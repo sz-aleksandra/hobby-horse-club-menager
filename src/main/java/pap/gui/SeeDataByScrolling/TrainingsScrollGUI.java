@@ -47,7 +47,7 @@ public class TrainingsScrollGUI extends DataScrollTemplate {
         //[MOCK] normalnie nie byloby tablicy tylko modyfikacja danych Ridera
         int indexOfElementInFittingElements = Arrays.asList(this.fittingElementsIds).indexOf(elementId);
 
-        if (userType == "Rider") {
+        if (userType.equals("Rider")) {
             if (this.isUserRegisteredForTraining[indexOfElementInFittingElements])
             {
                 ScrollElementButton unregisterButton = new ScrollElementButton("Cancel", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
@@ -68,7 +68,7 @@ public class TrainingsScrollGUI extends DataScrollTemplate {
                 });
                 dataPanel.add(registerButton);
             }
-        } else {
+        } else if (userType.equals("Employee") && doesEmployeeHaveWritePermissions()){
             ScrollElementButton editButton = new ScrollElementButton("Edit", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
             editButton.addActionListener(actionEvent -> {
                 handleEditData();

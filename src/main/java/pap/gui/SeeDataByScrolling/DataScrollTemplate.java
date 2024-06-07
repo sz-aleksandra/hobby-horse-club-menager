@@ -37,28 +37,37 @@ public abstract class DataScrollTemplate extends ScrollGUITemplate {
 
     protected void createScrollButtons(int elementId, JPanel dataPanel) {
 
-        int buttonSize = scrollButtonSize; this.buttonsGapSize = buttonSize/3;
-        dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
+        if (userType.equals("Employee") && doesEmployeeHaveWritePermissions()){
+            int buttonSize = scrollButtonSize; this.buttonsGapSize = buttonSize/3;
+            dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
 
-        ScrollElementButton editButton = new ScrollElementButton("Edit", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
-        editButton.addActionListener(actionEvent -> {
-            handleEditData();
-        });
-        dataPanel.add(editButton);
-        dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
+            ScrollElementButton editButton = new ScrollElementButton("Edit", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
+            editButton.addActionListener(actionEvent -> {
+                handleEditData();
+            });
+            dataPanel.add(editButton);
+            dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
 
-        ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
-        editButton.addActionListener(actionEvent -> {
-            handleRemoveData();
-        });
-        dataPanel.add(removeButton);
+            ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
+            editButton.addActionListener(actionEvent -> {
+                handleRemoveData();
+            });
+            dataPanel.add(removeButton);
+        }
+    }
+
+    protected boolean doesEmployeeHaveWritePermissions(){
+        String employeePositionName = "Trainer"; //[MOCK], pobrac z bazy danych informacje o nazwie pozycji
+        return new TableAccessChecker().getAccessType(pageName, employeePositionName).equals("Write");
     }
 
     protected void createCustomGUI() {
         super.createCustomGUI();
-        RoundedButton addButton = new RoundedButton("Add", frameWidth/10, 80, Color.decode("#ebb33b"), Color.decode("#c7911c"), fontButtons, false);
-        addButton.addActionListener(e->handleAddData());
-        logoPanel.add(addButton); logoPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
+        if (userType.equals("Employee") && doesEmployeeHaveWritePermissions()) {
+            RoundedButton addButton = new RoundedButton("Add", frameWidth/10, 80, Color.decode("#ebb33b"), Color.decode("#c7911c"), fontButtons, false);
+            addButton.addActionListener(e->handleAddData());
+            logoPanel.add(addButton); logoPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
+        }
     }
 
     public DataScrollTemplate(int userId, String userType, String pageName){

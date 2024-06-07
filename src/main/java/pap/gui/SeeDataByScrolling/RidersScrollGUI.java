@@ -66,6 +66,13 @@ public class RidersScrollGUI extends ScrollGUITemplate {
             //
         });
         riderPanel.add(editButton);
+        riderPanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
+
+        ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
+        editButton.addActionListener(actionEvent -> {
+            //
+        });
+        riderPanel.add(removeButton);
 
     }
 

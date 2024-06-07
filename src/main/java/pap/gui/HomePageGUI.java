@@ -110,28 +110,17 @@ public class HomePageGUI extends BaseGUI {
             JPanel buttonsRow2 = new JPanel();
             buttonsRow2.setLayout(new BoxLayout(buttonsRow2, BoxLayout.LINE_AXIS));
             buttonsRow2.setBackground(bgColor);
-            seeHorsesButton = new MenuButton("See horses", "/icons/history.png");
-            seeHorsesButton.addActionListener(e->seeHorsesAction());
-            seeStablesButton = new MenuButton("See stables", "/icons/reviews.png");
-            seeHorsesButton.addActionListener(e->seeStablesAction());
-            buttonsRow2.add(seeHorsesButton); buttonsRow2.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
-            buttonsRow2.add(seeStablesButton); buttonsRow2.add(Box.createHorizontalGlue());
-
-            JPanel buttonsRow3 = new JPanel();
-            buttonsRow3.setLayout(new BoxLayout(buttonsRow3, BoxLayout.LINE_AXIS));
-            buttonsRow3.setBackground(bgColor);
             seeLicenceButton = new MenuButton("See your licence", "/icons/payment.png");
             seeLicenceButton.addActionListener(e->seeLicenceAction());
             deactivateAccountButton = new MenuButton("Deactivate account", "/icons/deactivate.png");
             deactivateAccountButton.fillColor = statusWrongLighter;
             deactivateAccountButton.hoverColor = statusWrong;
             deactivateAccountButton.addActionListener(e->deactivateAccountAction());
-            buttonsRow3.add(seeLicenceButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
-            buttonsRow3.add(deactivateAccountButton); buttonsRow3.add(Box.createHorizontalGlue());
+            buttonsRow2.add(seeLicenceButton); buttonsRow2.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            buttonsRow2.add(deactivateAccountButton); buttonsRow2.add(Box.createHorizontalGlue());
 
             buttonsRowsPanel.add(buttonsRow1); buttonsRowsPanel.add(Box.createVerticalGlue());
             buttonsRowsPanel.add(buttonsRow2); buttonsRowsPanel.add(Box.createVerticalGlue());
-            buttonsRowsPanel.add(buttonsRow3); buttonsRowsPanel.add(Box.createVerticalGlue());
         } else if (userType.equals("Employee")) {
             JPanel buttonsRow1 = new JPanel();
             buttonsRow1.setLayout(new BoxLayout(buttonsRow1, BoxLayout.LINE_AXIS));

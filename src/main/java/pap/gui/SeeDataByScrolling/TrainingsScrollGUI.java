@@ -88,6 +88,13 @@ public class TrainingsScrollGUI extends ScrollGUITemplate {
                 //
             });
             trainingPanel.add(editButton);
+            trainingPanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
+
+            ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
+            editButton.addActionListener(actionEvent -> {
+                //
+            });
+            trainingPanel.add(removeButton);
         }
 
     }

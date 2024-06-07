@@ -86,6 +86,13 @@ public class TournamentsScrollGUI extends ScrollGUITemplate {
                 //
             });
             tournamentPanel.add(editButton);
+            tournamentPanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
+
+            ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
+            editButton.addActionListener(actionEvent -> {
+                //
+            });
+            tournamentPanel.add(removeButton);
         }
 
     }

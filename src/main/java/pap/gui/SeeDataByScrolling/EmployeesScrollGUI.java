@@ -67,6 +67,13 @@ public class EmployeesScrollGUI extends ScrollGUITemplate {
             //
         });
         employeePanel.add(editButton);
+        employeePanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
+
+        ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
+        editButton.addActionListener(actionEvent -> {
+            //
+        });
+        employeePanel.add(removeButton);
 
     }
 
@@ -79,7 +86,7 @@ public class EmployeesScrollGUI extends ScrollGUITemplate {
     public EmployeesScrollGUI(int userId, String userType){
         super(userId, userType);
         elementHeight = frameHeight/6;
-        elementWidth = frameWidth*7/10;
+        elementWidth = frameWidth*6/10;
         pageName = "Employees";
     }
 

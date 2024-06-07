@@ -17,20 +17,19 @@ import pap.logic.DeactivateAccount;
 import pap.logic.ErrorCodes;
 
 //TODO
-// - dodać w każdym scrollView przycisk ADD (myślę że żółty, na górze po prawej), widoczny tylko dla Pracowników (później -> dla niektórych pracowników)
 // - przygotować te widoki dodawania (formularz dla każdej tabeli)
-// - przyznawanie dostępu do tabel dla różnych typów pracowników (odczyt/zapis/usunięcie/brak dostępu)
+// - sprawdzenie jak widok home zachowuje si edla roznych Position name
 
 public class HomePageGUI extends BaseGUI {
 
     MenuButton seeTrainingsButton, seeTournamentsButton, seeHorsesButton,
             seeStablesButton, seeLicenceButton, deactivateAccountButton, seeAccessoriesButton,
-            seeRidersButton, seeGroupsButton;
+            seeRidersButton, seeGroupsButton, seePositionsButton, seeEmployeesButton;
     JPanel mainPanel, buttonsPanel, buttonsRowsPanel, infoPanel;
     LogoPanel logoPanel;
     JLabel welcomeLabel;
     LogOutButton logOutButton;
-    int menuButtonWidth = (this.userType == "Rider") ? frameWidth*4/20 : frameWidth*3/20;
+    int menuButtonWidth = (this.userType.equals("Rider")) ? frameWidth*4/20 : frameWidth*3/20;
     int menuButtonHeight = frameHeight*4/40;
     int menuButtonGap = menuButtonWidth/3;
 
@@ -129,15 +128,23 @@ public class HomePageGUI extends BaseGUI {
             JPanel buttonsRow1 = new JPanel();
             buttonsRow1.setLayout(new BoxLayout(buttonsRow1, BoxLayout.LINE_AXIS));
             buttonsRow1.setBackground(bgColor);
-            seeTrainingsButton = new MenuButton("Employees", "/icons/search_offers.png");
-            seeTrainingsButton.addActionListener(e->seeEmployeesAction());
-            seeTournamentsButton = new MenuButton("Positions", "/icons/reservations.png");
-            seeTournamentsButton.addActionListener(e->seePositionsAction());
+            seeEmployeesButton = new MenuButton("Employees", "/icons/search_offers.png");
+            seeEmployeesButton.addActionListener(e->seeEmployeesAction());
+            seePositionsButton = new MenuButton("Positions", "/icons/reservations.png");
+            seePositionsButton.addActionListener(e->seePositionsAction());
             seeStablesButton = new MenuButton("Stables", "/icons/reservations.png");
             seeStablesButton.addActionListener(e->seeStablesAction());
-            buttonsRow1.add(seeTrainingsButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
-            buttonsRow1.add(seeTournamentsButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
-            buttonsRow1.add(seeStablesButton); buttonsRow1.add(Box.createHorizontalGlue());
+
+            if (doesEmployeeHaveReadOrWritePermissions("Employees")){
+                buttonsRow1.add(seeEmployeesButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            }
+            if (doesEmployeeHaveReadOrWritePermissions("Positions")){
+                buttonsRow1.add(seePositionsButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            }
+            if (doesEmployeeHaveReadOrWritePermissions("Stables")){
+                buttonsRow1.add(seeStablesButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            }
+            buttonsRow1.add(Box.createHorizontalGlue());
 
             JPanel buttonsRow2 = new JPanel();
             buttonsRow2.setLayout(new BoxLayout(buttonsRow2, BoxLayout.LINE_AXIS));
@@ -146,8 +153,14 @@ public class HomePageGUI extends BaseGUI {
             seeHorsesButton.addActionListener(e->seeHorsesAction());
             seeAccessoriesButton = new MenuButton("Accessories", "/icons/deactivate.png");
             seeAccessoriesButton.addActionListener(e->seeAccessoriesAction());
-            buttonsRow2.add(seeHorsesButton); buttonsRow2.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
-            buttonsRow2.add(seeAccessoriesButton); buttonsRow2.add(Box.createHorizontalGlue());
+
+            if (doesEmployeeHaveReadOrWritePermissions("Horses")){
+                buttonsRow2.add(seeHorsesButton); buttonsRow2.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            }
+            if (doesEmployeeHaveReadOrWritePermissions("Accessories")){
+                buttonsRow2.add(seeAccessoriesButton); buttonsRow2.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            }
+            buttonsRow2.add(Box.createHorizontalGlue());
 
             JPanel buttonsRow3 = new JPanel();
             buttonsRow3.setLayout(new BoxLayout(buttonsRow3, BoxLayout.LINE_AXIS));
@@ -160,10 +173,20 @@ public class HomePageGUI extends BaseGUI {
             seeTrainingsButton.addActionListener(e->seeTrainingsAction());
             seeTournamentsButton = new MenuButton("Tournaments", "/icons/deactivate.png");
             seeTournamentsButton.addActionListener(e->seeTournamentsAction());
-            buttonsRow3.add(seeRidersButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
-            buttonsRow3.add(seeGroupsButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
-            buttonsRow3.add(seeTrainingsButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
-            buttonsRow3.add(seeTournamentsButton); buttonsRow3.add(Box.createHorizontalGlue());
+
+            if (doesEmployeeHaveReadOrWritePermissions("Riders")){
+                buttonsRow3.add(seeRidersButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            }
+            if (doesEmployeeHaveReadOrWritePermissions("Groups")){
+                buttonsRow3.add(seeGroupsButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            }
+            if (doesEmployeeHaveReadOrWritePermissions("Trainings")){
+                buttonsRow3.add(seeTrainingsButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            }
+            if (doesEmployeeHaveReadOrWritePermissions("Tournaments")){
+                buttonsRow3.add(seeTournamentsButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            }
+            buttonsRow3.add(Box.createHorizontalGlue());
             
             buttonsRowsPanel.add(buttonsRow1); buttonsRowsPanel.add(Box.createVerticalGlue());
             buttonsRowsPanel.add(buttonsRow2); buttonsRowsPanel.add(Box.createVerticalGlue());
@@ -258,6 +281,12 @@ public class HomePageGUI extends BaseGUI {
     void logOutBtnClickedAction(){
         new LogInGUI(-1, "None").createGUI();
         frame.setVisible(false);
+    }
+
+    protected boolean doesEmployeeHaveReadOrWritePermissions(String pageName){
+        String employeePositionName = "Trainer"; //[MOCK], pobrac z bazy danych informacje o nazwie pozycji
+        String accessType = new TableAccessChecker().getAccessType(pageName, employeePositionName);
+        return accessType.equals("Read") || accessType.equals("Write");
     }
 
     class MenuButton extends TextIconButton {

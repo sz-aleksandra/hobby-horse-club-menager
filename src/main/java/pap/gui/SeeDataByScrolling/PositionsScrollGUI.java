@@ -1,85 +1,54 @@
 package pap.gui.SeeDataByScrolling;
 
-import pap.gui.HomePageGUI;
-import pap.gui.components.ScrollElementButton;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 
-public class PositionsScrollGUI extends ScrollGUITemplate {
+public class PositionsScrollGUI extends DataScrollTemplate {
 
-    //[MOCK]
+    // [MOCK]
+    @Override
     protected void getElementsData() {
         this.fittingElementsIds = new Integer[]{1,2,3,4};
         this.nrOfElements = fittingElementsIds.length;
     }
 
     // [MOCK]
+    @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> positionInfo = new HashMap<String, String>();
-        positionInfo.put("name", "Trainer");
-        positionInfo.put("salary_min", "2400");
-        positionInfo.put("salary_max", "6000");
-        positionInfo.put("speciality", "Jumping Trainings");
-        return positionInfo;
+        HashMap<String, String> dataInfo = new HashMap<String, String>();
+        dataInfo.put("name", "Trainer");
+        dataInfo.put("salary_min", "2400");
+        dataInfo.put("salary_max", "6000");
+        dataInfo.put("speciality", "Jumping Trainings");
+        return dataInfo;
     }
 
-    protected JPanel createScrollElement(int elementId) {
-
-        HashMap<String, String> positionInfo = getElementData(elementId);
-
-        JPanel positionPanel = new JPanel();
-        positionPanel.setBackground(neutralBlue);
-        positionPanel.setLayout(new BoxLayout(positionPanel, BoxLayout.LINE_AXIS));
-        positionPanel.setPreferredSize(new Dimension(frameWidth, elementHeight));
-        positionPanel.setMaximumSize(new Dimension(frameWidth, elementHeight));
-        positionPanel.add(Box.createRigidArea(new Dimension(frameWidth/20,0)));
-
-        JPanel positionInfoPanel = new JPanel();
-        positionInfoPanel.setBackground(neutralGray);
-        positionInfoPanel.setLayout(new BoxLayout(positionInfoPanel, BoxLayout.PAGE_AXIS));
-        positionInfoPanel.setPreferredSize(new Dimension(elementWidth, elementHeight));
-        positionInfoPanel.setMaximumSize(new Dimension(elementWidth, elementHeight));
-        addJLabel(positionInfo.get("name"), Color.BLACK, fontBiggerBold, positionInfoPanel, elementWidth, elementHeight);
-        addJLabel("Salary: " + positionInfo.get("salary_min") + " - " + positionInfo.get("salary_max") + " PLN", Color.BLACK, fontMiddle, positionInfoPanel, elementWidth, elementHeight);
-        addJLabel("Speciality: " + positionInfo.get("speciality"), Color.BLACK, fontMiddle, positionInfoPanel, elementWidth, elementHeight);
-        positionPanel.add(positionInfoPanel);
-
-        return positionPanel;
+    @Override
+    protected void addInfoToDataInfoPanel (int elementId, JPanel dataInfoPanel) {
+        HashMap<String, String> dataInfo = getElementData(elementId);
+        addJLabel(dataInfo.get("name"), Color.BLACK, fontBiggerBold, dataInfoPanel, elementWidth, elementHeight);
+        addJLabel("Salary: " + dataInfo.get("salary_min") + " - " + dataInfo.get("salary_max") + " PLN", Color.BLACK, fontMiddle, dataInfoPanel, elementWidth, elementHeight);
+        addJLabel("Speciality: " + dataInfo.get("speciality"), Color.BLACK, fontMiddle, dataInfoPanel, elementWidth, elementHeight);
     }
 
-    protected void createScrollButtons(int elementId, JPanel positionPanel) {
-
-        int buttonSize = scrollButtonSize; int gapSize = buttonSize/3;
-        positionPanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
-
-        ScrollElementButton editButton = new ScrollElementButton("Edit", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
-        editButton.addActionListener(actionEvent -> {
-            //
-        });
-        positionPanel.add(editButton);
-        positionPanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
-
-        ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
-        editButton.addActionListener(actionEvent -> {
-            //
-        });
-        positionPanel.add(removeButton);
+    @Override
+    protected void handleAddData() {
 
     }
 
     @Override
-    protected void undoBtnClickedAction(){
-        new HomePageGUI(userId, userType).createGUI();
-        frame.setVisible(false);
+    protected void handleEditData() {
+
+    }
+
+    @Override
+    protected void handleRemoveData() {
+
     }
 
     public PositionsScrollGUI(int userId, String userType){
-        super(userId, userType);
-        elementHeight = frameHeight/6;
-        elementWidth = frameWidth*6/10;
-        pageName = "Positions";
+        super(userId, userType, "Positions");
     }
 
     public static void main(String[] args) {

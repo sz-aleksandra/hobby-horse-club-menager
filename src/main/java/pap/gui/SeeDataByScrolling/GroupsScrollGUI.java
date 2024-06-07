@@ -1,84 +1,53 @@
 package pap.gui.SeeDataByScrolling;
 
-import pap.gui.HomePageGUI;
-import pap.gui.components.ScrollElementButton;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 
-public class GroupsScrollGUI extends ScrollGUITemplate {
+public class GroupsScrollGUI extends DataScrollTemplate {
 
     //[MOCK]
+    @Override
     protected void getElementsData() {
-        this.fittingElementsIds = new Integer[]{1,2,3,4};
+        this.fittingElementsIds = new Integer[]{1,2,3,4,5,6};
         this.nrOfElements = fittingElementsIds.length;
     }
 
     // [MOCK]
+    @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> groupInfo = new HashMap<String, String>();
-        groupInfo.put("id", "1");
-        groupInfo.put("no_riders", "7");
-        groupInfo.put("trainings_for_group", "Id1, Id4, Id7, Id8, Id9");
-        return groupInfo;
+        HashMap<String, String> dataInfo = new HashMap<String, String>();
+        dataInfo.put("id", "1");
+        dataInfo.put("no_riders", "7");
+        dataInfo.put("trainings_for_group", "Id1, Id4, Id7, Id8, Id9");
+        return dataInfo;
     }
 
-    protected JPanel createScrollElement(int elementId) {
-
-        HashMap<String, String> groupInfo = getElementData(elementId);
-
-        JPanel groupPanel = new JPanel();
-        groupPanel.setBackground(neutralBlue);
-        groupPanel.setLayout(new BoxLayout(groupPanel, BoxLayout.LINE_AXIS));
-        groupPanel.setPreferredSize(new Dimension(frameWidth, elementHeight));
-        groupPanel.setMaximumSize(new Dimension(frameWidth, elementHeight));
-        groupPanel.add(Box.createRigidArea(new Dimension(frameWidth/20,0)));
-
-        JPanel groupInfoPanel = new JPanel();
-        groupInfoPanel.setBackground(neutralGray);
-        groupInfoPanel.setLayout(new BoxLayout(groupInfoPanel, BoxLayout.PAGE_AXIS));
-        groupInfoPanel.setPreferredSize(new Dimension(elementWidth, elementHeight));
-        groupInfoPanel.setMaximumSize(new Dimension(elementWidth, elementHeight));
-        addJLabel("Group " + groupInfo.get("id"), Color.BLACK, fontBiggerBold, groupInfoPanel, elementWidth, elementHeight);
-        addJLabel("Nr of riders: " + groupInfo.get("no_riders"), Color.BLACK, fontMiddle, groupInfoPanel, elementWidth, elementHeight);
-        addJLabel("Trainings for group: " + groupInfo.get("trainings_for_group"), Color.BLACK, fontMiddle, groupInfoPanel, elementWidth, elementHeight);
-        groupPanel.add(groupInfoPanel);
-
-        return groupPanel;
+    @Override
+    protected void addInfoToDataInfoPanel (int elementId, JPanel dataInfoPanel) {
+        HashMap<String, String> dataInfo = getElementData(elementId);
+        addJLabel("Group " + dataInfo.get("id"), Color.BLACK, fontBiggerBold, dataInfoPanel, elementWidth, elementHeight);
+        addJLabel("Nr of riders: " + dataInfo.get("no_riders"), Color.BLACK, fontMiddle, dataInfoPanel, elementWidth, elementHeight);
+        addJLabel("Trainings for group: " + dataInfo.get("trainings_for_group"), Color.BLACK, fontMiddle, dataInfoPanel, elementWidth, elementHeight);
     }
 
-    protected void createScrollButtons(int elementId, JPanel groupPanel) {
-
-        int buttonSize = scrollButtonSize; int gapSize = buttonSize/3;
-        groupPanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
-
-        ScrollElementButton editButton = new ScrollElementButton("Edit", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
-        editButton.addActionListener(actionEvent -> {
-            //
-        });
-        groupPanel.add(editButton);
-        groupPanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
-
-        ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
-        editButton.addActionListener(actionEvent -> {
-            //
-        });
-        groupPanel.add(removeButton);
+    @Override
+    protected void handleAddData() {
 
     }
 
     @Override
-    protected void undoBtnClickedAction(){
-        new HomePageGUI(userId, userType).createGUI();
-        frame.setVisible(false);
+    protected void handleEditData() {
+
+    }
+
+    @Override
+    protected void handleRemoveData() {
+
     }
 
     public GroupsScrollGUI(int userId, String userType){
-        super(userId, userType);
-        elementHeight = frameHeight/6;
-        elementWidth = frameWidth*6/10;
-        pageName = "Groups";
+        super(userId, userType, "Groups");
     }
 
     public static void main(String[] args) {

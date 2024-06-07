@@ -16,6 +16,10 @@ import pap.gui.components.TextIconButton;
 import pap.logic.DeactivateAccount;
 import pap.logic.ErrorCodes;
 
+//TODO
+// - dodać w każdym scrollView przycisk ADD (myślę że żółty, na górze po prawej), widoczny tylko dla Pracowników (później -> dla niektórych pracowników)
+// - przygotować te widoki dodawania (formularz dla każdej tabeli)
+// - przyznawanie dostępu do tabel dla różnych typów pracowników (odczyt/zapis/usunięcie/brak dostępu)
 
 public class HomePageGUI extends BaseGUI {
 

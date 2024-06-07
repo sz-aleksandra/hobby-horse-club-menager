@@ -2,9 +2,7 @@ package pap.gui.SeeDataByScrolling;
 
 import pap.gui.BaseGUI;
 import pap.gui.HomePageGUI;
-import pap.gui.components.FiltersPanel;
-import pap.gui.components.LogoPanel;
-import pap.gui.components.UndoPanel;
+import pap.gui.components.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +11,7 @@ import java.util.HashMap;
 public abstract class ScrollGUITemplate extends BaseGUI {
     protected JPanel mainPanel, scrollPanel;
     protected JScrollPane scrollPanelEnabler;
+    protected LogoPanel logoPanel;
 
     protected int nrOfElements;
     protected Integer[] fittingElementsIds;
@@ -36,7 +35,7 @@ public abstract class ScrollGUITemplate extends BaseGUI {
         int filtersPanelHeight = 0;
         int scrollPanelEnablerHeight = frameHeight - logoPanelHeight - filtersPanelHeight;
 
-        LogoPanel logoPanel = new LogoPanel(logoColor, frameHeight, frameWidth, logoPanelHeight);
+        logoPanel = new LogoPanel(logoColor, frameHeight, frameWidth, logoPanelHeight);
         mainPanel.add(logoPanel);
 
         scrollPanel = new JPanel();

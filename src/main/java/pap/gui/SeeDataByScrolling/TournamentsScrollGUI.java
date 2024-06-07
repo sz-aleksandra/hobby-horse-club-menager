@@ -1,60 +1,44 @@
 package pap.gui.SeeDataByScrolling;
 
-import pap.gui.HomePageGUI;
 import pap.gui.components.ScrollElementButton;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class TournamentsScrollGUI extends ScrollGUITemplate {
+public class TournamentsScrollGUI extends DataScrollTemplate {
 
     //[MOCK] Tworze tymczasowe pole klasy, powinna to byc funkcja z logic, ktora wykonujemy gdy chcemy sprawdzic czy danu user jest na turniej juz zapisany
     boolean[] isUserRegisteredForTournament = {true, false, false};
 
     //[MOCK]
+    @Override
     protected void getElementsData() {
         this.fittingElementsIds = new Integer[]{1,2,3};
         this.nrOfElements = fittingElementsIds.length;
     }
 
     // [MOCK]
+    @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> tournamentInfo = new HashMap<String, String>();
-        tournamentInfo.put("name", "XXIV Monthly Hobby Horsing Contest");
-        tournamentInfo.put("date", "2024-06-12");
-        tournamentInfo.put("address", "ul. Kolorowa 41, Warszawa");
-        return tournamentInfo;
+        HashMap<String, String> dataInfo = new HashMap<String, String>();
+        dataInfo.put("name", "XXIV Monthly Hobby Horsing Contest");
+        dataInfo.put("date", "2024-06-12");
+        dataInfo.put("address", "ul. Kolorowa 41, Warszawa");
+        return dataInfo;
     }
 
-    protected JPanel createScrollElement(int elementId) {
-
-        HashMap<String, String> tournamentInfo = getElementData(elementId);
-
-        JPanel tournamentPanel = new JPanel();
-        tournamentPanel.setBackground(neutralBlue);
-        tournamentPanel.setLayout(new BoxLayout(tournamentPanel, BoxLayout.LINE_AXIS));
-        tournamentPanel.setPreferredSize(new Dimension(frameWidth, elementHeight));
-        tournamentPanel.setMaximumSize(new Dimension(frameWidth, elementHeight));
-        tournamentPanel.add(Box.createRigidArea(new Dimension(frameWidth/20,0)));
-
-        JPanel tournamentInfoPanel = new JPanel();
-        tournamentInfoPanel.setBackground(neutralGray);
-        tournamentInfoPanel.setLayout(new BoxLayout(tournamentInfoPanel, BoxLayout.PAGE_AXIS));
-        tournamentInfoPanel.setPreferredSize(new Dimension(elementWidth, elementHeight));
-        tournamentInfoPanel.setMaximumSize(new Dimension(elementWidth, elementHeight));
-        addJLabel("Tournament " + tournamentInfo.get("name"), Color.BLACK, fontBiggerBold, tournamentInfoPanel, elementWidth, elementHeight);
-        addJLabel("hosted on " + tournamentInfo.get("date") + " at " + tournamentInfo.get("address"), Color.BLACK, fontMiddle, tournamentInfoPanel, elementWidth, elementHeight);
-        tournamentPanel.add(tournamentInfoPanel);
-
-        return tournamentPanel;
+    @Override
+    protected void addInfoToDataInfoPanel (int elementId, JPanel dataInfoPanel) {
+        HashMap<String, String> dataInfo = getElementData(elementId);
+        addJLabel("Tournament " + dataInfo.get("name"), Color.BLACK, fontBiggerBold, dataInfoPanel, elementWidth, elementHeight);
+        addJLabel("hosted on " + dataInfo.get("date") + " at " + dataInfo.get("address"), Color.BLACK, fontMiddle, dataInfoPanel, elementWidth, elementHeight);
     }
 
-    protected void createScrollButtons(int elementId, JPanel tournamentPanel) {
+    protected void createScrollButtons(int elementId, JPanel dataPanel) {
 
-        int buttonSize = scrollButtonSize; int gapSize = buttonSize/3;
-        tournamentPanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
+        int buttonSize = scrollButtonSize; buttonsGapSize = buttonSize/3;
+        dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
 
         //[MOCK] normalnie nie byloby tablicy tylko modyfikacja danych Ridera
         int indexOfElementInFittingElements = Arrays.asList(this.fittingElementsIds).indexOf(elementId);
@@ -67,56 +51,63 @@ public class TournamentsScrollGUI extends ScrollGUITemplate {
                     //[MOCK]
                     this.isUserRegisteredForTournament[indexOfElementInFittingElements] = false;
                     JOptionPane.showMessageDialog(frame, "You have cancelled participation in a tournament.");
-                    switchRegisterButtons(elementId, tournamentPanel);
+                    switchRegisterButtons(elementId, dataPanel);
                 });
-                tournamentPanel.add(unregisterButton);
+                dataPanel.add(unregisterButton);
             } else {
                 ScrollElementButton registerButton = new ScrollElementButton("Enter", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
                 registerButton.addActionListener(actionEvent -> {
                     //[MOCK]
                     this.isUserRegisteredForTournament[indexOfElementInFittingElements] = true;
                     JOptionPane.showMessageDialog(frame, "Successfully entered a tournament!");
-                    switchRegisterButtons(elementId, tournamentPanel);
+                    switchRegisterButtons(elementId, dataPanel);
                 });
-                tournamentPanel.add(registerButton);
+                dataPanel.add(registerButton);
             }
         } else {
             ScrollElementButton editButton = new ScrollElementButton("Edit", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
             editButton.addActionListener(actionEvent -> {
-                //
+                handleEditData();
             });
-            tournamentPanel.add(editButton);
-            tournamentPanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
+            dataPanel.add(editButton);
+            dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
 
             ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
             editButton.addActionListener(actionEvent -> {
-                //
+                handleEditData();
             });
-            tournamentPanel.add(removeButton);
+            dataPanel.add(removeButton);
         }
-
     }
 
-    void switchRegisterButtons(int elementId, JPanel tournamentPanel){
+    void switchRegisterButtons(int elementId, JPanel tournementPanel){
         // Removing button
-        tournamentPanel.remove(tournamentPanel.getComponentCount()-1);
+        tournementPanel.remove(tournementPanel.getComponentCount()-1);
         // Removing space before the button
-        tournamentPanel.remove(tournamentPanel.getComponentCount()-1);
-        createScrollButtons(elementId, tournamentPanel);
-        tournamentPanel.revalidate(); tournamentPanel.repaint();
+        tournementPanel.remove(tournementPanel.getComponentCount()-1);
+        createScrollButtons(elementId, tournementPanel);
+        tournementPanel.revalidate(); tournementPanel.repaint();
     }
 
     @Override
-    protected void undoBtnClickedAction(){
-        new HomePageGUI(userId, userType).createGUI();
-        frame.setVisible(false);
+    protected void handleAddData() {
+
+    }
+
+    @Override
+    protected void handleEditData() {
+
+    }
+
+    @Override
+    protected void handleRemoveData() {
+
     }
 
     public TournamentsScrollGUI(int userId, String userType){
-        super(userId, userType);
+        super(userId, userType, "Tournaments");
         elementHeight = frameHeight/6;
         elementWidth = frameWidth*3/5;
-        pageName = "Tournaments";
     }
 
     public static void main(String[] args) {

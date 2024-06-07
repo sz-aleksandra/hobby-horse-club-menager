@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pap.gui.DetailsView.LicenceGUI;
-import pap.gui.SeeDataByScrolling.EmployeesScrollGUI;
-import pap.gui.SeeDataByScrolling.TournamentsScrollGUI;
-import pap.gui.SeeDataByScrolling.TrainingsScrollGUI;
+import pap.gui.SeeDataByScrolling.*;
 import pap.gui.SignUpLogIn.LogInGUI;
 import pap.gui.components.LogOutButton;
 import pap.gui.components.LogoPanel;
@@ -22,12 +20,14 @@ import pap.logic.ErrorCodes;
 public class HomePageGUI extends BaseGUI {
 
     MenuButton seeTrainingsButton, seeTournamentsButton, seeHorsesButton,
-            seeStablesButton, seeLicenceButton, deactivateAccountButton, seeDataButton, addDataButton;
+            seeStablesButton, seeLicenceButton, deactivateAccountButton, seeAccessoriesButton,
+            seeRidersButton, seeGroupsButton;
     JPanel mainPanel, buttonsPanel, buttonsRowsPanel, infoPanel;
     LogoPanel logoPanel;
     JLabel welcomeLabel;
     LogOutButton logOutButton;
-    int menuButtonWidth = frameWidth*4/20; int menuButtonHeight = frameHeight*4/40;
+    int menuButtonWidth = (this.userType == "Rider") ? frameWidth*4/20 : frameWidth*3/20;
+    int menuButtonHeight = frameHeight*4/40;
     int menuButtonGap = menuButtonWidth/3;
 
     public HomePageGUI(int userId, String userType) {
@@ -125,24 +125,84 @@ public class HomePageGUI extends BaseGUI {
             JPanel buttonsRow1 = new JPanel();
             buttonsRow1.setLayout(new BoxLayout(buttonsRow1, BoxLayout.LINE_AXIS));
             buttonsRow1.setBackground(bgColor);
+            seeTrainingsButton = new MenuButton("Employees", "/icons/search_offers.png");
+            seeTrainingsButton.addActionListener(e->seeEmployeesAction());
+            seeTournamentsButton = new MenuButton("Positions", "/icons/reservations.png");
+            seeTournamentsButton.addActionListener(e->seePositionsAction());
+            seeStablesButton = new MenuButton("Stables", "/icons/reservations.png");
+            seeStablesButton.addActionListener(e->seeStablesAction());
+            buttonsRow1.add(seeTrainingsButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            buttonsRow1.add(seeTournamentsButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            buttonsRow1.add(seeStablesButton); buttonsRow1.add(Box.createHorizontalGlue());
 
-            seeDataButton = new MenuButton("See, edit, remove data", "/icons/search_offers.png");
-            seeDataButton.addActionListener(e->seeDataAction());
-            addDataButton = new MenuButton("Add data", "/icons/search_offers.png");
-            addDataButton.addActionListener(e->addDataAction());
-            deactivateAccountButton = new MenuButton("Deactivate account", "/icons/deactivate.png");
-            deactivateAccountButton.fillColor = statusWrongLighter; deactivateAccountButton.hoverColor = statusWrong;
-            deactivateAccountButton.addActionListener(e->deactivateAccountAction());
-            buttonsRow1.add(seeDataButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
-            buttonsRow1.add(addDataButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
-            buttonsRow1.add(deactivateAccountButton); buttonsRow1.add(Box.createHorizontalGlue());
+            JPanel buttonsRow2 = new JPanel();
+            buttonsRow2.setLayout(new BoxLayout(buttonsRow2, BoxLayout.LINE_AXIS));
+            buttonsRow2.setBackground(bgColor);
+            seeHorsesButton = new MenuButton("Horses", "/icons/payment.png");
+            seeHorsesButton.addActionListener(e->seeHorsesAction());
+            seeAccessoriesButton = new MenuButton("Accessories", "/icons/deactivate.png");
+            seeAccessoriesButton.addActionListener(e->seeAccessoriesAction());
+            buttonsRow2.add(seeHorsesButton); buttonsRow2.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            buttonsRow2.add(seeAccessoriesButton); buttonsRow2.add(Box.createHorizontalGlue());
 
-            buttonsRowsPanel.add(buttonsRow1);
-            buttonsRowsPanel.add(Box.createVerticalGlue());
+            JPanel buttonsRow3 = new JPanel();
+            buttonsRow3.setLayout(new BoxLayout(buttonsRow3, BoxLayout.LINE_AXIS));
+            buttonsRow3.setBackground(bgColor);
+            seeRidersButton = new MenuButton("Riders", "/icons/payment.png");
+            seeRidersButton.addActionListener(e->seeRidersAction());
+            seeGroupsButton = new MenuButton("Groups", "/icons/deactivate.png");
+            seeGroupsButton.addActionListener(e->seeGroupsAction());
+            seeTrainingsButton = new MenuButton("Trainings", "/icons/deactivate.png");
+            seeTrainingsButton.addActionListener(e->seeTrainingsAction());
+            seeTournamentsButton = new MenuButton("Tournaments", "/icons/deactivate.png");
+            seeTournamentsButton.addActionListener(e->seeTournamentsAction());
+            buttonsRow3.add(seeRidersButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            buttonsRow3.add(seeGroupsButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            buttonsRow3.add(seeTrainingsButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            buttonsRow3.add(seeTournamentsButton); buttonsRow3.add(Box.createHorizontalGlue());
+            
+            buttonsRowsPanel.add(buttonsRow1); buttonsRowsPanel.add(Box.createVerticalGlue());
+            buttonsRowsPanel.add(buttonsRow2); buttonsRowsPanel.add(Box.createVerticalGlue());
+            buttonsRowsPanel.add(buttonsRow3); buttonsRowsPanel.add(Box.createVerticalGlue());
         }
 
         mainPanel.add(buttonsPanel);
         mainPanel.add(Box.createVerticalGlue());
+    }
+
+    void seeGroupsAction() {
+        new GroupsScrollGUI(userId, userType).createGUI();
+        frame.setVisible(false);
+    }
+
+    void seeRidersAction() {
+        new RidersScrollGUI(userId, userType).createGUI();
+        frame.setVisible(false);
+    }
+
+    void seeAccessoriesAction() {
+        new AccessoriesScrollGUI(userId, userType).createGUI();
+        frame.setVisible(false);
+    }
+
+    void seeHorsesAction() {
+        new HorsesScrollGUI(userId, userType).createGUI();
+        frame.setVisible(false);
+    }
+
+    void seeStablesAction() {
+        new StablesScrollGUI(userId, userType).createGUI();
+        frame.setVisible(false);
+    }
+
+    void seePositionsAction() {
+        new PositionsScrollGUI(userId, userType).createGUI();
+        frame.setVisible(false);
+    }
+
+    void seeEmployeesAction() {
+        new EmployeesScrollGUI(userId, userType).createGUI();
+        frame.setVisible(false);
     }
 
     void seeTrainingsAction() {
@@ -155,29 +215,9 @@ public class HomePageGUI extends BaseGUI {
         frame.setVisible(false);
     }
 
-    void seeHorsesAction() {
-        //new ClientReservationHistoryGUI(userId, userType).createGUI();
-        //frame.setVisible(false); [MOCK] [EXTRA]
-    }
-
-    void seeStablesAction() {
-        //new ClientReservationHistoryGUI(userId, userType).createGUI();
-        //frame.setVisible(false); [MOCK] [EXTRA]
-    }
-
     void seeLicenceAction() {
         new LicenceGUI(userId, userType).createGUI();
         frame.setVisible(false);
-    }
-
-    void seeDataAction() {
-        System.out.println("See trainings, See tournaments, See employees, See riders, See horses, See accessories, See positions, See position history, See stables, See addresses, See groups");
-        new EmployeesScrollGUI(userId, userType).createGUI();
-        frame.setVisible(false);
-    }
-
-    void addDataAction() {
-        System.out.println("Add trainings, Add tournaments, Add employees, Add riders, Add horses, Add accessories, Add positions, Add stables, Add groups");
     }
 
     void deactivateAccountAction() {

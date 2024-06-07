@@ -1,25 +1,25 @@
-package pap.gui;
+package pap.gui.SeeDataByScrolling;
 
+import pap.gui.HomePageGUI;
 import pap.gui.components.ScrollElementButton;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Random;
 
-public class TrainingsScrollGUI extends ScrollGUITemplate{
+public class TrainingsScrollGUI extends ScrollGUITemplate {
 
     //[MOCK] Tworze tymczasowe pole klasy, powinna to byc funkcja z logic, ktora wykonujemy gdy chcemy sprawdzic czy danu user jest na trening juz zapisany
     boolean[] isUserRegisteredForTraining = {true, false, false, true, false, true, true};
 
     //[MOCK]
-    void getElementsData() {
+    protected void getElementsData() {
         this.fittingElementsIds = new Integer[]{1,2,3,4,5,6,7};
         this.nrOfElements = fittingElementsIds.length;
     }
 
     // [MOCK]
-    HashMap<String, String> getElementData(int elementId) {
+    protected HashMap<String, String> getElementData(int elementId) {
         HashMap<String, String> trainingInfo = new HashMap<String, String>();
         trainingInfo.put("type", "Jumping");
         trainingInfo.put("date", "Mondays, 3PM");
@@ -29,7 +29,7 @@ public class TrainingsScrollGUI extends ScrollGUITemplate{
         return trainingInfo;
     }
 
-    JPanel createScrollElement(int elementId) {
+    protected JPanel createScrollElement(int elementId) {
 
         HashMap<String, String> trainingInfo = getElementData(elementId);
 
@@ -53,7 +53,7 @@ public class TrainingsScrollGUI extends ScrollGUITemplate{
         return trainingPanel;
     }
 
-    void createScrollButtons(int elementId, JPanel trainingPanel) {
+    protected void createScrollButtons(int elementId, JPanel trainingPanel) {
 
         int buttonSize = scrollButtonSize; int gapSize = buttonSize/3;
         trainingPanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
@@ -102,7 +102,7 @@ public class TrainingsScrollGUI extends ScrollGUITemplate{
     }
 
     @Override
-    void undoBtnClickedAction(){
+    protected void undoBtnClickedAction(){
         new HomePageGUI(userId, userType).createGUI();
         frame.setVisible(false);
     }

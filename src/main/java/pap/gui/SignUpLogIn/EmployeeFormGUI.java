@@ -1,4 +1,4 @@
-package pap.gui;
+package pap.gui.SignUpLogIn;
 
 import java.time.Year;
 import java.util.ArrayList;
@@ -13,19 +13,19 @@ public class EmployeeFormGUI extends RegisterUserFormTemplate {
     }
 
     @Override
-    String[] getFieldLabels() {
+    protected String[] getFieldLabels() {
         String[] fieldLabels = {"Username", "Password", "Name", "Surname", "Date of birth", "Email", "Phone number", "Country", "City", "Street", "Street number", "Postal Code", "Position", "Salary (PLN)", "Date employed"};
         return fieldLabels;
     }
 
     @Override
-    String[] getFieldTypes() {
+    protected String[] getFieldTypes() {
         String[] fieldTypes = {"text", "password", "text", "text", "comboBoxDate", "text", "text", "text", "text", "text", "text", "text", "comboBox", "text", "comboBoxDate"};
         return fieldTypes;
     }
 
     @Override
-    Object[] getFieldParameters() {
+    protected Object[] getFieldParameters() {
 
         Integer[] days = new Integer[31];
         for (int i=0; i < days.length; i++) {
@@ -48,7 +48,7 @@ public class EmployeeFormGUI extends RegisterUserFormTemplate {
     }
 
     @Override
-    List<Integer> validateCredentials(HashMap<String, String> textFieldsValues) {
+    protected List<Integer> validateCredentials(HashMap<String, String> textFieldsValues) {
         /*List <Integer> errorCodes = new OwnerValidator(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Company name"),
                 textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
                 textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), textFieldsValues.get("NIP")).validateOwnerCredentials();*/
@@ -57,7 +57,7 @@ public class EmployeeFormGUI extends RegisterUserFormTemplate {
     }
 
     @Override
-    void createUser(HashMap<String, String> textFieldsValues) {
+    protected void createUser(HashMap<String, String> textFieldsValues) {
         /*new AddNewOwner(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Company name"),
                 textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
                 textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), textFieldsValues.get("NIP"),

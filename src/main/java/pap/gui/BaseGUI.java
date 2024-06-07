@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 
 
-public class BaseGUI {
+public abstract class BaseGUI {
     protected JFrame frame;
     protected JMenuBar mb;
     protected JMenu FileMenu, EditMenu, HelpMenu;
@@ -51,13 +51,6 @@ public class BaseGUI {
         frame.getContentPane().add(BorderLayout.PAGE_START, mb);
     }
 
-    void createBaseGUI(){
-        setFonts();
-        createFrame();
-        createMenus();
-//        frame.setVisible(true);
-    }
-
     void setFonts(){
         try {
             File fontFile = new File(getClass().getResource("/Montserrat-Regular.ttf").getPath());
@@ -80,12 +73,25 @@ public class BaseGUI {
         }
     }
 
+    void createBaseGUI(){
+        setFonts();
+        createFrame();
+        createMenus();
+    }
+
+    protected abstract void createCustomGUI();
+
+    public void createGUI(){
+        createBaseGUI();
+        createCustomGUI();
+        frame.setVisible(true);
+    };
+
     public BaseGUI(int userId, String userType){
         this.userId = userId;
         this.userType = userType;
     }
 
     public static void main(String[] args) {
-        new BaseGUI(-1, "None").createBaseGUI();
     }
 }

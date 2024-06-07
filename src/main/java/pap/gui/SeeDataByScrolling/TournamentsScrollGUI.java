@@ -1,5 +1,6 @@
-package pap.gui;
+package pap.gui.SeeDataByScrolling;
 
+import pap.gui.HomePageGUI;
 import pap.gui.components.ScrollElementButton;
 
 import javax.swing.*;
@@ -7,19 +8,19 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class TournamentsScrollGUI extends ScrollGUITemplate{
+public class TournamentsScrollGUI extends ScrollGUITemplate {
 
     //[MOCK] Tworze tymczasowe pole klasy, powinna to byc funkcja z logic, ktora wykonujemy gdy chcemy sprawdzic czy danu user jest na turniej juz zapisany
     boolean[] isUserRegisteredForTournament = {true, false, false};
 
     //[MOCK]
-    void getElementsData() {
+    protected void getElementsData() {
         this.fittingElementsIds = new Integer[]{1,2,3};
         this.nrOfElements = fittingElementsIds.length;
     }
 
     // [MOCK]
-    HashMap<String, String> getElementData(int elementId) {
+    protected HashMap<String, String> getElementData(int elementId) {
         HashMap<String, String> tournamentInfo = new HashMap<String, String>();
         tournamentInfo.put("name", "XXIV Monthly Hobby Horsing Contest");
         tournamentInfo.put("date", "2024-06-12");
@@ -27,7 +28,7 @@ public class TournamentsScrollGUI extends ScrollGUITemplate{
         return tournamentInfo;
     }
 
-    JPanel createScrollElement(int elementId) {
+    protected JPanel createScrollElement(int elementId) {
 
         HashMap<String, String> tournamentInfo = getElementData(elementId);
 
@@ -50,7 +51,7 @@ public class TournamentsScrollGUI extends ScrollGUITemplate{
         return tournamentPanel;
     }
 
-    void createScrollButtons(int elementId, JPanel tournamentPanel) {
+    protected void createScrollButtons(int elementId, JPanel tournamentPanel) {
 
         int buttonSize = scrollButtonSize; int gapSize = buttonSize/3;
         tournamentPanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
@@ -99,7 +100,7 @@ public class TournamentsScrollGUI extends ScrollGUITemplate{
     }
 
     @Override
-    void undoBtnClickedAction(){
+    protected void undoBtnClickedAction(){
         new HomePageGUI(userId, userType).createGUI();
         frame.setVisible(false);
     }

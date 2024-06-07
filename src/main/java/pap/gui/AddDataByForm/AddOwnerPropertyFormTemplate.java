@@ -1,5 +1,7 @@
-package pap.gui;
+package pap.gui.AddDataByForm;
 
+import pap.gui.HomePageGUI;
+import pap.gui.SignUpLogIn.FormGUITemplate;
 import pap.logic.ErrorCodes;
 
 import javax.swing.*;
@@ -12,13 +14,13 @@ abstract public class AddOwnerPropertyFormTemplate extends FormGUITemplate {
         super(userId, userType);
     }
 
-    abstract List <Integer> validatePropertyData(HashMap<String, String> textFieldsValues);
+    protected abstract List <Integer> validatePropertyData(HashMap<String, String> textFieldsValues);
 
-    abstract void addProperty(HashMap<String, String> textFieldsValues);
+    protected abstract void addProperty(HashMap<String, String> textFieldsValues);
 
 
     @Override
-    void finishFormButtonClicked(){
+    protected void finishFormButtonClicked(){
         // Get values
         HashMap<String, String> formFieldsValues = getFieldValues();
         // Validate values
@@ -44,7 +46,7 @@ abstract public class AddOwnerPropertyFormTemplate extends FormGUITemplate {
     }
 
     @Override
-    void undoBtnClickedAction(){
+    protected void undoBtnClickedAction(){
         new HomePageGUI(userId, userType).createGUI();
         frame.setVisible(false);
     }

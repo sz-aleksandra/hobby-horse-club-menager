@@ -1,21 +1,22 @@
-package pap.gui;
+package pap.gui.SeeDataByScrolling;
 
+import pap.gui.HomePageGUI;
 import pap.gui.components.ScrollElementButton;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 
-public class RidersScrollGUI extends ScrollGUITemplate{
+public class RidersScrollGUI extends ScrollGUITemplate {
 
     //[MOCK]
-    void getElementsData() {
+    protected void getElementsData() {
         this.fittingElementsIds = new Integer[]{1,2,3,4,5,6,7,8,9,10,12,13,14,15,16};
         this.nrOfElements = fittingElementsIds.length;
     }
 
     // [MOCK]
-    HashMap<String, String> getElementData(int elementId) {
+    protected HashMap<String, String> getElementData(int elementId) {
         HashMap<String, String> riderInfo = new HashMap<String, String>();
         riderInfo.put("name", "Ola");
         riderInfo.put("surname", "Nowak");
@@ -29,7 +30,7 @@ public class RidersScrollGUI extends ScrollGUITemplate{
         return riderInfo;
     }
 
-    JPanel createScrollElement(int elementId) {
+    protected JPanel createScrollElement(int elementId) {
 
         HashMap<String, String> riderInfo = getElementData(elementId);
 
@@ -55,7 +56,7 @@ public class RidersScrollGUI extends ScrollGUITemplate{
         return riderPanel;
     }
 
-    void createScrollButtons(int elementId, JPanel riderPanel) {
+    protected void createScrollButtons(int elementId, JPanel riderPanel) {
 
         int buttonSize = scrollButtonSize; int gapSize = buttonSize/3;
         riderPanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
@@ -69,7 +70,7 @@ public class RidersScrollGUI extends ScrollGUITemplate{
     }
 
     @Override
-    void undoBtnClickedAction(){
+    protected void undoBtnClickedAction(){
         new HomePageGUI(userId, userType).createGUI();
         frame.setVisible(false);
     }

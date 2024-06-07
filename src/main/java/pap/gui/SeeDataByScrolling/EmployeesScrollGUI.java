@@ -1,22 +1,22 @@
-package pap.gui;
+package pap.gui.SeeDataByScrolling;
 
+import pap.gui.HomePageGUI;
 import pap.gui.components.ScrollElementButton;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.HashMap;
 
-public class EmployeesScrollGUI extends ScrollGUITemplate{
+public class EmployeesScrollGUI extends ScrollGUITemplate {
 
     //[MOCK]
-    void getElementsData() {
+    protected void getElementsData() {
         this.fittingElementsIds = new Integer[]{1,2,3,4,5,6,7,8,9};
         this.nrOfElements = fittingElementsIds.length;
     }
 
     // [MOCK]
-    HashMap<String, String> getElementData(int elementId) {
+    protected HashMap<String, String> getElementData(int elementId) {
         HashMap<String, String> employeeInfo = new HashMap<String, String>();
         employeeInfo.put("name", "Adam");
         employeeInfo.put("surname", "Kaczka");
@@ -32,7 +32,7 @@ public class EmployeesScrollGUI extends ScrollGUITemplate{
         return employeeInfo;
     }
 
-    JPanel createScrollElement(int elementId) {
+    protected JPanel createScrollElement(int elementId) {
 
         HashMap<String, String> employeeInfo = getElementData(elementId);
 
@@ -57,7 +57,7 @@ public class EmployeesScrollGUI extends ScrollGUITemplate{
         return employeePanel;
     }
 
-    void createScrollButtons(int elementId, JPanel employeePanel) {
+    protected void createScrollButtons(int elementId, JPanel employeePanel) {
 
         int buttonSize = scrollButtonSize; int gapSize = buttonSize/3;
         employeePanel.add(Box.createRigidArea(new Dimension(gapSize,0)));
@@ -71,7 +71,7 @@ public class EmployeesScrollGUI extends ScrollGUITemplate{
     }
 
     @Override
-    void undoBtnClickedAction(){
+    protected void undoBtnClickedAction(){
         new HomePageGUI(userId, userType).createGUI();
         frame.setVisible(false);
     }

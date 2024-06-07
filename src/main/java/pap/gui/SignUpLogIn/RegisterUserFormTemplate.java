@@ -1,4 +1,4 @@
-package pap.gui;
+package pap.gui.SignUpLogIn;
 
 import pap.logic.ErrorCodes;
 
@@ -12,17 +12,17 @@ abstract public class RegisterUserFormTemplate extends FormGUITemplate {
         super(userId, userType);
     }
 
-    abstract List <Integer> validateCredentials(HashMap<String, String> textFieldsValues);
+    protected abstract List <Integer> validateCredentials(HashMap<String, String> textFieldsValues);
 
-    abstract void createUser(HashMap<String, String> textFieldsValues);
+    protected abstract void createUser(HashMap<String, String> textFieldsValues);
 
     @Override
-    void setFinishFormButtonText() {
+    protected void setFinishFormButtonText() {
         finishFormButtonText = "Register";
     }
 
     @Override
-    void finishFormButtonClicked(){
+    protected void finishFormButtonClicked(){
         // Get values
         HashMap<String, String> formFieldsValues = getFieldValues();
         // Validate values
@@ -48,7 +48,7 @@ abstract public class RegisterUserFormTemplate extends FormGUITemplate {
     }
 
     @Override
-    void undoBtnClickedAction(){
+    protected void undoBtnClickedAction(){
         new ChooseAccountTypeGUI(-1, "None").createGUI();
         frame.setVisible(false);
     }

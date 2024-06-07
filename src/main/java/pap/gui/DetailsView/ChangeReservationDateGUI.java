@@ -1,9 +1,11 @@
-package pap.gui;
+package pap.gui.DetailsView;
 
 
+import pap.gui.BaseGUI;
+import pap.gui.HomePageGUI;
 import pap.gui.components.*;
 import pap.logic.guiAction.OfferDetails;
-import pap.logic.guiAction.ReserveOffer;
+import pap.logic.reservation.ReservationFunctionality;
 import pap.logic.validators.ReservationValidator;
 
 import javax.swing.*;
@@ -11,17 +13,18 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 
-public class ReservationGUI extends BaseGUI {
+
+public class ChangeReservationDateGUI extends BaseGUI {
 
     JPanel mainPanel;
     int offerId;
 
-    public ReservationGUI(int userId, String userType, Integer offerId) {
+    public ChangeReservationDateGUI(int userId, String userType, Integer offerId) {
         super(userId, userType);
         this.offerId = offerId;
     }
 
-    void createCustomGUI() {
+    protected void createCustomGUI() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
         mainPanel.setBackground(bgColor);
@@ -35,12 +38,12 @@ public class ReservationGUI extends BaseGUI {
         mainPanel.add(Box.createRigidArea(new Dimension(0, gap)));
         OfferDetails offerDetails = new OfferDetails();
         HashMap<String, String> offerInfo = offerDetails.getOfferInfo(offerId);
+
         // Should be info passed to this class's constructor - hashmap<String,String>, which will be later passed to payment view
-        HashMap<String, String> reservationInfo = new HashMap<>();
-        MakeReservationPanel reservationPanel = new MakeReservationPanel(neutralGray, fontBigger, fontBiggerBold, fontMiddle,
-                fontMiddleBold, fontSmaller, fontSmallerBold, frameWidth, frameHeight - logoPanelHeight - footerHeight - gap - gap2*2,
-                offerInfo, reservationInfo, userId, frame, userType, offerId);
-        mainPanel.add(reservationPanel);
+        ChangeReservationPanel changeReservationPanel = new ChangeReservationPanel(neutralGray, fontBigger, fontBiggerBold, fontMiddle,
+                fontMiddleBold, fontSmaller, fontSmallerBold, frameWidth, frameHeight - logoPanelHeight - footerHeight - gap - gap2*2, offerInfo, userId, frame, userType, offerId);
+        mainPanel.add(changeReservationPanel);
+
 
         JPanel footerPanel = new JPanel();
         footerPanel.setLayout(new BoxLayout(footerPanel, BoxLayout.LINE_AXIS));
@@ -55,9 +58,9 @@ public class ReservationGUI extends BaseGUI {
         footerPanel.add(undoButton);
         footerPanel.add(Box.createHorizontalGlue());
 
-        RoundedButtonDefault reserveButton = new RoundedButtonDefault("Complete Reservation", frameWidth/5, frameHeight/10, false, false);
-        reserveButton.addActionListener(e-> makeReservationClickedAction(reservationPanel));
-        footerPanel.add(reserveButton);
+        RoundedButtonDefault changeButton = new RoundedButtonDefault("Change Reservation", frameWidth/5, frameHeight/10, false, false);
+        changeButton.addActionListener(e-> changeReservationClickedAction(changeReservationPanel));
+        footerPanel.add(changeButton);
         footerPanel.add(Box.createRigidArea(new Dimension(undoButtonSize/2, 0)));
 
         mainPanel.add(Box.createRigidArea(new Dimension(0,gap2)));
@@ -65,37 +68,40 @@ public class ReservationGUI extends BaseGUI {
         mainPanel.add(Box.createRigidArea(new Dimension(0,gap2)));
     }
 
-    void undoBtnClickedAction() {
-        //new OfferDetailsGUI(userId, userType, offerId).createGUI();
-        frame.setVisible(false);
-    }
-
-    void makeReservationClickedAction(MakeReservationPanel panel){
+    void changeReservationClickedAction(ChangeReservationPanel panel){
+        ReservationFunctionality reservationFunctionality = new ReservationFunctionality(panel.reservationId);
+        reservationFunctionality.changeStatus("In progress.");
         ReservationValidator reservationValidator = new ReservationValidator(panel.getStartDate(), panel.getEndDate(), panel.getPickedCreditCard(), offerId);
         List <Integer> errors = reservationValidator.validate();
         if (errors.isEmpty()){
-            showConfirmationDialog("Reservation made successfully!");
-            new ReserveOffer(panel.getStartDate(), panel.getEndDate(), offerId, userId);
-            System.out.println("Made Reservation!");
+            showConfirmationDialog("Reservation changed successfully!");
+            reservationFunctionality.changeStatus("Active");
+            reservationFunctionality.changeDates(panel.startDate, panel.endDate);
+            System.out.println("Changed Reservation!");
             frame.setVisible(false);
             new HomePageGUI(userId, userType).createGUI();
         }
         else {
             new ErrorWindow(errors);
+            reservationFunctionality.changeStatus("Active");
         }
+    }
+    void undoBtnClickedAction() {
+        //new OfferDetailsGUI(userId, userType, offerId).createGUI();
+        frame.setVisible(false);
+    }
+
+    void changeReservationClickedAction(){
+        return;
     }
 
     private void showConfirmationDialog(String message) {
         JOptionPane.showMessageDialog(null, message, "Reservation Confirmation", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    void createGUI(){
-        super.createBaseGUI();
-        createCustomGUI();
-        frame.setVisible(true);
-    }
-
     public static void main(String[] args) {
-        new ReservationGUI(-1, "None", 1).createGUI();
+        new ChangeReservationDateGUI(-1, "None", 1).createGUI();
     }
 }
+
+

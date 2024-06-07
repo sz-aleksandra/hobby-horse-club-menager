@@ -1,5 +1,7 @@
-package pap.gui;
+package pap.gui.DetailsView;
 
+import pap.gui.BaseGUI;
+import pap.gui.HomePageGUI;
 import pap.gui.components.LogoPanel;
 import pap.gui.components.UndoButton;
 import javax.swing.*;
@@ -9,7 +11,7 @@ public class LicenceGUI extends BaseGUI {
 
     JPanel mainPanel;
 
-    void createCustomGUI() {
+    protected void createCustomGUI() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
         mainPanel.setBackground(bgColor);
@@ -68,12 +70,6 @@ public class LicenceGUI extends BaseGUI {
     void undoBtnClickedAction(){
         new HomePageGUI(userId, userType).createGUI();
         frame.setVisible(false);
-    }
-
-    void createGUI(){
-        super.createBaseGUI();
-        createCustomGUI();
-        frame.setVisible(true);
     }
 
     public LicenceGUI(int userId, String userType){

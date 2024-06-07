@@ -1,33 +1,28 @@
-package pap.gui;
+package pap.gui.DetailsView;
 
 import lombok.Getter;
 import pap.db.dao.OfferDAO;
+import pap.db.dao.ReservationDAO;
 import pap.db.entities.Discount;
-import pap.db.entities.Offer;
 import pap.db.entities.PaymentMethod;
-import pap.gui.FormGUITemplate;
+import pap.db.entities.Reservation;
 
 import pap.db.dao.PaymentMethodDAO;
-import pap.db.dao.DiscountsDAO;
 import pap.gui.HomePageGUI;
-import pap.gui.components.OfferPanel;
 import pap.gui.components.RoundedButton;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Calendar;
 
 
-public class MakeReservationPanel extends JPanel {
+public class ChangeReservationPanel extends JPanel {
     int panelWidth, panelHeight, userId;
     private JLabel costLabel;
     private JComboBox<Integer> startYearComboBox;
@@ -41,16 +36,17 @@ public class MakeReservationPanel extends JPanel {
     @Getter
     PaymentMethod pickedCreditCard;
     Color bgColor; Font fontBigger, fontMiddle, fontMiddleBold, fontSmaller, fontSmallerBold;
-    LocalDate startDate, endDate;
+    LocalDate startDate, endDate, lastStartDate, lastEndDate;
     String userType;
-    Integer offerId;
-    Float discountValue;
+    Integer reservationId;
     Discount discount;
+    Reservation reservation;
     @Getter
     private String discountCode;
 
-    public MakeReservationPanel(Color bgColor, Font fontBigger, Font fontBiggerBold, Font fontMiddle, Font fontMiddleBold, Font fontSmaller, Font fontSmallerBold, int panelWidth, int panelHeight,
-                             HashMap<String, String> offerInfo, HashMap<String, String> reservationInfo, Integer userId, JFrame frame, String userType, Integer offerId) {
+    public ChangeReservationPanel(Color bgColor, Font fontBigger, Font fontBiggerBold, Font fontMiddle, Font fontMiddleBold,
+                                  Font fontSmaller, Font fontSmallerBold, int panelWidth, int panelHeight,
+                                  HashMap<String, String> offerInfo, Integer userId, JFrame frame, String userType, Integer reservationId) {
 
         this.panelWidth = panelWidth;
         this.panelHeight = panelHeight;
@@ -65,9 +61,11 @@ public class MakeReservationPanel extends JPanel {
         this.frame = frame;
         this.userType = userType;
         this.pickedCreditCard = null;
-        this.offerId = offerId;
-        this.discountValue = 0f;
+        this.reservationId = reservationId;
+        this.reservation = new ReservationDAO().findById(reservationId);
         this.discount = null;
+        this.lastStartDate = reservation.getStartDate();
+        this.lastEndDate = reservation.getEndDate();
 
         setBackground(bgColor);
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -126,7 +124,7 @@ public class MakeReservationPanel extends JPanel {
         int offerImgWidth = leftPanelWidth ;
         int offerImgHeight = contentPanelsHeight / 2;
         try {
-            Image offerImg = new OfferDAO().getImageById(offerId);
+            Image offerImg = new OfferDAO().getImageById(reservation.getOffer().getOfferId());
             offerImg = offerImg.getScaledInstance(offerImgWidth, offerImgHeight, Image.SCALE_SMOOTH);
             ImageIcon offerImgIcon = new ImageIcon(offerImg);
             JLabel offerImgLabel = new JLabel();
@@ -242,9 +240,19 @@ public class MakeReservationPanel extends JPanel {
         contentPanelRight.add(paymentMethodLabel);
 
         addCreditCardPanel(contentPanelRight);
-        addDiscountPanel(contentPanelRight);
+        JLabel emptyBox = new JLabel("ㅤㅤㅤㅤ");
+        emptyBox.setFont(new Font(endDateLabel.getFont().getName(), Font.BOLD, 60));
+        contentPanelRight.add(emptyBox);
+        JLabel currentDateLabel = new JLabel("Currently reserved date:");
+        currentDateLabel.setFont(new Font(endDateLabel.getFont().getName(), Font.BOLD, 24));
+        contentPanelRight.add(currentDateLabel);
+        JLabel currentDate = new JLabel(lastStartDate.toString() + "  -  " + lastEndDate.toString());
+        currentDate.setFont(new Font(endDateLabel.getFont().getName(), Font.PLAIN, 24));
+        contentPanelRight.add(currentDate);
+        JLabel emptyBox2 = new JLabel("ㅤㅤㅤㅤ");
+        emptyBox2.setFont(new Font(endDateLabel.getFont().getName(), Font.BOLD, 60));
+        contentPanelRight.add(emptyBox2);
         addReservationCostPanel(contentPanelRight);
-
 
     }
 
@@ -351,83 +359,6 @@ public class MakeReservationPanel extends JPanel {
         }
     }
 
-    void addDiscountPanel(JPanel panel) {
-        // Use a smaller font size for the label
-        JPanel newPanel = new JPanel();
-        JLabel addCreditCardLabel = new JLabel("Enter discount code:");
-        addCreditCardLabel.setFont(new Font(addCreditCardLabel.getFont().getName(), Font.PLAIN, 14));
-
-        JTextField discountCodeField = new JTextField(16);
-
-        // Smaller font size for the button
-        RoundedButton checkDiscountCodeButton = new RoundedButton("Check",
-                panelWidth * 5 / 6, panelHeight / 4, Color.ORANGE, Color.YELLOW, new Font("Arial", Font.PLAIN, 12), false);
-
-        // Set the layout manager to GridBagLayout
-        newPanel.setBackground(bgColor);
-        newPanel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        // Label
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        newPanel.add(addCreditCardLabel, gbc);
-
-        // Text field
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        newPanel.add(discountCodeField, gbc);
-
-        // Button
-        gbc.gridx = 2;
-        gbc.gridy = 0;
-        gbc.weightx = 0.0;
-        newPanel.add(checkDiscountCodeButton, gbc);
-        panel.add(newPanel);
-
-        checkDiscountCodeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String discountCode = discountCodeField.getText();
-                float discountValid = isValidDiscountCode(discountCode);
-                if (discountValid > 0) {
-                    if (discount.getValueType() == 0){
-                        JOptionPane.showMessageDialog(null, String.format("Discount code correct, adding %szł discount", String.format("%.2f", discountValue)), "Discount Code Confirmation", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(null, String.format("Discount code correct, adding %s%% discount", String.format("%.2f", discountValue)), "Discount Code Confirmation", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-                else {
-                    JOptionPane.showMessageDialog(null, "Discount code incorrect!", "Error!", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-    }
-
-    private float isValidDiscountCode(String discountCode) {
-        List<Discount> discounts = new DiscountsDAO().findAll();
-        Offer offer = new OfferDAO().findById(offerId);
-        for (Discount discount: discounts){
-            if (isCurrentDiscountValid(offer, discount, discountCode)){
-                this.discountValue = discount.getValue();
-                this.discount = discount;
-                updateCost();
-                return discount.getValue();
-            }
-        }
-        return 0;
-    }
-
-    private boolean isCurrentDiscountValid(Offer offer, Discount discount, String discountCode){
-        return discount.isActive() &&
-                (offer.getHotel().getHotelId() == discount.getHotel().getHotelId() || discount.getType() == 0) &&
-                discountCode.equalsIgnoreCase(discount.getCode());
-    }
-
     List<PaymentMethod> getCreditCards(){
         return new PaymentMethodDAO().findByClientId(userId);
     }
@@ -457,27 +388,24 @@ public class MakeReservationPanel extends JPanel {
     public void addReservationCostPanel(JPanel panel) {
         costLabel.setLayout(new FlowLayout(FlowLayout.LEFT));
         costLabel.setFont(new Font(costLabel.getFont().getName(), Font.PLAIN, 24));
-        panel.add(costLabel);
+        panel.add(costLabel, BorderLayout.SOUTH);
     }
     public void updateCost() {
         returnSelectedDates();
         if (startDate != null && endDate != null && (startDate.isBefore(endDate) || startDate.isEqual(endDate))) {
-            long numberOfDays = calculateDaysBetween();
-            float price = new OfferDAO().findById(offerId).getPrice();
-            double totalCost = 0;
-            if (discount != null && discount.getValueType() == 0){
-                totalCost = numberOfDays * (price - discountValue);
+            long numberOfDays = calculateDaysBetween(startDate, endDate);
+            float price = new OfferDAO().findById(reservation.getOffer().getOfferId()).getPrice();
+            double totalCost = numberOfDays * price - (calculateDaysBetween(lastStartDate, lastEndDate) * price);
+            if (totalCost < 0){
+                totalCost = 0;
             }
-            else {
-                totalCost = numberOfDays * (price - price * discountValue / 100);
-            }
-            this.costLabel.setText(String.format("Cost: %.2f zł", totalCost));
+            this.costLabel.setText(String.format("Cost of change: %.2f zł", totalCost));
         } else {
             this.costLabel.setText("Cost: N/A");
         }
     }
 
-    public long calculateDaysBetween() {
+    public long calculateDaysBetween(LocalDate startDate, LocalDate endDate) {
         long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
         return daysBetween + 1;
     }

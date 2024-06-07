@@ -1,5 +1,7 @@
-package pap.gui;
+package pap.gui.SeeDataByScrolling;
 
+import pap.gui.BaseGUI;
+import pap.gui.HomePageGUI;
 import pap.gui.components.FiltersPanel;
 import pap.gui.components.LogoPanel;
 import pap.gui.components.UndoPanel;
@@ -8,23 +10,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 
-public abstract class ScrollGUITemplate extends BaseGUI{
-    JPanel mainPanel, scrollPanel;
-    JScrollPane scrollPanelEnabler;
+public abstract class ScrollGUITemplate extends BaseGUI {
+    protected JPanel mainPanel, scrollPanel;
+    protected JScrollPane scrollPanelEnabler;
 
-    int nrOfElements;
-    Integer[] fittingElementsIds;
-    int elementHeight = frameHeight/4;
-    int elementWidth = frameWidth/3;
-    int scrollButtonSize = frameHeight/7;
-    String pageName = "";
+    protected int nrOfElements;
+    protected Integer[] fittingElementsIds;
+    protected int elementHeight = frameHeight/4;
+    protected int elementWidth = frameWidth/3;
+    protected int scrollButtonSize = frameHeight/7;
+    protected String pageName = "";
 
-    abstract void getElementsData(); //called in constructor
-    abstract HashMap<String, String> getElementData(int elementId);
-    abstract JPanel createScrollElement(int elementId);
-    abstract void createScrollButtons(int elementId, JPanel elementPanel);
+    protected abstract void getElementsData(); //called in constructor
+    protected abstract HashMap<String, String> getElementData(int elementId);
+    protected abstract JPanel createScrollElement(int elementId);
+    protected abstract void createScrollButtons(int elementId, JPanel elementPanel);
 
-    void createCustomGUI() {
+    protected void createCustomGUI() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
         mainPanel.setBackground(bgColor);
@@ -60,18 +62,12 @@ public abstract class ScrollGUITemplate extends BaseGUI{
         mainPanel.add(undoPanel);
     }
 
-    public void createGUI(){
-        super.createBaseGUI();
-        createCustomGUI();
-        frame.setVisible(true);
-    }
-
-    void undoBtnClickedAction(){
+    protected void undoBtnClickedAction(){
         new HomePageGUI(userId, userType).createGUI();
         frame.setVisible(false);
     }
 
-    void addJLabel(String text, Color color, Font font, JPanel panel, int width, int height) {
+    protected void addJLabel(String text, Color color, Font font, JPanel panel, int width, int height) {
         JLabel textLabel = new JLabel(text, JLabel.LEFT);
         textLabel.setPreferredSize(new Dimension(width, height));
         textLabel.setMaximumSize(new Dimension(width, height));

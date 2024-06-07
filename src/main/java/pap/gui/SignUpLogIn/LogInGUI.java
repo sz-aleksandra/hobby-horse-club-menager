@@ -1,15 +1,14 @@
-package pap.gui;
+package pap.gui.SignUpLogIn;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import pap.db.entities.Client;
-import pap.db.entities.Owner;
+import pap.gui.BaseGUI;
+import pap.gui.HomePageGUI;
 import pap.gui.components.LogoPanel;
 import pap.gui.components.RoundedButtonDefault;
-import pap.logic.login.*;
 import pap.logic.ErrorCodes;
 
 
@@ -26,7 +25,7 @@ public class LogInGUI extends BaseGUI {
         super(userId, userType);
     }
 
-    void createCustomGUI(){
+    protected void createCustomGUI(){
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
         mainPanel.setBackground(bgColor);
@@ -192,18 +191,11 @@ public class LogInGUI extends BaseGUI {
             statusLabel.setForeground(statusWrong);
             statusLabel.paintImmediately(statusLabel.getVisibleRect());
         }
-
     }
 
     void createAccountBtnClickedAction() {
         new ChooseAccountTypeGUI(-1, "None").createGUI();
         frame.setVisible(false);
-    }
-
-    void createGUI(){
-        super.createBaseGUI();
-        createCustomGUI();
-        frame.setVisible(true);
     }
 
     public static void main(String[] args) {

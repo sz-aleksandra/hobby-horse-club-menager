@@ -1,4 +1,4 @@
-package pap.gui;
+package pap.gui.SignUpLogIn;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,36 +7,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 
+import pap.gui.BaseGUI;
 import pap.gui.components.LogoPanel;
 import pap.gui.components.RoundedButtonDefault;
 import pap.gui.components.UndoPanel;
 import pap.logic.ErrorCodes;
 import pap.logic.validators.*;
 
-public abstract class FormGUITemplate extends BaseGUI{
-    JPanel mainPanel;
-    List<JTextField> textFields = new ArrayList<JTextField>();
-    List<String> textFieldLabels = new ArrayList<String>();
-    List<JComboBox> comboBoxes = new ArrayList<JComboBox>();
-    List<String> comboBoxesLabels = new ArrayList<String>();
-    List<List<JComboBox>> dateComboBoxes = new ArrayList<List<JComboBox>>();
-    List<String> dateComboBoxesLabels = new ArrayList<String>();
+public abstract class FormGUITemplate extends BaseGUI {
+    protected JPanel mainPanel;
+    protected List<JTextField> textFields = new ArrayList<JTextField>();
+    protected List<String> textFieldLabels = new ArrayList<String>();
+    protected List<JComboBox> comboBoxes = new ArrayList<JComboBox>();
+    protected List<String> comboBoxesLabels = new ArrayList<String>();
+    protected List<List<JComboBox>> dateComboBoxes = new ArrayList<List<JComboBox>>();
+    protected List<String> dateComboBoxesLabels = new ArrayList<String>();
 
-    JLabel statusLabel;
-    String pageName = "";
-    String finishFormButtonText = "";
+    protected JLabel statusLabel;
+    protected String pageName = "";
+    protected String finishFormButtonText = "";
 
     public FormGUITemplate(int userId, String userType) {
         super(userId, userType);
     }
 
-    //przeniesc tutaj niektore componenty
+    protected abstract String[] getFieldLabels();
+    protected abstract String[] getFieldTypes();
+    protected abstract Object[] getFieldParameters();
+    protected abstract void setFinishFormButtonText();
+    protected abstract void finishFormButtonClicked();
+    protected abstract void undoBtnClickedAction();
 
-    abstract String[] getFieldLabels();
-    abstract String[] getFieldTypes();
-    abstract Object[] getFieldParameters();
-
-    void createCustomGUI() {
+    protected void createCustomGUI() {
         // Move this part to new main.java.pap.gui.BaseGUI function/to createBaseGUI function
         // podzielic te funkcje na czesci
         mainPanel = new JPanel();
@@ -214,18 +216,7 @@ public abstract class FormGUITemplate extends BaseGUI{
         mainPanel.add(Box.createRigidArea(new Dimension(0,frameHeight/40)));
     }
 
-    // make main.java.pap.gui.BaseGUI abstract, add createcustomgui as virtual method and createGUI with body as below
-    void createGUI(){
-        super.createBaseGUI();
-        createCustomGUI();
-        frame.setVisible(true);
-    }
-
-    abstract void setFinishFormButtonText();
-    abstract void finishFormButtonClicked();
-    abstract void undoBtnClickedAction();
-
-    HashMap<String, String> getFieldValues(){
+    protected HashMap<String, String> getFieldValues(){
         int nrOfTextFields = textFields.size();
         int nrOfComboBoxes = comboBoxes.size();
         int nrOfDateComboBoxes = dateComboBoxes.size();

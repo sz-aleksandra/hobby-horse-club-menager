@@ -7,8 +7,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import pap.db.dao.ClientDAO;
-import pap.db.dao.OwnerDAO;
+import pap.gui.DetailsView.LicenceGUI;
+import pap.gui.SeeDataByScrolling.EmployeesScrollGUI;
+import pap.gui.SeeDataByScrolling.TournamentsScrollGUI;
+import pap.gui.SeeDataByScrolling.TrainingsScrollGUI;
+import pap.gui.SignUpLogIn.LogInGUI;
 import pap.gui.components.LogOutButton;
 import pap.gui.components.LogoPanel;
 import pap.gui.components.TextIconButton;
@@ -31,7 +34,7 @@ public class HomePageGUI extends BaseGUI {
         super(userId, userType);
     }
 
-    void createCustomGUI(){
+    protected void createCustomGUI(){
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
         mainPanel.setBackground(bgColor);
@@ -222,12 +225,6 @@ public class HomePageGUI extends BaseGUI {
     void logOutBtnClickedAction(){
         new LogInGUI(-1, "None").createGUI();
         frame.setVisible(false);
-    }
-
-    void createGUI(){
-        super.createBaseGUI();
-        createCustomGUI();
-        frame.setVisible(true);
     }
 
     class MenuButton extends TextIconButton {

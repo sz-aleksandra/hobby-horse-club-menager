@@ -1,6 +1,5 @@
-package pap.gui;
+package pap.gui.AddDataByForm;
 
-        import pap.logic.add.AddNewOwner;
         import java.util.ArrayList;
         import java.util.HashMap;
         import java.util.List;
@@ -13,19 +12,19 @@ public class AddHotelGUI extends AddOwnerPropertyFormTemplate {
     }
 
     @Override
-    String[] getFieldLabels() {
+    protected String[] getFieldLabels() {
         String[] fieldLabels = {"Hotel name", "Hotel description", "Hotel email", "Hotel phone number", "Hotel bank account number", "Country", "City", "Street", "Street number", "Postal Code"};
         return fieldLabels;
     }
 
     @Override
-    String[] getFieldTypes() {
+    protected String[] getFieldTypes() {
         String[] fieldTypes = {"text", "text", "text", "text", "text", "text", "text", "text", "text", "text"};
         return fieldTypes;
     }
 
     @Override
-    Object[] getFieldParameters() {
+    protected Object[] getFieldParameters() {
 
         Object[] fieldParameters = {15, 60, 20, 10, 20, 15, 15, 15, 6, 6};
 
@@ -33,7 +32,7 @@ public class AddHotelGUI extends AddOwnerPropertyFormTemplate {
     }
 
     @Override
-    List<Integer> validatePropertyData(HashMap<String, String> textFieldsValues) {
+    protected List<Integer> validatePropertyData(HashMap<String, String> textFieldsValues) {
 //        List <Integer> errorCodes = new OwnerValidator(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Company name"),
 //                textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
 //                textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), textFieldsValues.get("NIP")).validateOwnerCredentials();
@@ -42,7 +41,7 @@ public class AddHotelGUI extends AddOwnerPropertyFormTemplate {
     }
 
     @Override
-    void addProperty(HashMap<String, String> textFieldsValues) {
+    protected void addProperty(HashMap<String, String> textFieldsValues) {
 //        new AddNewOwner(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Company name"),
 //                textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
 //                textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), textFieldsValues.get("NIP"),
@@ -51,7 +50,7 @@ public class AddHotelGUI extends AddOwnerPropertyFormTemplate {
     }
 
     @Override
-    void setFinishFormButtonText() {
+    protected void setFinishFormButtonText() {
         finishFormButtonText = "Add hotel";
     }
 

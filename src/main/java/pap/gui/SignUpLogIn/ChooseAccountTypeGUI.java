@@ -1,7 +1,7 @@
-package pap.gui;
+package pap.gui.SignUpLogIn;
 
+import pap.gui.BaseGUI;
 import pap.gui.components.LogoPanel;
-import pap.gui.components.RoundedButton;
 import pap.gui.components.RoundedButtonDefault;
 
 import javax.swing.*;
@@ -20,7 +20,7 @@ public class ChooseAccountTypeGUI extends BaseGUI {
         super(userId, userType);
     }
 
-    void createCustomGUI(){
+    protected void createCustomGUI(){
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
         mainPanel.setBackground(bgColor);
@@ -84,14 +84,6 @@ public class ChooseAccountTypeGUI extends BaseGUI {
         new LogInGUI(-1, "None").createGUI();
         frame.setVisible(false);
     }
-
-
-    void createGUI(){
-        super.createBaseGUI();
-        createCustomGUI();
-        frame.setVisible(true);
-    }
-
 
     public static void main(String[] args) {
         new ChooseAccountTypeGUI(-1, "None").createGUI();

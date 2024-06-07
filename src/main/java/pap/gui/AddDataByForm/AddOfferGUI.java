@@ -1,4 +1,4 @@
-package pap.gui;
+package pap.gui.AddDataByForm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,19 +12,19 @@ public class AddOfferGUI extends AddOwnerPropertyFormTemplate {
     }
 
     @Override
-    String[] getFieldLabels() {
+    protected String[] getFieldLabels() {
         String[] fieldLabels = {"Offer name", "Hotel", "Room type", "Description", "Price per night", "Room no.", "Bathroom no.", "Bed no.", "Has kitchen", "Pet friendly"};
         return fieldLabels;
     }
 
     @Override
-    String[] getFieldTypes() {
+    protected String[] getFieldTypes() {
         String[] fieldTypes = {"text", "comboBoxString", "comboBoxString", "text", "text", "text", "text", "text", "comboBoxString", "comboBoxString"};
         return fieldTypes;
     }
 
     @Override
-    Object[] getFieldParameters() {
+    protected Object[] getFieldParameters() {
 
         // mock
         String[][] ownerHotels = new String[][]{{"Hotel One", "Hotel Two", "Hotel Three"}};
@@ -37,7 +37,7 @@ public class AddOfferGUI extends AddOwnerPropertyFormTemplate {
     }
 
     @Override
-    List<Integer> validatePropertyData(HashMap<String, String> textFieldsValues) {
+    protected List<Integer> validatePropertyData(HashMap<String, String> textFieldsValues) {
 //        List <Integer> errorCodes = new OwnerValidator(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Company name"),
 //                textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
 //                textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), textFieldsValues.get("NIP")).validateOwnerCredentials();
@@ -46,7 +46,7 @@ public class AddOfferGUI extends AddOwnerPropertyFormTemplate {
     }
 
     @Override
-    void addProperty(HashMap<String, String> textFieldsValues) {
+    protected void addProperty(HashMap<String, String> textFieldsValues) {
 //        new AddNewOwner(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Company name"),
 //                textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
 //                textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), textFieldsValues.get("NIP"),
@@ -55,7 +55,7 @@ public class AddOfferGUI extends AddOwnerPropertyFormTemplate {
     }
 
     @Override
-    void setFinishFormButtonText() {
+    protected void setFinishFormButtonText() {
         finishFormButtonText = "Add offer";
     }
 

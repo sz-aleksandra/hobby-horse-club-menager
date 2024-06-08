@@ -31,8 +31,7 @@ abstract public class RegisterUserFormTemplate extends FormGUITemplate {
         if (errorCodes.isEmpty()) {
             createUser(formFieldsValues);
             JOptionPane.showMessageDialog(frame, "Success! Created user!");
-            new LogInGUI(-1, "None").createGUI();
-            frame.setVisible(false);
+            undoBtnClickedAction();
         }
         // Errors occured, display them on screen
         else {

@@ -1,5 +1,8 @@
 package pap.gui.SeeDataByScrolling;
 
+import pap.gui.AddDataByForm.AddEmployeeGUI;
+import pap.gui.AddDataByForm.AddRiderGUI;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
@@ -41,7 +44,8 @@ public class RidersScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleAddData() {
-
+        new AddRiderGUI(userId, userType).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

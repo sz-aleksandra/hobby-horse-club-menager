@@ -22,6 +22,8 @@ public abstract class FormGUITemplate extends BaseGUI {
     protected List<String> comboBoxesLabels = new ArrayList<String>();
     protected List<List<JComboBox>> dateComboBoxes = new ArrayList<List<JComboBox>>();
     protected List<String> dateComboBoxesLabels = new ArrayList<String>();
+    protected List<List<JCheckBox>> checkBoxes = new ArrayList<List<JCheckBox>>();
+    protected List<String> checkBoxesLabels = new ArrayList<String>();
 
     protected JLabel statusLabel;
     protected String pageName = "";
@@ -192,7 +194,36 @@ public abstract class FormGUITemplate extends BaseGUI {
                         dateComboBoxes.get(dateComboBoxes.size() - 1).add(comboBox);
                     }
                 }
+            } else if (fieldTypes[i].startsWith("checkBox")){
+                Object[] checkBoxOptions;
+                if (fieldTypes[i].equals("checkBoxInteger")) {
+                    checkBoxOptions = (Integer[]) fieldParameters[i];
+                } else {
+                    checkBoxOptions = (String[]) fieldParameters[i];
+                }
+
+                checkBoxesLabels.add(fieldLabels[i]);
+                checkBoxes.add(new ArrayList<JCheckBox>());
+
+                JPanel checkBoxesField = new JPanel();
+                checkBoxesField.setLayout(new BoxLayout(checkBoxesField, BoxLayout.PAGE_AXIS));
+                checkBoxesField.setBackground(bgColor);
+
+                JLabel countHeightLabel = new JLabel(""); countHeightLabel.setFont(fontMiddle);
+                int optionHeight = countHeightLabel.getFontMetrics(fontMiddle).getHeight();
+                fieldPanel.setPreferredSize(new Dimension(frameWidth, optionHeight * checkBoxOptions.length));
+                fieldPanel.setMaximumSize(new Dimension(frameWidth, optionHeight * checkBoxOptions.length));
+
+                for (var option : checkBoxOptions) {
+                    JCheckBox optionBox = new JCheckBox(String.valueOf(option));
+                    optionBox.setFont(fontMiddle);
+                    optionBox.setSelected(false);
+                    checkBoxesField.add(optionBox);
+                    checkBoxes.get(checkBoxes.size() - 1).add(optionBox);
+                }
+                fieldPanel.add(checkBoxesField);
             }
+
             fieldsPanel.add(Box.createVerticalGlue());
         }
 
@@ -220,6 +251,7 @@ public abstract class FormGUITemplate extends BaseGUI {
         int nrOfTextFields = textFields.size();
         int nrOfComboBoxes = comboBoxes.size();
         int nrOfDateComboBoxes = dateComboBoxes.size();
+        int nrOfCheckBoxes = checkBoxes.size();
         HashMap<String, String> FieldValues = new HashMap<String, String>();
 
         for (int i = 0; i < nrOfTextFields; i++){
@@ -240,6 +272,19 @@ public abstract class FormGUITemplate extends BaseGUI {
             String currDateData = LocalDate.of(year, month, day).toString();
 
             FieldValues.put(dateComboBoxesLabels.get(i), currDateData);
+        }
+        for (int i = 0; i < nrOfCheckBoxes; i++){
+
+            String selectedOptions = "";
+
+            List<JCheckBox> checkBoxesOptions = checkBoxes.get(i);
+            for (JCheckBox option : checkBoxesOptions) {
+                if (option.isSelected()) {
+                    selectedOptions += option.getText()+",";
+                }
+            }
+
+            FieldValues.put(checkBoxesLabels.get(i), selectedOptions);
         }
 
         return FieldValues;

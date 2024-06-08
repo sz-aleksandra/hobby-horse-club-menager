@@ -57,14 +57,22 @@ public abstract class DataScrollTemplate extends ScrollGUITemplate {
     }
 
     protected boolean doesEmployeeHaveWritePermissions(){
-        String employeePositionName = "Trainer"; //[MOCK], pobrac z bazy danych informacje o nazwie pozycji
+        //[MOCK], pobrac z bazy danych informacje o nazwie pozycji
+        String employeePositionName;
+        if (userId == 1) {
+            employeePositionName = "Owner";
+        } else if (userId == 2) {
+            employeePositionName = "Cleaner";
+        } else {
+            employeePositionName = "Trainer";
+        }
         return new TableAccessChecker().getAccessType(pageName, employeePositionName).equals("Write");
     }
 
     protected void createCustomGUI() {
         super.createCustomGUI();
         if (userType.equals("Employee") && doesEmployeeHaveWritePermissions()) {
-            RoundedButton addButton = new RoundedButton("Add", frameWidth/10, 80, Color.decode("#ebb33b"), Color.decode("#c7911c"), fontButtons, false);
+            RoundedButton addButton = new RoundedButton("Add", frameWidth/10, 50, Color.decode("#ebb33b"), Color.decode("#c7911c"), fontButtons, false);
             addButton.addActionListener(e->handleAddData());
             logoPanel.add(addButton); logoPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
         }

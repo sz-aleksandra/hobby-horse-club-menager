@@ -1,5 +1,6 @@
 package pap.gui.SeeDataByScrolling;
 
+import pap.gui.AddDataByForm.AddTrainingGUI;
 import pap.gui.components.ScrollElementButton;
 
 import javax.swing.*;
@@ -95,7 +96,8 @@ public class TrainingsScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleAddData() {
-
+        new AddTrainingGUI(userId, userType).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

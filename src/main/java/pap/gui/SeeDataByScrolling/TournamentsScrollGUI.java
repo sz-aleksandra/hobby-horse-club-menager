@@ -1,5 +1,6 @@
 package pap.gui.SeeDataByScrolling;
 
+import pap.gui.AddDataByForm.AddTournamentGUI;
 import pap.gui.components.ScrollElementButton;
 import javax.swing.*;
 import java.awt.*;
@@ -91,7 +92,8 @@ public class TournamentsScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleAddData() {
-
+        new AddTournamentGUI(userId, userType).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

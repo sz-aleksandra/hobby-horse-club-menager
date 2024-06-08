@@ -1,5 +1,7 @@
 package pap.gui.SeeDataByScrolling;
 
+import pap.gui.AddDataByForm.AddPositionGUI;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
@@ -34,7 +36,8 @@ public class PositionsScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleAddData() {
-
+        new AddPositionGUI(userId, userType).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

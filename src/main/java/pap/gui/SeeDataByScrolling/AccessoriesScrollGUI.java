@@ -1,5 +1,7 @@
 package pap.gui.SeeDataByScrolling;
 
+import pap.gui.AddDataByForm.AddAccessoryGUI;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
@@ -31,7 +33,8 @@ public class AccessoriesScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleAddData() {
-
+        new AddAccessoryGUI(userId, userType).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

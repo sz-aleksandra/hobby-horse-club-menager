@@ -60,7 +60,14 @@ public class HomePageGUI extends BaseGUI {
         } else if (userType.equals("Employee")) {
             //OwnerDAO od = new OwnerDAO();
             //name = od.findById(userId).getCompanyName();
-            name = "Bartek (Trainer)"; //[MOCK]
+            //[MOCK]
+            if (userId == 1) {
+                name = "Natalia (Owner)";
+            } else if (userId == 2) {
+                name = "Adam (Cleaner)";
+            } else {
+                name = "Bartek (Trainer)";
+            }
             userImgPath = "/business.png";
         } else {
             name = "User";
@@ -284,7 +291,16 @@ public class HomePageGUI extends BaseGUI {
     }
 
     protected boolean doesEmployeeHaveReadOrWritePermissions(String pageName){
-        String employeePositionName = "Trainer"; //[MOCK], pobrac z bazy danych informacje o nazwie pozycji
+        //[MOCK], pobrac z bazy danych informacje o nazwie pozycji
+        String employeePositionName;
+        if (userId == 1) {
+            employeePositionName = "Owner";
+        } else if (userId == 2) {
+            employeePositionName = "Cleaner";
+        } else {
+            employeePositionName = "Trainer";
+        }
+
         String accessType = new TableAccessChecker().getAccessType(pageName, employeePositionName);
         return accessType.equals("Read") || accessType.equals("Write");
     }

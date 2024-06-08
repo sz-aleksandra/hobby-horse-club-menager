@@ -1,5 +1,7 @@
 package pap.gui.SeeDataByScrolling;
 
+import pap.gui.AddDataByForm.AddStableGUI;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
@@ -31,7 +33,8 @@ public class StablesScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleAddData() {
-
+        new AddStableGUI(userId, userType).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

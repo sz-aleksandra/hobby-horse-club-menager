@@ -179,9 +179,16 @@ public class LogInGUI extends BaseGUI {
         List<Integer> errorCodesEmployee = new ArrayList<>();
 
         if (errorCodesEmployee.isEmpty()) {
-            //[MOCK]
             // new HomePageGUI(owner.getOwnerId(), "Employee").createGUI();
-            new HomePageGUI(1, "Employee").createGUI();
+            //[MOCK]
+            if (usernameText.equals("1")) {
+                new HomePageGUI(1, "Employee").createGUI();
+            } else if (usernameText.equals("2")) {
+                new HomePageGUI(2, "Employee").createGUI();
+            } else {
+                new HomePageGUI(3, "Employee").createGUI();
+            }
+
             frame.setVisible(false);
         } else {
             statusLabelText = "<html>";

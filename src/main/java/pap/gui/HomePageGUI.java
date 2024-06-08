@@ -16,10 +16,6 @@ import pap.gui.components.TextIconButton;
 import pap.logic.DeactivateAccount;
 import pap.logic.ErrorCodes;
 
-//TODO
-// - przygotować te widoki dodawania (formularz dla każdej tabeli)
-// - sprawdzenie jak widok home zachowuje si edla roznych Position name
-
 public class HomePageGUI extends BaseGUI {
 
     MenuButton seeTrainingsButton, seeTournamentsButton, seeHorsesButton,
@@ -110,9 +106,9 @@ public class HomePageGUI extends BaseGUI {
             JPanel buttonsRow1 = new JPanel();
             buttonsRow1.setLayout(new BoxLayout(buttonsRow1, BoxLayout.LINE_AXIS));
             buttonsRow1.setBackground(bgColor);
-            seeTrainingsButton = new MenuButton("See trainings", "/icons/search_offers.png");
+            seeTrainingsButton = new MenuButton("See trainings", "/icons/training.png");
             seeTrainingsButton.addActionListener(e->seeTrainingsAction());
-            seeTournamentsButton = new MenuButton("See tournamets", "/icons/reservations.png");
+            seeTournamentsButton = new MenuButton("See tournamets", "/icons/tournament.png");
             seeTournamentsButton.addActionListener(e->seeTournamentsAction());
             buttonsRow1.add(seeTrainingsButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
             buttonsRow1.add(seeTournamentsButton); buttonsRow1.add(Box.createHorizontalGlue());
@@ -120,7 +116,7 @@ public class HomePageGUI extends BaseGUI {
             JPanel buttonsRow2 = new JPanel();
             buttonsRow2.setLayout(new BoxLayout(buttonsRow2, BoxLayout.LINE_AXIS));
             buttonsRow2.setBackground(bgColor);
-            seeLicenceButton = new MenuButton("See your licence", "/icons/payment.png");
+            seeLicenceButton = new MenuButton("See your licence", "/icons/licence.png");
             seeLicenceButton.addActionListener(e->seeLicenceAction());
             deactivateAccountButton = new MenuButton("Deactivate account", "/icons/deactivate.png");
             deactivateAccountButton.fillColor = statusWrongLighter;
@@ -135,11 +131,11 @@ public class HomePageGUI extends BaseGUI {
             JPanel buttonsRow1 = new JPanel();
             buttonsRow1.setLayout(new BoxLayout(buttonsRow1, BoxLayout.LINE_AXIS));
             buttonsRow1.setBackground(bgColor);
-            seeEmployeesButton = new MenuButton("Employees", "/icons/search_offers.png");
+            seeEmployeesButton = new MenuButton("Employees", "/icons/employee.png");
             seeEmployeesButton.addActionListener(e->seeEmployeesAction());
-            seePositionsButton = new MenuButton("Positions", "/icons/reservations.png");
+            seePositionsButton = new MenuButton("Positions", "/icons/position.png");
             seePositionsButton.addActionListener(e->seePositionsAction());
-            seeStablesButton = new MenuButton("Stables", "/icons/reservations.png");
+            seeStablesButton = new MenuButton("Stables", "/icons/stable.png");
             seeStablesButton.addActionListener(e->seeStablesAction());
 
             if (doesEmployeeHaveReadOrWritePermissions("Employees")){
@@ -156,9 +152,9 @@ public class HomePageGUI extends BaseGUI {
             JPanel buttonsRow2 = new JPanel();
             buttonsRow2.setLayout(new BoxLayout(buttonsRow2, BoxLayout.LINE_AXIS));
             buttonsRow2.setBackground(bgColor);
-            seeHorsesButton = new MenuButton("Horses", "/icons/payment.png");
+            seeHorsesButton = new MenuButton("Horses", "/icons/horse.png");
             seeHorsesButton.addActionListener(e->seeHorsesAction());
-            seeAccessoriesButton = new MenuButton("Accessories", "/icons/deactivate.png");
+            seeAccessoriesButton = new MenuButton("Accessories", "/icons/accessory.png");
             seeAccessoriesButton.addActionListener(e->seeAccessoriesAction());
 
             if (doesEmployeeHaveReadOrWritePermissions("Horses")){
@@ -172,13 +168,13 @@ public class HomePageGUI extends BaseGUI {
             JPanel buttonsRow3 = new JPanel();
             buttonsRow3.setLayout(new BoxLayout(buttonsRow3, BoxLayout.LINE_AXIS));
             buttonsRow3.setBackground(bgColor);
-            seeRidersButton = new MenuButton("Riders", "/icons/payment.png");
+            seeRidersButton = new MenuButton("Riders", "/icons/rider.png");
             seeRidersButton.addActionListener(e->seeRidersAction());
-            seeGroupsButton = new MenuButton("Groups", "/icons/deactivate.png");
+            seeGroupsButton = new MenuButton("Groups", "/icons/group.png");
             seeGroupsButton.addActionListener(e->seeGroupsAction());
-            seeTrainingsButton = new MenuButton("Trainings", "/icons/deactivate.png");
+            seeTrainingsButton = new MenuButton("Trainings", "/icons/training.png");
             seeTrainingsButton.addActionListener(e->seeTrainingsAction());
-            seeTournamentsButton = new MenuButton("Tournaments", "/icons/deactivate.png");
+            seeTournamentsButton = new MenuButton("Tournaments", "/icons/tournament.png");
             seeTournamentsButton.addActionListener(e->seeTournamentsAction());
 
             if (doesEmployeeHaveReadOrWritePermissions("Riders")){

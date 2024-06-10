@@ -16,6 +16,8 @@ import pap.gui.components.TextIconButton;
 import pap.logic.DeactivateAccount;
 import pap.logic.ErrorCodes;
 
+// TODO: pomysl - dodanie wszytskich modyfikacji danych to moze byc 1. stworzenie formularza 2. przejscie po wszystkich polach tak jak w getFieldsValues TYLKO nie getowanie a ustawinie. I moze to doslownie bedzie szybkie.
+
 public class HomePageGUI extends BaseGUI {
 
     MenuButton seeTrainingsButton, seeTournamentsButton, seeHorsesButton,

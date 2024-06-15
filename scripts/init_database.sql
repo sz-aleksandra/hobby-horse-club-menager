@@ -31,8 +31,8 @@ CREATE TABLE "Members" (
 
 CREATE TABLE "Riders" (
                           "id" serial PRIMARY KEY,
-                          "parent_consent_id" integer,
-                          "licence_id" integer,
+                          "parent_consent" varchar,
+                          "licence" varchar,
                           "group_id" integer,
                           "horse_id" integer,
                           FOREIGN KEY ("id") REFERENCES "Members" ("id")

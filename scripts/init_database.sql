@@ -22,6 +22,8 @@ CREATE TABLE "Members" (
                            "id" serial PRIMARY KEY,
                            "name" varchar,
                            "surname" varchar,
+                           "username" varchar,
+                           "password" varchar,
                            "date_of_birth" timestamp,
                            "address_id" integer,
                            "phone_number" varchar,

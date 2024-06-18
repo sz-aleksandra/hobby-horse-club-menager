@@ -25,6 +25,14 @@ public class Member {
     private String surname;
 
     @Basic
+    @Column(name = "username", nullable = false)
+    private String username;
+
+    @Basic
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Basic
     @Temporal(TemporalType.DATE)
     @Column(name = "date_of_birth", nullable = false)
     private Date dateOfBirth;

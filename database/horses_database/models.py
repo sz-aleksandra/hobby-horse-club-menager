@@ -7,21 +7,21 @@ class Accessories(models.Model):
     class Meta:
         db_table = 'Accessories'
 
-class Address(models.Model):
+class Addresses(models.Model):
     id = models.AutoField(primary_key=True)
     country = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     street = models.CharField(max_length=255)
 
     class Meta:
-        db_table = 'Address'
+        db_table = 'Addresses'
 
 class Members(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     surname = models.CharField(max_length=255)
     date_of_birth = models.DateField()
-    address = models.ForeignKey(Address, on_delete=models.CASCADE)
+    address = models.ForeignKey(Addresses, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=20)
     email = models.EmailField()
     is_active = models.BooleanField(default=True)

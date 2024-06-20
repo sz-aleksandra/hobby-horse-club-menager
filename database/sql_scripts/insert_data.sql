@@ -12,7 +12,7 @@ INSERT INTO Accessories (name) VALUES
 ('Saddle pad'),
 ('Ends for whips');
 
-INSERT INTO Address (country, city, street) VALUES
+INSERT INTO Addresses (country, city, street) VALUES
 ('Poland', 'Warsaw', 'Puławska 20'),
 ('Poland', 'Warsaw', 'Marszałkowska 45'),
 ('Poland', 'Warsaw', 'Krakowskie Przedmieście 56'),

@@ -118,6 +118,7 @@ CREATE TABLE Tournaments (
                             id INT AUTO_INCREMENT PRIMARY KEY,
                             name VARCHAR(255) NOT NULL,
                             address_id INT NOT NULL,
+                            
                             judge_id INT,
                             FOREIGN KEY (address_id) REFERENCES Addresses(id),
                             FOREIGN KEY (judge_id) REFERENCES Employees(id)

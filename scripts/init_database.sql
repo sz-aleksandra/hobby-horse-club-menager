@@ -23,6 +23,8 @@ CREATE TABLE Members (
                          id INT AUTO_INCREMENT PRIMARY KEY,
                          name VARCHAR(255) NOT NULL,
                          surname VARCHAR(255) NOT NULL,
+                         username VARCHAR(255) NOT NULL,
+                         password VARCHAR(255) NOT NULL,
                          date_of_birth DATE NOT NULL,
                          address_id INT NOT NULL,
                          phone_number VARCHAR(20),

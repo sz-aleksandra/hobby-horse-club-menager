@@ -45,7 +45,6 @@ CREATE TABLE Riders (
                         FOREIGN KEY (group_id) REFERENCES Groups(id),
                         FOREIGN KEY (horse_id) REFERENCES Horses(id)
 );
-);
 
 CREATE TABLE Employees (
                            id INT AUTO_INCREMENT PRIMARY KEY,

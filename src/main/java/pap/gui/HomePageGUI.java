@@ -13,7 +13,6 @@ import pap.gui.SignUpLogIn.LogInGUI;
 import pap.gui.components.LogOutButton;
 import pap.gui.components.LogoPanel;
 import pap.gui.components.TextIconButton;
-import pap.logic.DeactivateAccount;
 import pap.logic.ErrorCodes;
 
 // TODO: pomysl - dodanie wszytskich modyfikacji danych to moze byc 1. stworzenie formularza 2. przejscie po wszystkich polach tak jak w getFieldsValues TYLKO nie getowanie a ustawinie. I moze to doslownie bedzie szybkie.
@@ -269,9 +268,9 @@ public class HomePageGUI extends BaseGUI {
         if (pickedOption == 1) {
             List<Integer> errorCodes = new ArrayList<>();
             if (userType.equals("Rider")){
-                errorCodes = DeactivateAccount.deactivateClientAccount(userId); //[MOCK], zmienic na deaktywacje Ridera
+            //    errorCodes = DeactivateAccount.deactivateClientAccount(userId); //[MOCK], zmienic na deaktywacje Ridera
             } else if (userType.equals("Employee")){
-                errorCodes = DeactivateAccount.deactivateOwnerAccount(userId); // [MOCK], zmienic na deaktywacje Employee
+            //    errorCodes = DeactivateAccount.deactivateOwnerAccount(userId); // [MOCK], zmienic na deaktywacje Employee
             } else {
                 errorCodes.add(-1);
             }

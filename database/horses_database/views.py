@@ -6,9 +6,8 @@ from django.db import transaction, IntegrityError, DatabaseError
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 # Create your views here.
-
-@csrf_exempt
 class AddressesView:
+    @csrf_exempt
     @staticmethod
     def get_all_addresses(request):
         # Retrieve all addresses
@@ -16,6 +15,7 @@ class AddressesView:
         return JsonResponse({'addresses': addresses}, status=200)
 
     @staticmethod
+    @csrf_exempt
     def add_addresses(request):
         """
         Add addresses.
@@ -63,6 +63,7 @@ class AddressesView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+    @csrf_exempt
     @staticmethod
     def get_address_by_id(request):
         """
@@ -92,6 +93,7 @@ class AddressesView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+    @csrf_exempt
     @staticmethod
     def get_all_addresses_in_country(request):
         """
@@ -123,8 +125,8 @@ class AddressesView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
-@csrf_exempt
 class MembersView:
+    @csrf_exempt
     @staticmethod
     def get_all_members(request):
         """
@@ -155,6 +157,7 @@ class MembersView:
         ]
         return JsonResponse({'members': data}, status=200)
 
+    @csrf_exempt
     @staticmethod
     def get_members_by_id(request):
         """
@@ -203,6 +206,7 @@ class MembersView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+    @csrf_exempt
     @staticmethod
     def add_members(request):
         """
@@ -294,6 +298,7 @@ class MembersView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+    @csrf_exempt
     @staticmethod
     def get_all_members_in_country(request):
         """
@@ -342,6 +347,7 @@ class MembersView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+    @csrf_exempt
     @staticmethod
     def get_all_members_by_address_id(request):
         """
@@ -390,6 +396,7 @@ class MembersView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+    @csrf_exempt
     @staticmethod
     def get_all_active_members(request):
         """
@@ -424,6 +431,7 @@ class MembersView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+    @csrf_exempt
     @staticmethod
     def get_all_inactive_members(request):
         """
@@ -458,9 +466,8 @@ class MembersView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
-
-@csrf_exempt
 class AccessoriesView:
+    @csrf_exempt
     @staticmethod
     def get_all_accessories(request):
         """
@@ -472,8 +479,9 @@ class AccessoriesView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+    @csrf_exempt
     @staticmethod
-    def add_new_accessory(self, request):
+    def add_new_accessory(request):
         """
         Add a new accessory.
         Example JSON payload:

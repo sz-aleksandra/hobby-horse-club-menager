@@ -108,11 +108,14 @@ public class HomePageGUI extends BaseGUI {
             JPanel buttonsRow1 = new JPanel();
             buttonsRow1.setLayout(new BoxLayout(buttonsRow1, BoxLayout.LINE_AXIS));
             buttonsRow1.setBackground(bgColor);
+            seeGroupsButton = new MenuButton("See groups", "/icons/training.png");
+            seeGroupsButton.addActionListener(e->seeGroupAction());
             seeTrainingsButton = new MenuButton("See trainings", "/icons/training.png");
             seeTrainingsButton.addActionListener(e->seeTrainingsAction());
             seeTournamentsButton = new MenuButton("See tournamets", "/icons/tournament.png");
             seeTournamentsButton.addActionListener(e->seeTournamentsAction());
-            buttonsRow1.add(seeTrainingsButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            buttonsRow1.add(seeGroupsButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            buttonsRow1.add(seeTrainingsButton); buttonsRow1.add(Box.createHorizontalGlue());
             buttonsRow1.add(seeTournamentsButton); buttonsRow1.add(Box.createHorizontalGlue());
 
             JPanel buttonsRow2 = new JPanel();
@@ -234,6 +237,11 @@ public class HomePageGUI extends BaseGUI {
 
     void seeEmployeesAction() {
         new EmployeesScrollGUI(userId, userType).createGUI();
+        frame.setVisible(false);
+    }
+
+	void seeGroupAction() {
+        new GroupScrollGUI(userId, userType).createGUI();
         frame.setVisible(false);
     }
 

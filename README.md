@@ -39,9 +39,9 @@ Dane do logowania do bazy danych:
 
 Możliwe jest uruchomienie projektu w IntelliJ IDEA po utworzeniu i dodaniu informacji do bazy danych.
 Aplikacje dostępne przy kompilacji:
-- `pap.UploadImages` - aplikacja do uploadu zdjęć do bazy danych
-- `pap.Default` - aplikacja dla zwykłych użytkowników
-- **@TODO** `pap.Admin` - aplikacja dla administratorów
+- `bd2.UploadImages` - aplikacja do uploadu zdjęć do bazy danych
+- `bd2.Default` - aplikacja dla zwykłych użytkowników
+- **@TODO** `bd2.Admin` - aplikacja dla administratorów
 
 ## Autorzy
     Adrian Murawski

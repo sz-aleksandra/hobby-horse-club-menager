@@ -53,7 +53,7 @@ public class AddressDAO {
     public void update(Address address) {
         try (Session session = factory.openSession()) {
             session.beginTransaction();
-            session.remove(address);
+            session.merge(address);
             session.getTransaction().commit();
             System.out.println("[AddressDAO] Updated address with id: " + address.getAddressId());
         }

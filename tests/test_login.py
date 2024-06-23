@@ -10,8 +10,8 @@ class LoginTests(TestCase):
         self.address = Addresses.objects.create(country="USA", city="New York", street="Broadway", street_no="123",
                                                 postal_code="10001")
         self.licence = Licences.objects.create(licence_level="Basic")
-        self.position = Positions.objects.create(name='Owner', salary_min=1000, salary_max=5000)
-        self.position_empl = Positions.objects.create(name='Employee', salary_min=1000, salary_max=5000)
+        self.position = Positions.objects.create(name='Owner', salary_min=1000, salary_max=5000, licence=self.licence, coaching_licence=self.licence)
+        self.position_empl = Positions.objects.create(name='Employee', salary_min=1000, salary_max=5000, licence=self.licence, coaching_licence=self.licence)
 
         self.member_employee = Members.objects.create(
             username='employee_user',

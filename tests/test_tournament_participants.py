@@ -2,7 +2,7 @@ from datetime import datetime
 from django.test import TestCase, Client
 from django.urls import reverse
 from horses_database.models import TournamentParticipants, Tournaments, Addresses, Employees, Licences, Members, \
-    Positions
+    Positions, Groups, Horses, Riders
 import json
 
 
@@ -32,7 +32,23 @@ class TournamentParticipantsViewTests(TestCase):
             phone_number="+1234567890", email="john.doe@example.com",
             is_active=True, address_id=self.address.id, licence_id=self.licence.id
         )
-        self.participant = TournamentParticipants.objects.create(tournament=self.tournament, contestant=self.member2,
+
+        self.group = Groups.objects.create(name="Beginners", max_group_members=10)
+
+        self.horse = Horses.objects.create(
+            breed="Thoroughbred", height=160.0, color="Bay",
+            eye_color="Brown", age=8, origin="USA", hairstyle="Short"
+        )
+
+        self.rider = Riders.objects.create(
+            member=self.member2, parent_consent=True, group=self.group, horse=self.horse
+        )
+
+        self.rider2 = Riders.objects.create(
+            member=self.member2, parent_consent=True, group=self.group, horse=self.horse
+        )
+
+        self.participant = TournamentParticipants.objects.create(tournament=self.tournament, contestant=self.rider,
                                                                  contestant_place=1)
 
     def test_get_all_tournaments_participants(self):
@@ -56,7 +72,7 @@ class TournamentParticipantsViewTests(TestCase):
             'tournament_participants': [
                 {
                     'tournament': {'id': self.tournament.id},
-                    'contestant': {'id': self.member.id},
+                    'contestant': {'id': self.rider2.id},
                     'contestant_place': 1
                 }
             ]
@@ -75,7 +91,7 @@ class TournamentParticipantsViewTests(TestCase):
                 {
                     'id': self.participant.id,
                     'tournament': {'id': self.tournament.id},
-                    'contestant': {'id': self.member.id},
+                    'contestant': {'id': self.rider.id},
                     'contestant_place': 2
                 }
             ]

@@ -136,7 +136,7 @@ class Tournaments(models.Model):
 
 class TournamentParticipants(models.Model):
     tournament = models.ForeignKey(Tournaments, on_delete=models.CASCADE)
-    contestant = models.ForeignKey(Members, on_delete=models.CASCADE)
+    contestant = models.ForeignKey(Riders, on_delete=models.CASCADE)
     contestant_place = models.IntegerField(null=True, blank=True)
 
     class Meta:

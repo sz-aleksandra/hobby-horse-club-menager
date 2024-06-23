@@ -1,8 +1,10 @@
+import json
+
+from django.db import transaction, IntegrityError, DatabaseError
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.db import transaction, IntegrityError, DatabaseError
-from horses_database.models import TournamentParticipants, Tournaments, Members
-import json
+
+from horses_database.models import TournamentParticipants, Tournaments, Riders
 
 
 class TournamentParticipantsView:
@@ -74,24 +76,43 @@ class TournamentParticipantsView:
                     },
                     "contestant": {
                         "id": 1,
-                        "name": "Alice",
-                        "surname": "Smith",
-                        "username": "alicesmith",
-                        "date_of_birth": "1995-03-15",
-                        "address": {
-                            "id": 2,
-                            "country": "UK",
-                            "city": "London",
-                            "street": "Oxford Street",
-                            "street_no": "456",
-                            "postal_code": "SW1A 1AA"
+                        "member": {
+                            "id": 1,
+                            "name": "John",
+                            "surname": "Doe",
+                            "username": "johndoe",
+                            "date_of_birth": "1990-01-01",
+                            "address": {
+                                "id": 1,
+                                "country": "USA",
+                                "city": "New York",
+                                "street": "Broadway",
+                                "street_no": "123",
+                                "postal_code": "10001"
+                            },
+                            "phone_number": "+1234567890",
+                            "email": "john.doe@example.com",
+                            "is_active": true,
+                            "licence": {
+                                "id": 1,
+                                "licence_level": "A"
+                            }
                         },
-                        "phone_number": "+447123456789",
-                        "email": "alice.smith@example.com",
-                        "is_active": true,
-                        "licence": {
-                            "id": 2,
-                            "licence_level": "B"
+                        "parent_consent": true,
+                        "group": {
+                            "id": 1,
+                            "name": "Jumpers",
+                            "max_group_members": 10
+                        },
+                        "horse": {
+                            "id": 1,
+                            "breed": "Thoroughbred",
+                            "height": 170,
+                            "color": "Bay",
+                            "eye_color": "Brown",
+                            "age": 7,
+                            "origin": "USA",
+                            "hairstyle": "Short"
                         }
                     },
                     "contestant_place": 3
@@ -103,9 +124,10 @@ class TournamentParticipantsView:
             participants = TournamentParticipants.objects.select_related(
                 'tournament__address', 'tournament__judge__member__address', 'tournament__judge__member__licence',
                 'tournament__judge__position__licence', 'tournament__judge__position__coaching_licence',
-                'contestant__address', 'contestant__licence'
+                'contestant__member__address' 'contestant__member__licence', 'contestant__group', 'contestant__horse'
             ).values(
-                'id', 'tournament_id', 'tournament__name', 'tournament__date', 'tournament__address_id', 'tournament__address__country',
+                'id', 'tournament_id', 'tournament__name', 'tournament__date', 'tournament__address_id',
+                'tournament__address__country',
                 'tournament__address__city', 'tournament__address__street', 'tournament__address__street_no',
                 'tournament__address__postal_code', 'tournament__judge_id', 'tournament__judge__member_id',
                 'tournament__judge__member__name', 'tournament__judge__member__surname',
@@ -118,13 +140,23 @@ class TournamentParticipantsView:
                 'tournament__judge__member__licence__licence_level', 'tournament__judge__position_id',
                 'tournament__judge__position__name', 'tournament__judge__position__salary_min',
                 'tournament__judge__position__salary_max', 'tournament__judge__position__licence_id',
-                'tournament__judge__position__licence__licence_level', 'tournament__judge__position__coaching_licence_id',
+                'tournament__judge__position__licence__licence_level',
+                'tournament__judge__position__coaching_licence_id',
                 'tournament__judge__position__coaching_licence__licence_level', 'tournament__judge__salary',
-                'tournament__judge__date_employed', 'contestant_id', 'contestant__name', 'contestant__surname',
-                'contestant__username', 'contestant__date_of_birth', 'contestant__address_id', 'contestant__address__country',
-                'contestant__address__city', 'contestant__address__street', 'contestant__address__street_no',
-                'contestant__address__postal_code', 'contestant__phone_number', 'contestant__email', 'contestant__is_active',
-                'contestant__licence_id', 'contestant__licence__licence_level', 'contestant_place'
+                'tournament__judge__date_employed', 'contestant_id', 'contestant__member_id', 'contestant__member__name',
+                'contestant__member__surname',
+                'contestant__member__username', 'contestant__member__date_of_birth', 'contestant__member__address_id',
+                'contestant__member__address__country',
+                'contestant__member__address__city', 'contestant__member__address__street',
+                'contestant__member__address__street_no',
+                'contestant__member__address__postal_code', 'contestant__member__phone_number',
+                'contestant__member__email', 'contestant__member__is_active',
+                'contestant__member__licence_id', 'contestant__member__licence__licence_level',
+                'contestant__parent_consent', 'contestant__group_id', 'contestant__group__name',
+                'contestant__group__max_group_members', 'contestant__horse_id', 'contestant__horse__breed',
+                'contestant__horse__height', 'contestant__horse__color', 'contestant__horse__eye_color',
+                'contestant__horse__age', 'contestant__horse__origin', 'contestant__horse__hairstyle',
+                'contestant_place'
             )
 
             data = []
@@ -178,7 +210,8 @@ class TournamentParticipantsView:
                                 },
                                 "coaching_licence": {
                                     "id": participant['tournament__judge__position__coaching_licence_id'],
-                                    "licence_level": participant['tournament__judge__position__coaching_licence__licence_level']
+                                    "licence_level": participant[
+                                        'tournament__judge__position__coaching_licence__licence_level']
                                 }
                             },
                             "salary": participant['tournament__judge__salary'],
@@ -187,24 +220,43 @@ class TournamentParticipantsView:
                     },
                     "contestant": {
                         "id": participant['contestant_id'],
-                        "name": participant['contestant__name'],
-                        "surname": participant['contestant__surname'],
-                        "username": participant['contestant__username'],
-                        "date_of_birth": participant['contestant__date_of_birth'],
-                        "address": {
-                            "id": participant['contestant__address_id'],
-                            "country": participant['contestant__address__country'],
-                            "city": participant['contestant__address__city'],
-                            "street": participant['contestant__address__street'],
-                            "street_no": participant['contestant__address__street_no'],
-                            "postal_code": participant['contestant__address__postal_code']
+                        "member": {
+                            "id": participant['contestant__member_id'],
+                            "name": participant['contestant__member__name'],
+                            "surname": participant['contestant__member__surname'],
+                            "username": participant['contestant__member__username'],
+                            "date_of_birth": participant['contestant__member__date_of_birth'],
+                            "address": {
+                                "id": participant['contestant__member__address_id'],
+                                "country": participant['contestant__member__address__country'],
+                                "city": participant['contestant__member__address__city'],
+                                "street": participant['contestant__member__address__street'],
+                                "street_no": participant['contestant__member__address__street_no'],
+                                "postal_code": participant['contestant__member__address__postal_code']
+                            },
+                            "phone_number": participant['contestant__member__phone_number'],
+                            "email": participant['contestant__member__email'],
+                            "is_active": participant['contestant__member__is_active'],
+                            "licence": {
+                                "id": participant['contestant__member__licence_id'],
+                                "licence_level": participant['contestant__member__licence__licence_level']
+                            }
                         },
-                        "phone_number": participant['contestant__phone_number'],
-                        "email": participant['contestant__email'],
-                        "is_active": participant['contestant__is_active'],
-                        "licence": {
-                            "id": participant['contestant__licence_id'],
-                            "licence_level": participant['contestant__licence__licence_level']
+                        "parent_consent": participant['contestant__parent_consent'],
+                        "group": {
+                            "id": participant['contestant__group_id'],
+                            "name": participant['contestant__group__name'],
+                            "max_group_members": participant['contestant__group__max_group_members']
+                        },
+                        "horse": {
+                            "id": participant['contestant__horse_id'],
+                            "breed": participant['contestant__horse__breed'],
+                            "height": participant['contestant__horse__height'],
+                            "color": participant['contestant__horse__color'],
+                            "eye_color": participant['contestant__horse__eye_color'],
+                            "age": participant['contestant__horse__age'],
+                            "origin": participant['contestant__horse__origin'],
+                            "hairstyle": participant['contestant__horse__hairstyle']
                         }
                     },
                     "contestant_place": participant['contestant_place']
@@ -293,24 +345,43 @@ class TournamentParticipantsView:
                     },
                     "contestant": {
                         "id": 1,
-                        "name": "Alice",
-                        "surname": "Smith",
-                        "username": "alicesmith",
-                        "date_of_birth": "1995-03-15",
-                        "address": {
-                            "id": 2,
-                            "country": "UK",
-                            "city": "London",
-                            "street": "Oxford Street",
-                            "street_no": "456",
-                            "postal_code": "SW1A 1AA"
+                        "member": {
+                            "id": 1,
+                            "name": "John",
+                            "surname": "Doe",
+                            "username": "johndoe",
+                            "date_of_birth": "1990-01-01",
+                            "address": {
+                                "id": 1,
+                                "country": "USA",
+                                "city": "New York",
+                                "street": "Broadway",
+                                "street_no": "123",
+                                "postal_code": "10001"
+                            },
+                            "phone_number": "+1234567890",
+                            "email": "john.doe@example.com",
+                            "is_active": true,
+                            "licence": {
+                                "id": 1,
+                                "licence_level": "A"
+                            }
                         },
-                        "phone_number": "+447123456789",
-                        "email": "alice.smith@example.com",
-                        "is_active": true,
-                        "licence": {
-                            "id": 2,
-                            "licence_level": "B"
+                        "parent_consent": true,
+                        "group": {
+                            "id": 1,
+                            "name": "Jumpers",
+                            "max_group_members": 10
+                        },
+                        "horse": {
+                            "id": 1,
+                            "breed": "Thoroughbred",
+                            "height": 170,
+                            "color": "Bay",
+                            "eye_color": "Brown",
+                            "age": 7,
+                            "origin": "USA",
+                            "hairstyle": "Short"
                         }
                     },
                     "contestant_place": 3
@@ -326,9 +397,10 @@ class TournamentParticipantsView:
             participants = TournamentParticipants.objects.filter(id__in=ids).select_related(
                 'tournament__address', 'tournament__judge__member__address', 'tournament__judge__member__licence',
                 'tournament__judge__position__licence', 'tournament__judge__position__coaching_licence',
-                'contestant__address', 'contestant__licence'
+                'contestant__member__address' 'contestant__member__licence', 'contestant__group', 'contestant__horse'
             ).values(
-                'id', 'tournament_id', 'tournament__name', 'tournament__date', 'tournament__address_id', 'tournament__address__country',
+                'id', 'tournament_id', 'tournament__name', 'tournament__date', 'tournament__address_id',
+                'tournament__address__country',
                 'tournament__address__city', 'tournament__address__street', 'tournament__address__street_no',
                 'tournament__address__postal_code', 'tournament__judge_id', 'tournament__judge__member_id',
                 'tournament__judge__member__name', 'tournament__judge__member__surname',
@@ -341,13 +413,23 @@ class TournamentParticipantsView:
                 'tournament__judge__member__licence__licence_level', 'tournament__judge__position_id',
                 'tournament__judge__position__name', 'tournament__judge__position__salary_min',
                 'tournament__judge__position__salary_max', 'tournament__judge__position__licence_id',
-                'tournament__judge__position__licence__licence_level', 'tournament__judge__position__coaching_licence_id',
+                'tournament__judge__position__licence__licence_level',
+                'tournament__judge__position__coaching_licence_id',
                 'tournament__judge__position__coaching_licence__licence_level', 'tournament__judge__salary',
-                'tournament__judge__date_employed', 'contestant_id', 'contestant__name', 'contestant__surname',
-                'contestant__username', 'contestant__date_of_birth', 'contestant__address_id', 'contestant__address__country',
-                'contestant__address__city', 'contestant__address__street', 'contestant__address__street_no',
-                'contestant__address__postal_code', 'contestant__phone_number', 'contestant__email', 'contestant__is_active',
-                'contestant__licence_id', 'contestant__licence__licence_level', 'contestant_place'
+                'tournament__judge__date_employed', 'contestant_id', 'contestant__member_id', 'contestant__member__name',
+                'contestant__member__surname',
+                'contestant__member__username', 'contestant__member__date_of_birth', 'contestant__member__address_id',
+                'contestant__member__address__country',
+                'contestant__member__address__city', 'contestant__member__address__street',
+                'contestant__member__address__street_no',
+                'contestant__member__address__postal_code', 'contestant__member__phone_number',
+                'contestant__member__email', 'contestant__member__is_active',
+                'contestant__member__licence_id', 'contestant__member__licence__licence_level',
+                'contestant__parent_consent', 'contestant__group_id', 'contestant__group__name',
+                'contestant__group__max_group_members', 'contestant__horse_id', 'contestant__horse__breed',
+                'contestant__horse__height', 'contestant__horse__color', 'contestant__horse__eye_color',
+                'contestant__horse__age', 'contestant__horse__origin', 'contestant__horse__hairstyle',
+                'contestant_place'
             )
 
             data = []
@@ -401,7 +483,8 @@ class TournamentParticipantsView:
                                 },
                                 "coaching_licence": {
                                     "id": participant['tournament__judge__position__coaching_licence_id'],
-                                    "licence_level": participant['tournament__judge__position__coaching_licence__licence_level']
+                                    "licence_level": participant[
+                                        'tournament__judge__position__coaching_licence__licence_level']
                                 }
                             },
                             "salary": participant['tournament__judge__salary'],
@@ -410,24 +493,43 @@ class TournamentParticipantsView:
                     },
                     "contestant": {
                         "id": participant['contestant_id'],
-                        "name": participant['contestant__name'],
-                        "surname": participant['contestant__surname'],
-                        "username": participant['contestant__username'],
-                        "date_of_birth": participant['contestant__date_of_birth'],
-                        "address": {
-                            "id": participant['contestant__address_id'],
-                            "country": participant['contestant__address__country'],
-                            "city": participant['contestant__address__city'],
-                            "street": participant['contestant__address__street'],
-                            "street_no": participant['contestant__address__street_no'],
-                            "postal_code": participant['contestant__address__postal_code']
+                        "member": {
+                            "id": participant['contestant__member_id'],
+                            "name": participant['contestant__member__name'],
+                            "surname": participant['contestant__member__surname'],
+                            "username": participant['contestant__member__username'],
+                            "date_of_birth": participant['contestant__member__date_of_birth'],
+                            "address": {
+                                "id": participant['contestant__member__address_id'],
+                                "country": participant['contestant__member__address__country'],
+                                "city": participant['contestant__member__address__city'],
+                                "street": participant['contestant__member__address__street'],
+                                "street_no": participant['contestant__member__address__street_no'],
+                                "postal_code": participant['contestant__member__address__postal_code']
+                            },
+                            "phone_number": participant['contestant__member__phone_number'],
+                            "email": participant['contestant__member__email'],
+                            "is_active": participant['contestant__member__is_active'],
+                            "licence": {
+                                "id": participant['contestant__member__licence_id'],
+                                "licence_level": participant['contestant__member__licence__licence_level']
+                            }
                         },
-                        "phone_number": participant['contestant__phone_number'],
-                        "email": participant['contestant__email'],
-                        "is_active": participant['contestant__is_active'],
-                        "licence": {
-                            "id": participant['contestant__licence_id'],
-                            "licence_level": participant['contestant__licence__licence_level']
+                        "parent_consent": participant['contestant__parent_consent'],
+                        "group": {
+                            "id": participant['contestant__group_id'],
+                            "name": participant['contestant__group__name'],
+                            "max_group_members": participant['contestant__group__max_group_members']
+                        },
+                        "horse": {
+                            "id": participant['contestant__horse_id'],
+                            "breed": participant['contestant__horse__breed'],
+                            "height": participant['contestant__horse__height'],
+                            "color": participant['contestant__horse__color'],
+                            "eye_color": participant['contestant__horse__eye_color'],
+                            "age": participant['contestant__horse__age'],
+                            "origin": participant['contestant__horse__origin'],
+                            "hairstyle": participant['contestant__horse__hairstyle']
                         }
                     },
                     "contestant_place": participant['contestant_place']
@@ -490,15 +592,17 @@ class TournamentParticipantsView:
                     if not Tournaments.objects.filter(id=tournament_id).exists():
                         return JsonResponse({'error': f'Tournament with ID {tournament_id} does not exist'}, status=400)
 
-                    if not Members.objects.filter(id=contestant_id).exists():
-                        return JsonResponse({'error': f'Member with ID {contestant_id} does not exist'}, status=400)
+                    if not Riders.objects.filter(id=contestant_id).exists():
+                        return JsonResponse({'error': f'Rider with ID {contestant_id} does not exist'}, status=400)
 
                     new_tournament_participant = TournamentParticipants.objects.create(tournament_id=tournament_id,
                                                                                        contestant_id=contestant_id,
                                                                                        contestant_place=contestant_place)
                     new_tournament_participants_id.append(new_tournament_participant.id)
 
-            return JsonResponse({'message': 'Tournament Participants added successfully', 'ids': new_tournament_participants_id}, status=200)
+            return JsonResponse(
+                {'message': 'Tournament Participants added successfully', 'ids': new_tournament_participants_id},
+                status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
@@ -557,17 +661,19 @@ class TournamentParticipantsView:
                     if not Tournaments.objects.filter(id=tournament_id).exists():
                         return JsonResponse({'error': f'Tournament with ID {tournament_id} does not exist'}, status=400)
 
-                    if not Members.objects.filter(id=contestant_id).exists():
-                        return JsonResponse({'error': f'Member with ID {contestant_id} does not exist'}, status=400)
+                    if not Riders.objects.filter(id=contestant_id).exists():
+                        return JsonResponse({'error': f'Rider with ID {contestant_id} does not exist'}, status=400)
 
                     if not TournamentParticipants.objects.filter(id=tournament_part_id).exists():
-                        return JsonResponse({'error': f'Tournament Participant with ID {contestant_id} does not exist'}, status=400)
+                        return JsonResponse({'error': f'Tournament Participant with ID {contestant_id} does not exist'},
+                                            status=400)
 
                     new_tournament_participant = TournamentParticipants.objects.filter(id=tournament_part_id).update(
                         tournament_id=tournament_id, contestant_id=contestant_id, contestant_place=contestant_place)
                     updated_ids.append(tournament_part_id)
 
-            return JsonResponse({'message': 'Tournament Participants updated successfully', 'ids': updated_ids}, status=200)
+            return JsonResponse({'message': 'Tournament Participants updated successfully', 'ids': updated_ids},
+                                status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
@@ -606,7 +712,8 @@ class TournamentParticipantsView:
                     TournamentParticipants.objects.filter(id=tournament_participant_id).delete()
                     deleted_ids.append(tournament_participant_id)
 
-            return JsonResponse({'message': 'Tournament participants deleted successfully', 'deleted_ids': deleted_ids}, status=200)
+            return JsonResponse({'message': 'Tournament participants deleted successfully', 'deleted_ids': deleted_ids},
+                                status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:

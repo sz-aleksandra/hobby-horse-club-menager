@@ -138,10 +138,7 @@ INSERT INTO Tournaments (name, date, address_id, judge_id) VALUES
 INSERT INTO Tournament_Participants (tournament_id, contestant_id, contestant_place) VALUES
 (1, 1, 1),
 (1, 2, 2),
-(1, 3, 4),
-(1, 4, 3),
+(1, 3, 3),
 (2, 1, 2),
 (2, 2, 1),
-(2, 3, 2),
-(2, 4, 4),
-(2, 5, 5);
+(2, 3, 3);

@@ -154,13 +154,11 @@ public class LogInGUI extends BaseGUI {
         RequestBody body = RequestBody.create(
                 json, MediaType.get("application/json; charset=utf-8"));
 
-        // Create the request
         Request request = new Request.Builder()
                 .url("http://localhost:8000/riders/get_by_username/")
                 .post(body)
                 .build();
 
-        // Send the request and get the response
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -178,7 +176,7 @@ public class LogInGUI extends BaseGUI {
                     
                     int id = jsonObject.get("id").getAsInt();
 
-					new HomePageGUI(1, "Rider").createGUI();
+					new HomePageGUI(id, "Rider").createGUI();
             		frame.setVisible(false);
                 } else {
                     System.err.println("Login failed: " + response.body().string());

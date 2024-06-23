@@ -176,7 +176,7 @@ public class HomePageGUI extends BaseGUI {
             seeRidersButton = new MenuButton("Riders", "/icons/rider.png");
             seeRidersButton.addActionListener(e->seeRidersAction());
             seeGroupsButton = new MenuButton("Groups", "/icons/group.png");
-            seeGroupsButton.addActionListener(e->seeGroupsAction());
+            seeGroupsButton.addActionListener(e->seeGroupAction());
             seeTrainingsButton = new MenuButton("Trainings", "/icons/training.png");
             seeTrainingsButton.addActionListener(e->seeTrainingsAction());
             seeTournamentsButton = new MenuButton("Tournaments", "/icons/tournament.png");
@@ -203,11 +203,6 @@ public class HomePageGUI extends BaseGUI {
 
         mainPanel.add(buttonsPanel);
         mainPanel.add(Box.createVerticalGlue());
-    }
-
-    void seeGroupsAction() {
-        new GroupsScrollGUI(userId, userType).createGUI();
-        frame.setVisible(false);
     }
 
     void seeRidersAction() {

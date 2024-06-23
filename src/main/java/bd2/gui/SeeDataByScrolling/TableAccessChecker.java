@@ -29,7 +29,7 @@ public class TableAccessChecker {
         userTypeAccessTypeToTable.put("Accessories",accessoriesAccess);
 
         HashMap<String, String> ridersAccess = new HashMap<>();
-        ridersAccess.put("Cleaner", "No"); ridersAccess.put("Trainer", "No"); ridersAccess.put("Accountant", "No"); ridersAccess.put("Owner", "Write");
+        ridersAccess.put("Cleaner", "No"); ridersAccess.put("Trainer", "Read"); ridersAccess.put("Accountant", "No"); ridersAccess.put("Owner", "Write");
         userTypeAccessTypeToTable.put("Riders",ridersAccess);
 
         HashMap<String, String> groupsAccess = new HashMap<>();
@@ -37,11 +37,11 @@ public class TableAccessChecker {
         userTypeAccessTypeToTable.put("Groups",groupsAccess);
 
         HashMap<String, String> trainingsAccess = new HashMap<>();
-        trainingsAccess.put("Cleaner", "No"); trainingsAccess.put("Trainer", "Write"); trainingsAccess.put("Accountant", "No"); trainingsAccess.put("Owner", "Write");
+        trainingsAccess.put("Cleaner", "Read"); trainingsAccess.put("Trainer", "Write"); trainingsAccess.put("Accountant", "No"); trainingsAccess.put("Owner", "Write");
         userTypeAccessTypeToTable.put("Trainings",trainingsAccess);
 
         HashMap<String, String> tournamentsAccess = new HashMap<>();
-        tournamentsAccess.put("Cleaner", "No"); tournamentsAccess.put("Trainer", "Write"); tournamentsAccess.put("Accountant", "No"); tournamentsAccess.put("Owner", "Write");
+        tournamentsAccess.put("Cleaner", "Read"); tournamentsAccess.put("Trainer", "Write"); tournamentsAccess.put("Accountant", "No"); tournamentsAccess.put("Owner", "Write");
         userTypeAccessTypeToTable.put("Tournaments",tournamentsAccess);
     }
 

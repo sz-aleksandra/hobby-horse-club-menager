@@ -3,14 +3,14 @@ USE horses-database;
 -- Insert statements for the Addresses table
 INSERT INTO Addresses (country, city, street, street_no, postal_code) VALUES
 ('Poland', 'Warsaw', 'Main Street', '123', '00-001'),
-('Poland', 'Warsaw', 'Puławska', '20', '02-515'),
-('Poland', 'Warsaw', 'Marszałkowska', '45', '00-676'),
-('Poland', 'Warsaw', 'Krakowskie Przedmieście', '56', '00-322'),
+('Poland', 'Warsaw', 'Pulawska', '20', '02-515'),
+('Poland', 'Warsaw', 'Marszalkowska', '45', '00-676'),
+('Poland', 'Warsaw', 'Krakowskie Przedmiescie', '56', '00-322'),
 ('Poland', 'Piaseczno', 'Warszawska', '10', '05-500'),
-('Poland', 'Konstancin-Jeziorna', 'Kościelna', '5', '05-510'),
-('Poland', 'Warsaw', 'Nowy Świat', '30', '00-029'),
+('Poland', 'Konstancin-Jeziorna', 'Koscielna', '5', '05-510'),
+('Poland', 'Warsaw', 'Nowy Swiat', '30', '00-029'),
 ('Poland', 'Warsaw', 'Plac Defilad', '1', '00-901'),
-('Poland', 'Pruszków', 'Główna', '3', '05-800'),
+('Poland', 'Pruszkow', 'Glowna', '3', '05-800'),
 ('Poland', 'Legionowo', 'Polna', '6', '05-120'),
 ('Poland', 'Grodzisk Mazowiecki', 'Rynek', '7', '05-825');
 
@@ -38,7 +38,7 @@ INSERT INTO `Groups` (name, max_group_members) VALUES
 -- Insert statements for the Horses table
 INSERT INTO Horses (breed, height, color, eye_color, age, origin, hairstyle) VALUES
 ('Hucul', 150, 'Chestnut', 'Brown', 5, 'Poland', 'Mane'),
-('Małopolski', 160, 'Gray', 'Blue', 8, 'Poland', 'Mane'),
+('Malopolski', 160, 'Gray', 'Blue', 8, 'Poland', 'Mane'),
 ('Friesian', 155, 'Black', 'Black', 7, 'Netherlands', 'Mane'),
 ('Polish', 145, 'Bay', 'Brown', 10, 'Poland', 'Mane'),
 ('Connemara', 148, 'Dark Bay', 'Green', 6, 'Ireland', 'Braided'),
@@ -102,26 +102,25 @@ INSERT INTO Positions (name, salary_min, salary_max, licence_id, coaching_licenc
 INSERT INTO Members (name, surname, username, password, date_of_birth, address_id, phone_number, email, is_active, licence_id) VALUES
 ('Jacek', 'Lewandowski', 'jlewan', 'qwerty', '1982-07-21', 1, '321321123', 'jacek.lewandowski@example.com', TRUE, 1),
 ('Barbara', 'Kwiatkowska', 'bkwat', 'qwer', '1979-04-17', 2, '654987321', 'barbara.kwiatkowska@example.com', TRUE, 2),
-('Michał', 'Kaczmarek', 'mkaczmar', '12345', '1991-12-03', 3, '789456123', 'michal.kaczmarek@example.com', TRUE, 1),
-('Agnieszka', 'Dąbrowska', 'adab', '09876', '1984-06-29', 4, '456123789', 'agnieszka.dabrowska@example.com', TRUE, 2),
-('Karolina', 'Szymańska', 'kszyman', 'ytrewq', '1992-03-11', 5, '321456987', 'karolina.szymanska@example.com', TRUE, 5),
-('Tomasz', 'Wiśniewski', 'twiś', 'password1', '1985-09-23', 6, '111222333', 'tomasz.wisniewski@example.com', TRUE, 3),
+('Michal', 'Kaczmarek', 'mkaczmar', '12345', '1991-12-03', 3, '789456123', 'michal.kaczmarek@example.com', TRUE, 1),
+('Agnieszka', 'Dabrowska', 'adab', '09876', '1984-06-29', 4, '456123789', 'agnieszka.dabrowska@example.com', TRUE, 2),
+('Karolina', 'Szymanska', 'kszyman', 'ytrewq', '1992-03-11', 5, '321456987', 'karolina.szymanska@example.com', TRUE, 5),
+('Tomasz', 'Wisniewski', 'twis', 'password1', '1985-09-23', 6, '111222333', 'tomasz.wisniewski@example.com', TRUE, 3),
 ('Anna', 'Nowak', 'anowak', 'pass123', '1990-08-15', 7, '444555666', 'anna.nowak@example.com', TRUE, 4),
-('Paweł', 'Zieliński', 'pziel', 'mypass', '1977-03-12', 8, '777888999', 'pawel.zielinski@example.com', TRUE, 5),
+('Pawel', 'Zielinski', 'pziel', 'mypass', '1977-03-12', 8, '777888999', 'pawel.zielinski@example.com', TRUE, 5),
 ('Ewa', 'Majewska', 'emajew', 'password2', '1983-11-19', 9, '123123123', 'ewa.majewska@example.com', TRUE, 1),
 ('Jan', 'Kowalski', 'jkowal', 'letmein', '1987-05-25', 10, '234234234', 'jan.kowalski@example.com', TRUE, 2),
-('Magdalena', 'Wójcik', 'mwojcik', 'securepass', '1993-02-17', 11, '345345345', 'magdalena.wojcik@example.com', TRUE, 1),
+('Magdalena', 'Wojcik', 'mwojcik', 'securepass', '1993-02-17', 11, '345345345', 'magdalena.wojcik@example.com', TRUE, 1),
 ('Piotr', 'Jankowski', 'pjanko', 'piotrpass', '1981-04-30', 1, '456456456', 'piotr.jankowski@example.com', TRUE, 6),
-('Katarzyna', 'Woźniak', 'kwozniak', 'wozniakpass', '1986-10-05', 2, '567567567', 'katarzyna.wozniak@example.com', TRUE, 2),
+('Katarzyna', 'Wozniak', 'kwozniak', 'wozniakpass', '1986-10-05', 2, '567567567', 'katarzyna.wozniak@example.com', TRUE, 2),
 ('Marek', 'Mazur', 'mmazur', 'mazurpass', '1995-07-14', 3, '678678678', 'marek.mazur@example.com', TRUE, 1),
 ('Joanna', 'Krawczyk', 'jkraw', 'krawpass', '1994-06-20', 4, '789789789', 'joanna.krawczyk@example.com', TRUE, 2),
-('Rafał', 'Król', 'rkrol', 'kingpass', '1989-01-01', 5, '890890890', 'rafal.krol@example.com', TRUE, 6),
+('Rafal', 'Krol', 'rkrol', 'kingpass', '1989-01-01', 5, '890890890', 'rafal.krol@example.com', TRUE, 6),
 ('Sylwia', 'Ostrowska', 'sostro', 'ostropass', '1976-12-12', 6, '901901901', 'sylwia.ostrowska@example.com', TRUE, 5),
 ('Adam', 'Duda', 'aduda', 'dudapass', '1998-09-09', 7, '012012012', 'adam.duda@example.com', TRUE, 5),
 ('Maria', 'Pawlak', 'mpawlak', 'pawpass', '1997-03-03', 8, '345678123', 'maria.pawlak@example.com', TRUE, 4),
-('Dariusz', 'Włodarczyk', 'dwlodar', 'wlopass', '1988-10-10', 9, '456789234', 'dariusz.wlodarczyk@example.com', TRUE, 6),
-('Alicja', 'Górska', 'agorska', 'gorpass', '1982-11-11', 10, '567890345', 'alicja.gorska@example.com', TRUE, 5);
-
+('Dariusz', 'Wlodarczyk', 'dwlodar', 'wlopass', '1988-10-10', 9, '456789234', 'dariusz.wlodarczyk@example.com', TRUE, 6),
+('Alicja', 'Gorska', 'agorska', 'gorpass', '1982-11-11', 10, '567890345', 'alicja.gorska@example.com', TRUE, 5);
 
 -- Insert statements for the Riders table
 INSERT INTO Riders (member_id, parent_consent, group_id, horse_id) VALUES

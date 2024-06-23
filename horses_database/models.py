@@ -57,7 +57,7 @@ class HorsesAccessories(models.Model):
 
 class Stables(models.Model):
     name = models.CharField(max_length=255)
-    address = models.ForeignKey(Addresses, on_delete=models.CASCADE)
+    address = models.ForeignKey(Addresses, on_delete=models.RESTRICT)
 
     class Meta:
         db_table = 'Stables'
@@ -91,8 +91,8 @@ class Members(models.Model):
 class Riders(models.Model):
     member = models.ForeignKey(Members, on_delete=models.CASCADE)
     parent_consent = models.BooleanField()
-    group = models.ForeignKey(Groups, on_delete=models.RESTRICT, null=True)
-    horse = models.ForeignKey(Horses, on_delete=models.RESTRICT, null=True)
+    group = models.ForeignKey(Groups, on_delete=models.SET_NULL, null=True)
+    horse = models.ForeignKey(Horses, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         db_table = 'Riders'

@@ -1,0 +1,100 @@
+package bd2.gui.SeeDataByScrolling;
+
+import bd2.gui.AddDataByForm.AddTrainingGUI;
+import bd2.gui.components.ScrollElementButton;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Arrays;
+import java.util.HashMap;
+
+public class TrainingsScrollGUI extends DataScrollTemplate {
+
+    //[MOCK] Tworze tymczasowe pole klasy, powinna to byc funkcja z logic, ktora wykonujemy gdy chcemy sprawdzic czy danu user jest na trening juz zapisany
+    boolean[] isUserRegisteredForTraining = {true, false, false, true, false, true, true};
+
+    //[MOCK]
+    @Override
+    protected void getElementsData() {
+        this.fittingElementsIds = new Integer[]{1, 2, 3, 4, 5, 6, 7};
+        this.nrOfElements = fittingElementsIds.length;
+    }
+
+    // [MOCK]
+    @Override
+    protected HashMap<String, String> getElementData(int elementId) {
+        HashMap<String, String> dataInfo = new HashMap<String, String>();
+        dataInfo.put("type", "Jumping");
+        dataInfo.put("date", "Mondays, 3PM");
+        dataInfo.put("trainer", "Adam Kaczka");
+        dataInfo.put("group", "3");
+        dataInfo.put("stable", "Horse Palace, ul. Ogrodowa 5");
+        return dataInfo;
+    }
+
+    @Override
+    protected void addInfoToDataInfoPanel(int elementId, JPanel dataInfoPanel) {
+        HashMap<String, String> dataInfo = getElementData(elementId);
+        addJLabel("Training " + dataInfo.get("type"), Color.BLACK, fontBiggerBold, dataInfoPanel, elementWidth, elementHeight);
+        addJLabel("hosted on " + dataInfo.get("date") + " in " + dataInfo.get("stable"), Color.BLACK, fontMiddle, dataInfoPanel, elementWidth, elementHeight);
+        addJLabel("by " + dataInfo.get("trainer") + " for group " + dataInfo.get("group"), Color.BLACK, fontMiddle, dataInfoPanel, elementWidth, elementHeight);
+    }
+
+    protected void createScrollButtons(int elementId, JPanel dataPanel) {
+        int buttonSize = scrollButtonSize;
+        int buttonsGapSize = buttonSize / 3;
+        dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize, 0)));
+
+        // If user is Employee with write permissions, show edit and delete buttons
+        if (userType.equals("Employee") && doesEmployeeHaveWritePermissions()) {
+            ScrollElementButton editButton = new ScrollElementButton("Edit", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
+            editButton.addActionListener(actionEvent -> {
+                handleEditData();
+            });
+            dataPanel.add(editButton);
+            dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize, 0)));
+
+            ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
+            removeButton.addActionListener(actionEvent -> {
+                handleRemoveData();
+            });
+            dataPanel.add(removeButton);
+        }
+    }
+
+    void switchRegisterButtons(int elementId, JPanel trainingPanel) {
+        // Removing button
+        trainingPanel.remove(trainingPanel.getComponentCount() - 1);
+        // Removing space before the button
+        trainingPanel.remove(trainingPanel.getComponentCount() - 1);
+        createScrollButtons(elementId, trainingPanel);
+        trainingPanel.revalidate();
+        trainingPanel.repaint();
+    }
+
+    @Override
+    protected void handleAddData() {
+        new AddTrainingGUI(userId, userType).createGUI();
+        frame.setVisible(false);
+    }
+
+    @Override
+    protected void handleEditData() {
+        // Handle edit data
+    }
+
+    @Override
+    protected void handleRemoveData() {
+        // Handle remove data
+    }
+
+    public TrainingsScrollGUI(int userId, String userType) {
+        super(userId, userType, "Trainings");
+        elementHeight = frameHeight / 6;
+        elementWidth = frameWidth * 3 / 5;
+    }
+
+    public static void main(String[] args) {
+        new TrainingsScrollGUI(-1, "None").createGUI();
+    }
+}

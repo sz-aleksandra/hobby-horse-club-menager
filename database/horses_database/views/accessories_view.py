@@ -11,6 +11,27 @@ class AccessoriesView:
     def get_all_accessories(request):
         """
         Retrieve all accessories.
+        Example JSON response:
+        {
+          "accessories": [
+            {
+              "id": 1,
+              "name": "English Saddle",
+              "type": {
+                "id": 1,
+                "type_name": "Saddles"
+              }
+            },
+            {
+              "id": 2,
+              "name": "Western Bridle",
+              "type": {
+                "id": 2,
+                "type_name": "Bridles"
+              }
+            }
+          ]
+        }
         """
         try:
             accessories = Accessories.objects.select_related('type').values(

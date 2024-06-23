@@ -414,7 +414,6 @@ class ClassesView:
             return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-        pass
 
     @staticmethod
     @csrf_exempt

@@ -54,7 +54,7 @@ class Horses(models.Model):
         db_table = 'Horses'
 
 
-class HorseAccessories(models.Model):
+class HorsesAccessories(models.Model):
     horse = models.ForeignKey(Horses, on_delete=models.CASCADE)
     accessory = models.ForeignKey(Accessories, on_delete=models.CASCADE)
 
@@ -118,7 +118,7 @@ class Employees(models.Model):
         db_table = 'Employees'
 
 
-class PositionHistory(models.Model):
+class PositionsHistory(models.Model):
     employee = models.ForeignKey(Employees, on_delete=models.CASCADE)
     position = models.ForeignKey(Positions, on_delete=models.CASCADE)
     date_start = models.DateField()

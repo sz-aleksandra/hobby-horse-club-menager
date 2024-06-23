@@ -30,7 +30,9 @@ from horses_database.views.riders_view import *
 from horses_database.views.employees_view import *
 from horses_database.views.tournaments_view import *
 from horses_database.views.classes_view import *
-#from horses_database.views.tournament_participants_view import *
+from horses_database.views.tournament_participants_view import *
+from horses_database.views.horses_accessories_view import *
+from horses_database.views.positions_history_view import *
 
 
 urlpatterns = [
@@ -38,6 +40,7 @@ urlpatterns = [
 
     path('accessories/', AccessoriesView.get_all_accessories, name='get_all_accessories'),
     path('accessories/get_all/', AccessoriesView.get_all_accessories, name='get_all_accessories'),
+    path('accessories/get_by_id/', AccessoriesView.get_accessory_by_id, name='get_accessory_by_id'),
     path('accessories/add/', AccessoriesView.add_new_accessories, name='add_accessory'),
     path('accessories/update/', AccessoriesView.update_accessories, name='update_accessory'),
     path('accessories/delete/', AccessoriesView.delete_accessories, name='delete_accessory'),
@@ -104,7 +107,7 @@ urlpatterns = [
     path('riders/', RidersView.get_all_riders, name='get_all_riders'),
     path('riders/get_all', RidersView.get_all_riders, name='get_all_riders'),
     path('riders/get_by_id/', RidersView.get_rider_by_id, name='get_rider_by_id'),
-	path('riders/get_by_username/', RidersView.get_rider_by_username, name='get_rider_by_username'),
+    path('riders/get_by_username/', RidersView.get_rider_by_username, name='get_rider_by_username'),
     path('riders/add/', RidersView.add_rider, name='add_rider'),
     path('riders/update/', RidersView.update_rider, name='update_rider'),
     path('riders/delete/', RidersView.delete_rider, name='delete_rider'),
@@ -130,6 +133,24 @@ urlpatterns = [
     path('classes/update/', ClassesView.update_class, name='update_class'),
     path('classes/delete/', ClassesView.delete_class, name='delete_class'),
 
-    #path('tournament_participants/', TournamentParticipantsView.get_all_tournaments_participants, name='get_all_tournaments_participants'),
-    #path('tournament_participants/get_all', TournamentParticipantsView.get_all_tournaments_participants, name='get_all_tournaments_participants'),
+    path('tournament_participants/', TournamentParticipantsView.get_all_tournaments_participants, name='get_all_tournaments_participants'),
+    path('tournament_participants/get_all', TournamentParticipantsView.get_all_tournaments_participants, name='get_all_tournaments_participants'),
+    path('tournament_participants/get_by_id', TournamentParticipantsView.get_tournament_participant_by_id, name='get_tournament_participant_by_id'),
+    path('tournament_participants/add/', TournamentParticipantsView.add_tournament, name='add_tournament_participant'),
+    path('tournament_participants/update/', TournamentParticipantsView.update_tournament, name='update_tournament_participant'),
+    path('tournament_participants/delete/', TournamentParticipantsView.delete_tournament_participant, name='delete_tournament_participant'),
+
+    path('horses_accessories/', HorsesAccessoriesView.get_all_horses_accessories, name='get_all_horses_accessories'),
+    path('horses_accessories/get_all', HorsesAccessoriesView.get_all_horses_accessories, name='get_all_horses_accessories'),
+    path('horses_accessories/get_by_id', HorsesAccessoriesView.get_horses_accessories_by_id, name='get_horses_accessory_by_id'),
+    path('horses_accessories/add/', HorsesAccessoriesView.add_horses_accessory, name='add_horses_accessory'),
+    path('horses_accessories/update/', HorsesAccessoriesView.update_horse_accessory, name='update_horses_accessory'),
+    path('horses_accessories/delete/', HorsesAccessoriesView.delete_horses_accessory, name='delete_horses_accessory'),
+
+    path('positions_history/', PositionsHistoryView.get_all_positions_history, name='get_all_positions_history'),
+    path('positions_history/get_all', PositionsHistoryView.get_all_positions_history, name='get_all_positions_history'),
+    path('positions_history/get_by_id', PositionsHistoryView.get_position_history_by_id, name='get_horses_accessory_by_id'),
+    path('positions_history/add/', PositionsHistoryView.add_position_history, name='add_horses_accessory'),
+    path('positions_history/update/', PositionsHistoryView.update_position_history, name='update_horses_accessory'),
+    path('positions_history/delete/', PositionsHistoryView.delete_positions_history, name='delete_horses_accessory'),
 ]

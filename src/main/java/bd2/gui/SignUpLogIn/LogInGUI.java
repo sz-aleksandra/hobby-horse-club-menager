@@ -1,7 +1,12 @@
 package bd2.gui.SignUpLogIn;
 
 import javax.swing.*;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +16,7 @@ import bd2.gui.components.LogoPanel;
 import bd2.gui.components.RoundedButtonDefault;
 import bd2.logic.ErrorCodes;
 
+import okhttp3.*;
 
 public class LogInGUI extends BaseGUI {
 
@@ -141,26 +147,44 @@ public class LogInGUI extends BaseGUI {
         statusLabel.setForeground(statusNeutral);
         statusLabel.paintImmediately(statusLabel.getVisibleRect());
 
-        // [MOCK], logging in as default Rider
-        /*ClientLogin ul = new ClientLogin(usernameText, passwordText);
-        Client user = ul.getUserAccount();
-        List<Integer> errorCodesUser = ul.getErrorCodes();*/
-        List<Integer> errorCodesUser = new ArrayList<>();
+		OkHttpClient client = new OkHttpClient();
 
-        // Successful log in
-        if (errorCodesUser.isEmpty()) {
-            //[MOCK]
-            //new HomePageGUI(user.getClientId(), "Rider").createGUI();
-            new HomePageGUI(1, "Rider").createGUI();
-            frame.setVisible(false);
-        } else {
-            statusLabelText = "<html>";
-            statusLabelText = statusLabelText + ErrorCodes.getErrorDescription(errorCodesUser.get(0));
-            statusLabelText = statusLabelText + "</html>";
-            statusLabel.setText(statusLabelText);
-            statusLabel.setForeground(statusWrong);
-            statusLabel.paintImmediately(statusLabel.getVisibleRect());
-        }
+        String json = "{\"username\":\"" + usernameText + "\",\"password\":\"" + passwordText + "\"}";
+
+        RequestBody body = RequestBody.create(
+                json, MediaType.get("application/json; charset=utf-8"));
+
+        // Create the request
+        Request request = new Request.Builder()
+                .url("http://localhost:8000/riders/get_by_username/")
+                .post(body)
+                .build();
+
+        // Send the request and get the response
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    System.out.println("Response Body: " + responseBody);
+
+                    Gson gson = new Gson();
+                    JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
+                    
+                    int id = jsonObject.get("id").getAsInt();
+
+					new HomePageGUI(1, "Rider").createGUI();
+            		frame.setVisible(false);
+                } else {
+                    System.err.println("Login failed: " + response.body().string());
+                }
+            }
+        });
     }
 
     void logInEmployeeClickedAction() {

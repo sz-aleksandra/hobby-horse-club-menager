@@ -1,7 +1,6 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction, IntegrityError, DatabaseError
-from django.contrib.auth.hashers import check_password
 from horses_database.models import Riders, Members, Groups, Horses, Addresses, Licences
 import json
 
@@ -281,42 +280,6 @@ class RidersView:
             ]
 
             return JsonResponse({'riders': data}, status=200)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
-        except KeyError as e:
-            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-    @staticmethod
-    @csrf_exempt
-    def get_rider_by_username(request):
-        try:
-            data = json.loads(request.body)
-            username = data.get('username')
-            password_from_java = data.get('password')
-            if not username or not password_from_java:
-                return JsonResponse({'error': 'Username and password are required'}, status=400)
-
-            rider = Riders.objects.filter(member__username=username).select_related('member', 'group', 'horse').values(
-                'id',
-                'member_id', 'member__name', 'member__surname', 'member__username', 'member__password', 'member__date_of_birth',
-                'member__address_id', 'member__address__country', 'member__address__city', 'member__address__street',
-                'member__address__street_no', 'member__address__postal_code', 'member__phone_number', 'member__email',
-                'member__is_active', 'member__licence__id', 'member__licence__licence_level', 'parent_consent',
-                'group_id', 'group__name', 'group__max_group_members',
-                'horse_id', 'horse__breed', 'horse__height', 'horse__color', 'horse__eye_color', 'horse__age',
-                'horse__origin', 'horse__hairstyle'
-            ).first()
-            
-            if not rider:
-                return JsonResponse({'error': 'Rider not found'}, status=404)
-
-            id = rider['id']
-            password = rider['member__password']
-            
-            return JsonResponse({'password': password, 'id': id}, status=200)
-            
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:

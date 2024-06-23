@@ -112,6 +112,7 @@ urlpatterns = [
     path('riders/delete/', RidersView.delete_rider, name='delete_rider'),
     path('riders/login_rider/', RidersView.login_rider, name='login_rider'),
     path('riders/get_classes_for_rider/', RidersView.get_classes_for_rider, name='get_classes_for_rider'),
+    path('riders/deactivate_account/', RidersView.deactivate_account, name='deactivate_rider_account'),
 
     path('employees/', EmployeesView.get_all_employees, name='get_all_employees'),
     path('employees/get_all', EmployeesView.get_all_employees, name='get_all_employees'),
@@ -121,6 +122,7 @@ urlpatterns = [
     path('employees/delete/', EmployeesView.delete_employee, name='delete_employee'),
     path('employees/login_employee/', EmployeesView.login_employee, name='login_employee'),
     path('employees/login_owner/', EmployeesView.login_owner, name='login_owner'),
+    path('employees/deactivate_account/', EmployeesView.deactivate_account, name='deactivate_employee_account'),
 
     path('tournaments/', TournamentsView.get_all_tournaments, name='get_all_tournaments'),
     path('tournaments/get_all', TournamentsView.get_all_tournaments, name='get_all_tournaments'),

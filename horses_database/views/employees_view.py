@@ -535,7 +535,7 @@ class EmployeesView:
                 return JsonResponse({'error': 'No login or password provided'}, status=400)
 
             try:
-                employee = Employees.objects.get(member__username=login)
+                employee = Employees.objects.get(member__username=login, member__is_active=True)
             except Employees.DoesNotExist:
                 return JsonResponse({'error': 'Invalid login'}, status=401)
 
@@ -578,7 +578,7 @@ class EmployeesView:
                 return JsonResponse({'error': 'No login or password provided'}, status=400)
 
             try:
-                employee = Employees.objects.get(member__username=login, position__name='Owner')
+                employee = Employees.objects.get(member__username=login, position__name='Owner', member__is_active=True)
             except Employees.DoesNotExist:
                 return JsonResponse({'error': 'Invalid login'}, status=401)
 
@@ -586,6 +586,46 @@ class EmployeesView:
                 return JsonResponse({'error': 'Invalid password'}, status=401)
 
             return JsonResponse({'id': employee.id}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    @staticmethod
+    @csrf_exempt
+    def deactivate_account(request):
+        """
+        Example JSON request:
+        {
+            "id": 1
+        }
+        Example JSON response:
+        {
+            'message': 'Successfully deactivated account',
+            'id': 1
+        }
+        """
+        try:
+            data = json.loads(request.body)
+            employee_id = data.get('id')
+
+            if not employee_id:
+                return JsonResponse({'error': 'No id provided'}, status=400)
+            try:
+                employee = Employees.objects.get(id=employee_id)
+            except Employees.DoesNotExist:
+                return JsonResponse({'error': 'Invalid employee id'}, status=401)
+
+            employee.member.is_active = False
+            employee.member.save()
+            return JsonResponse({'message': 'Successfully deactivated account', 'id': employee.id}, status=200)
+
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:

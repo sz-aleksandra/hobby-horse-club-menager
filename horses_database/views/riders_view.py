@@ -611,7 +611,7 @@ class RidersView:
                 return JsonResponse({'error': 'No login or password provided'}, status=400)
 
             try:
-                rider = Riders.objects.get(member__username=login)
+                rider = Riders.objects.get(member__username=login, member__is_active=True)
             except Riders.DoesNotExist:
                 return JsonResponse({'error': 'Invalid login'}, status=401)
 
@@ -807,4 +807,43 @@ class RidersView:
             return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-        pass
+
+    @staticmethod
+    @csrf_exempt
+    def deactivate_account(request):
+        """
+        Example JSON request:
+        {
+            "id": 1
+        }
+        Example JSON response:
+        {
+            'message': 'Successfully deactivated account',
+            'id': 1
+        }
+        """
+        try:
+            data = json.loads(request.body)
+            rider_id = data.get('id')
+
+            if not rider_id:
+                return JsonResponse({'error': 'No id provided'}, status=400)
+            try:
+                rider = Riders.objects.get(id=rider_id)
+            except Riders.DoesNotExist:
+                return JsonResponse({'error': 'Invalid rider id'}, status=401)
+
+            rider.member.is_active = False
+            rider.member.save()
+            return JsonResponse({'message': 'Successfully deactivated account', 'id': rider.id}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

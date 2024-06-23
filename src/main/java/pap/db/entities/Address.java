@@ -2,9 +2,7 @@ package pap.db.entities;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import jakarta.persistence.*;
-
 import java.util.List;
 
 @Entity
@@ -29,23 +27,4 @@ public class Address {
     @Column(name = "street", nullable = false)
     private String street;
 
-    @Basic
-    @Column(name = "postal_code", nullable = false)
-    private String postalCode;
-
-    @Basic
-    @Column(name = "street_no", nullable = false)
-    private String streetNumber;
-
-    @OneToMany
-    @JoinColumn(name = "address_id")
-    private List<Client> clients;
-
-    @OneToMany
-    @JoinColumn(name = "address_id")
-    private List<Owner> owners;
-
-    @OneToMany
-    @JoinColumn(name = "address_id")
-    private List<Hotel> hotels;
 }

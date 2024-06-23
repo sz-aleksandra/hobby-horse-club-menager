@@ -17,6 +17,7 @@ class TournamentsView:
                 {
                     "id": 1,
                     "name": "Championship",
+                    "date": "1990-01-01",
                     "address": {
                         "id": 1,
                         "country": "USA",
@@ -76,7 +77,7 @@ class TournamentsView:
                 'address', 'judge__member__address', 'judge__member__licence',
                 'judge__position__licence', 'judge__position__coaching_licence'
             ).values(
-                'id', 'name', 'address_id', 'address__country', 'address__city', 'address__street',
+                'id', 'name', 'date', 'address_id', 'address__country', 'address__city', 'address__street',
                 'address__street_no', 'address__postal_code', 'judge_id', 'judge__member_id',
                 'judge__member__name', 'judge__member__surname', 'judge__member__username',
                 'judge__member__date_of_birth', 'judge__member__address_id', 'judge__member__address__country',
@@ -96,6 +97,7 @@ class TournamentsView:
                 tournament_data = {
                     "id": tournament['id'],
                     "name": tournament['name'],
+                    "date": tournament['date'],
                     "address": {
                         "id": tournament['address_id'],
                         "country": tournament['address__country'],
@@ -173,6 +175,7 @@ class TournamentsView:
                 {
                     "id": 1,
                     "name": "Championship",
+                    "date": "1990-01-01",
                     "address": {
                         "id": 1,
                         "country": "USA",
@@ -236,7 +239,7 @@ class TournamentsView:
                 'address', 'judge__member__address', 'judge__member__licence',
                 'judge__position__licence', 'judge__position__coaching_licence'
             ).values(
-                'id', 'name', 'address_id', 'address__country', 'address__city', 'address__street',
+                'id', 'name', 'date', 'address_id', 'address__country', 'address__city', 'address__street',
                 'address__street_no', 'address__postal_code', 'judge_id', 'judge__member_id',
                 'judge__member__name', 'judge__member__surname', 'judge__member__username',
                 'judge__member__date_of_birth', 'judge__member__address_id', 'judge__member__address__country',
@@ -255,6 +258,7 @@ class TournamentsView:
                 tournament_data = {
                     "id": tournament['id'],
                     "name": tournament['name'],
+                    "date": tournament['date'],
                     "address": {
                         "id": tournament['address_id'],
                         "country": tournament['address__country'],
@@ -327,6 +331,7 @@ class TournamentsView:
             "tournaments": [
                 {
                     "name": "Championship",
+                    "date": "1990-01-01",
                     "address": {
                         "country": "USA",
                         "city": "New York",
@@ -366,7 +371,9 @@ class TournamentsView:
                         tournament_data['address_id'] = address.id
 
                     # Create Tournament object
-                    new_tournament = Tournaments.objects.create(name=tournament_data.get('name'), address_id=address.id,
+                    new_tournament = Tournaments.objects.create(name=tournament_data.get('name'),
+                                                                date=tournament_data.get('date'),
+                                                                address_id=address.id,
                                                                 judge_id=judge_id)
                     new_tournament_ids.append(new_tournament.id)
 
@@ -392,6 +399,7 @@ class TournamentsView:
                 {
                     "id": 1
                     "name": "Championship",
+                    "date": "1990-01-01",
                     "address": {
                         "id": 1
                         "country": "USA",
@@ -445,6 +453,7 @@ class TournamentsView:
                     # Update Tournament
                     Tournaments.objects.filter(id=tournament_id).update(
                         name=tournament_data.get('name'),
+                        date=tournament_data.get('date'),
                         address_id=address_id,
                         judge_id=judge_id)
                     updated_ids.append(tournament_id)

@@ -27,6 +27,7 @@ class TournamentsViewTests(TestCase):
             "tournaments": [
                 {
                     "name": "Test Tournament",
+                    "date": "1990-01-01",
                     "address": {
                         "country": "USA",
                         "city": "New York",

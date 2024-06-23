@@ -20,6 +20,7 @@ class TournamentParticipantsView:
                     "tournament": {
                         "id": 1,
                         "name": "Championship",
+                        "date": "1990-01-01",
                         "address": {
                             "id": 1,
                             "country": "USA",
@@ -104,7 +105,7 @@ class TournamentParticipantsView:
                 'tournament__judge__position__licence', 'tournament__judge__position__coaching_licence',
                 'contestant__address', 'contestant__licence'
             ).values(
-                'id', 'tournament_id', 'tournament__name', 'tournament__address_id', 'tournament__address__country',
+                'id', 'tournament_id', 'tournament__name', 'tournament__date', 'tournament__address_id', 'tournament__address__country',
                 'tournament__address__city', 'tournament__address__street', 'tournament__address__street_no',
                 'tournament__address__postal_code', 'tournament__judge_id', 'tournament__judge__member_id',
                 'tournament__judge__member__name', 'tournament__judge__member__surname',
@@ -133,6 +134,7 @@ class TournamentParticipantsView:
                     "tournament": {
                         "id": participant['tournament_id'],
                         "name": participant['tournament__name'],
+                        "date": participant['tournament__date'],
                         "address": {
                             "id": participant['tournament__address_id'],
                             "country": participant['tournament__address__country'],
@@ -237,6 +239,7 @@ class TournamentParticipantsView:
                     "tournament": {
                         "id": 1,
                         "name": "Championship",
+                        "date": "1990-01-01",
                         "address": {
                             "id": 1,
                             "country": "USA",
@@ -325,7 +328,7 @@ class TournamentParticipantsView:
                 'tournament__judge__position__licence', 'tournament__judge__position__coaching_licence',
                 'contestant__address', 'contestant__licence'
             ).values(
-                'id', 'tournament_id', 'tournament__name', 'tournament__address_id', 'tournament__address__country',
+                'id', 'tournament_id', 'tournament__name', 'tournament__date', 'tournament__address_id', 'tournament__address__country',
                 'tournament__address__city', 'tournament__address__street', 'tournament__address__street_no',
                 'tournament__address__postal_code', 'tournament__judge_id', 'tournament__judge__member_id',
                 'tournament__judge__member__name', 'tournament__judge__member__surname',
@@ -354,6 +357,7 @@ class TournamentParticipantsView:
                     "tournament": {
                         "id": participant['tournament_id'],
                         "name": participant['tournament__name'],
+                        "date": participant['tournament__date'],
                         "address": {
                             "id": participant['tournament__address_id'],
                             "country": participant['tournament__address__country'],

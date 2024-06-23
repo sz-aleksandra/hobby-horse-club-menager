@@ -21,7 +21,7 @@ class TournamentParticipantsViewTests(TestCase):
                                                  speciality="Jumping")
         self.employee1 = Employees.objects.create(member=self.member, position=self.position, salary=1000,
                                                   date_employed=datetime(1985, 5, 15))
-        self.tournament = Tournaments.objects.create(name="Test Tournament", address=self.address, judge=self.employee1)
+        self.tournament = Tournaments.objects.create(name="Test Tournament", date=datetime(1990, 1, 1), address=self.address, judge=self.employee1)
         self.address = Addresses.objects.create(country="USA", city="New York", street="Broadway", street_no="123",
                                                 postal_code="10001")
 

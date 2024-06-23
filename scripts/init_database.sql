@@ -16,24 +16,24 @@ CREATE TABLE Horses (
 );
 
 CREATE TABLE Accessories (
-                             id INT AUTO_INCREMENT PRIMARY KEY,
-                             name VARCHAR(255) NOT NULL
+                            id INT AUTO_INCREMENT PRIMARY KEY,
+                            name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE Members (
-                         id INT AUTO_INCREMENT PRIMARY KEY,
-                         name VARCHAR(255) NOT NULL,
-                         surname VARCHAR(255) NOT NULL,
-                         username VARCHAR(255) NOT NULL,
-                         password VARCHAR(255) NOT NULL,
-                         date_of_birth DATE NOT NULL,
-                         address_id INT NOT NULL,
-                         phone_number VARCHAR(20),
-                         email VARCHAR(255),
-                         is_active BOOLEAN NOT NULL DEFAULT TRUE,
-                         licence_id INT,
-                         FOREIGN KEY (address_id) REFERENCES Addresses(id),
-                         FOREIGN KEY (licence_id) REFERENCES Licences(id)
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        surname VARCHAR(255) NOT NULL,
+                        username VARCHAR(255) NOT NULL,
+                        password VARCHAR(255) NOT NULL,
+                        date_of_birth DATE NOT NULL,
+                        address_id INT NOT NULL,
+                        phone_number VARCHAR(20),
+                        email VARCHAR(255),
+                        is_active BOOLEAN NOT NULL DEFAULT TRUE,
+                        licence_id INT,
+                        FOREIGN KEY (address_id) REFERENCES Addresses(id),
+                        FOREIGN KEY (licence_id) REFERENCES Licences(id)
 );
 
 CREATE TABLE Riders (
@@ -46,38 +46,37 @@ CREATE TABLE Riders (
                         FOREIGN KEY (group_id) REFERENCES Groups(id),
                         FOREIGN KEY (horse_id) REFERENCES Horses(id)
 );
-);
 
 CREATE TABLE Employees (
-                           id INT AUTO_INCREMENT PRIMARY KEY,
-                           member_id INT NOT NULL,
-                           position_id INT NOT NULL,
-                           salary DECIMAL(10, 2) NOT NULL,
-                           date_employed DATE NOT NULL,
-                           FOREIGN KEY (member_id) REFERENCES Members(id),
-                           FOREIGN KEY (position_id) REFERENCES Positions(id)
+                            id INT AUTO_INCREMENT PRIMARY KEY,
+                            member_id INT NOT NULL,
+                            position_id INT NOT NULL,
+                            salary DECIMAL(10, 2) NOT NULL,
+                            date_employed DATE NOT NULL,
+                            FOREIGN KEY (member_id) REFERENCES Members(id),
+                            FOREIGN KEY (position_id) REFERENCES Positions(id)
 );
 
 CREATE TABLE Positions (
-                           id INT AUTO_INCREMENT PRIMARY KEY,
-                           name VARCHAR(255) NOT NULL,
-                           salary_min DECIMAL(10, 2) NOT NULL,
-                           salary_max DECIMAL(10, 2) NOT NULL,
-                           licence_id INT,
-                           coaching_licence_id INT,
-                           speciality VARCHAR(255),
-                           FOREIGN KEY (licence_id) REFERENCES Licences(id),
-                           FOREIGN KEY (coaching_licence_id) REFERENCES Licences(id)
+                            id INT AUTO_INCREMENT PRIMARY KEY,
+                            name VARCHAR(255) NOT NULL,
+                            salary_min DECIMAL(10, 2) NOT NULL,
+                            salary_max DECIMAL(10, 2) NOT NULL,
+                            licence_id INT,
+                            coaching_licence_id INT,
+                            speciality VARCHAR(255),
+                            FOREIGN KEY (licence_id) REFERENCES Licences(id),
+                            FOREIGN KEY (coaching_licence_id) REFERENCES Licences(id)
 );
 
 CREATE TABLE Positions_History (
-                                   id INT AUTO_INCREMENT PRIMARY KEY,
-                                   employee_id INT NOT NULL,
-                                   position_id INT NOT NULL,
-                                   date_start DATE NOT NULL,
-                                   date_end DATE,
-                                   FOREIGN KEY (employee_id) REFERENCES Employees(id),
-                                   FOREIGN KEY (position_id) REFERENCES Positions(id)
+                                    id INT AUTO_INCREMENT PRIMARY KEY,
+                                    employee_id INT NOT NULL,
+                                    position_id INT NOT NULL,
+                                    date_start DATE NOT NULL,
+                                    date_end DATE,
+                                    FOREIGN KEY (employee_id) REFERENCES Employees(id),
+                                    FOREIGN KEY (position_id) REFERENCES Positions(id)
 );
 
 CREATE TABLE Groups (
@@ -89,52 +88,55 @@ CREATE TABLE Groups (
 );
 
 CREATE TABLE Classes (
-                         id INT AUTO_INCREMENT PRIMARY KEY,
-                         type VARCHAR(255) NOT NULL,
-                         date DATE NOT NULL,
-                         trainer_id INT,
-                         group_id INT,
-                         stable_id INT,
-                         FOREIGN KEY (trainer_id) REFERENCES Members(id),
-                         FOREIGN KEY (group_id) REFERENCES Groups(id),
-                         FOREIGN KEY (stable_id) REFERENCES Stables(id)
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        type VARCHAR(255) NOT NULL,
+                        date DATE NOT NULL,
+                        trainer_id INT,
+                        group_id INT,
+                        stable_id INT,
+                        FOREIGN KEY (trainer_id) REFERENCES Members(id),
+                        FOREIGN KEY (group_id) REFERENCES Groups(id),
+                        FOREIGN KEY (stable_id) REFERENCES Stables(id)
 );
 
 CREATE TABLE Stables (
-                         id INT AUTO_INCREMENT PRIMARY KEY,
-                         name VARCHAR(255) NOT NULL,
-                         address_id INT NOT NULL,
-                         FOREIGN KEY (address_id) REFERENCES Addresses(id)
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        address_id INT NOT NULL,
+                        FOREIGN KEY (address_id) REFERENCES Addresses(id)
 );
 
 CREATE TABLE Addresses (
-                           id INT AUTO_INCREMENT PRIMARY KEY,
-                           country VARCHAR(255) NOT NULL,
-                           city VARCHAR(255) NOT NULL,
-                           street VARCHAR(255) NOT NULL,
-                           street_no VARCHAR(50) NOT NULL,
-                           postal_code VARCHAR(20) NOT NULL
+                            id INT AUTO_INCREMENT PRIMARY KEY,
+                            country VARCHAR(255) NOT NULL,
+                            city VARCHAR(255) NOT NULL,
+                            street VARCHAR(255) NOT NULL,
+                            street_no VARCHAR(50) NOT NULL,
+                            postal_code VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE Tournaments (
-                             id INT AUTO_INCREMENT PRIMARY KEY,
-                             name VARCHAR(255) NOT NULL,
-                             address_id INT NOT NULL,
-                             FOREIGN KEY (address_id) REFERENCES Addresses(id)
+                            id INT AUTO_INCREMENT PRIMARY KEY,
+                            name VARCHAR(255) NOT NULL,
+                            address_id INT NOT NULL,
+                            
+                            judge_id INT,
+                            FOREIGN KEY (address_id) REFERENCES Addresses(id),
+                            FOREIGN KEY (judge_id) REFERENCES Employees(id)
 );
 
 CREATE TABLE Tournament_Participants (
-                                         id INT AUTO_INCREMENT PRIMARY KEY,
-                                         tournament_id INT NOT NULL,
-                                         contestant_id INT NOT NULL,
-                                         contestant_place INT,
-                                         FOREIGN KEY (tournament_id) REFERENCES Tournaments(id),
-                                         FOREIGN KEY (contestant_id) REFERENCES Members(id)
+                                        id INT AUTO_INCREMENT PRIMARY KEY,
+                                        tournament_id INT NOT NULL,
+                                        contestant_id INT NOT NULL,
+                                        contestant_place INT,
+                                        FOREIGN KEY (tournament_id) REFERENCES Tournaments(id),
+                                        FOREIGN KEY (contestant_id) REFERENCES Members(id)
 );
 
 CREATE TABLE Licences (
-                          id INT AUTO_INCREMENT PRIMARY KEY,
-                          licence_level VARCHAR(255) NOT NULL
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        licence_level VARCHAR(255) NOT NULL
 );
 
 ''' Test data '''

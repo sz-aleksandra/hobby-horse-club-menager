@@ -10,78 +10,78 @@ class ClassesView:
     @csrf_exempt
     def get_all_classes(request):
         """
-                Get all classes.
-                Example JSON request: N/A
-                Example JSON response:
+        Get all classes.
+        Example JSON request: N/A
+        Example JSON response:
+        {
+            "classes": [
                 {
-                    "classes": [
-                        {
+                    "id": 1,
+                    "type": "Training",
+                    "date": "2023-06-15",
+                    "trainer": {
+                        "id": 1,
+                        "member": {
                             "id": 1,
-                            "type": "Training",
-                            "date": "2023-06-15",
-                            "trainer": {
+                            "name": "John",
+                            "surname": "Doe",
+                            "username": "johndoe",
+                            "date_of_birth": "1990-01-01",
+                            "address": {
                                 "id": 1,
-                                "member": {
-                                    "id": 1,
-                                    "name": "John",
-                                    "surname": "Doe",
-                                    "username": "johndoe",
-                                    "date_of_birth": "1990-01-01",
-                                    "address": {
-                                        "id": 1,
-                                        "country": "USA",
-                                        "city": "New York",
-                                        "street": "Broadway",
-                                        "street_no": "123",
-                                        "postal_code": "10001"
-                                    },
-                                    "phone_number": "+1234567890",
-                                    "email": "john.doe@example.com",
-                                    "is_active": True,
-                                    "licence": {
-                                        "id": 1,
-                                        "licence_level": "A"
-                                    }
-                                },
-                                "position": {
-                                    "id": 1,
-                                    "name": "Head Coach",
-                                    "salary_min": "5000.00",
-                                    "salary_max": "8000.00",
-                                    "licence": {
-                                        "id": 1,
-                                        "licence_level": "Advanced"
-                                    },
-                                    "coaching_licence": {
-                                        "id": 2,
-                                        "licence_level": "Basic"
-                                    },
-                                    "speciality": "Jumping"
-                                },
-                                "salary": "1000",
-                                "date_employed": "1985-05-15"
+                                "country": "USA",
+                                "city": "New York",
+                                "street": "Broadway",
+                                "street_no": "123",
+                                "postal_code": "10001"
                             },
-                            "group": {
+                            "phone_number": "+1234567890",
+                            "email": "john.doe@example.com",
+                            "is_active": True,
+                            "licence": {
                                 "id": 1,
-                                "name": "Jumpers",
-                                "max_group_members": 10
-                            },
-                            "stable": {
-                                "id": 1,
-                                "name": "Green Pastures Stables",
-                                "address": {
-                                    "id": 1,
-                                    "country": "United States",
-                                    "city": "New York",
-                                    "street": "Broadway",
-                                    "street_no": "123",
-                                    "postal_code": "10001"
-                                }
+                                "licence_level": "A"
                             }
+                        },
+                        "position": {
+                            "id": 1,
+                            "name": "Head Coach",
+                            "salary_min": "5000.00",
+                            "salary_max": "8000.00",
+                            "licence": {
+                                "id": 1,
+                                "licence_level": "Advanced"
+                            },
+                            "coaching_licence": {
+                                "id": 2,
+                                "licence_level": "Basic"
+                            },
+                            "speciality": "Jumping"
+                        },
+                        "salary": "1000",
+                        "date_employed": "1985-05-15"
+                    },
+                    "group": {
+                        "id": 1,
+                        "name": "Jumpers",
+                        "max_group_members": 10
+                    },
+                    "stable": {
+                        "id": 1,
+                        "name": "Green Pastures Stables",
+                        "address": {
+                            "id": 1,
+                            "country": "United States",
+                            "city": "New York",
+                            "street": "Broadway",
+                            "street_no": "123",
+                            "postal_code": "10001"
                         }
-                    ]
+                    }
                 }
-                """
+            ]
+        }
+        """
         try:
             classes = Classes.objects.select_related(
                 'trainer__member__address', 'trainer__member__licence',
@@ -159,10 +159,14 @@ class ClassesView:
 
             return JsonResponse({'classes': classes_list}, status=200)
 
-        except IntegrityError:
-            return JsonResponse({'error': 'Integrity error'}, status=400)
-        except DatabaseError:
-            return JsonResponse({'error': 'Database error'}, status=500)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -170,82 +174,82 @@ class ClassesView:
     @csrf_exempt
     def get_class_by_id(request):
         """
-                Get classes with given ID
-                Example JSON request:
-                {
-                    "ids": [1]
-                }
+        Get classes with given ID
+        Example JSON request:
+        {
+            "ids": [1]
+        }
 
-                Example JSON response:
+        Example JSON response:
+        {
+            "classes": [
                 {
-                    "classes": [
-                        {
+                    "id": 1,
+                    "type": "Training",
+                    "date": "2023-06-15",
+                    "trainer": {
+                        "id": 1,
+                        "member": {
                             "id": 1,
-                            "type": "Training",
-                            "date": "2023-06-15",
-                            "trainer": {
+                            "name": "John",
+                            "surname": "Doe",
+                            "username": "johndoe",
+                            "date_of_birth": "1990-01-01",
+                            "address": {
                                 "id": 1,
-                                "member": {
-                                    "id": 1,
-                                    "name": "John",
-                                    "surname": "Doe",
-                                    "username": "johndoe",
-                                    "date_of_birth": "1990-01-01",
-                                    "address": {
-                                        "id": 1,
-                                        "country": "USA",
-                                        "city": "New York",
-                                        "street": "Broadway",
-                                        "street_no": "123",
-                                        "postal_code": "10001"
-                                    },
-                                    "phone_number": "+1234567890",
-                                    "email": "john.doe@example.com",
-                                    "is_active": True,
-                                    "licence": {
-                                        "id": 1,
-                                        "licence_level": "A"
-                                    }
-                                },
-                                "position": {
-                                    "id": 1,
-                                    "name": "Head Coach",
-                                    "salary_min": "5000.00",
-                                    "salary_max": "8000.00",
-                                    "licence": {
-                                        "id": 1,
-                                        "licence_level": "Advanced"
-                                    },
-                                    "coaching_licence": {
-                                        "id": 2,
-                                        "licence_level": "Basic"
-                                    },
-                                    "speciality": "Jumping"
-                                },
-                                "salary": "1000",
-                                "date_employed": "1985-05-15"
+                                "country": "USA",
+                                "city": "New York",
+                                "street": "Broadway",
+                                "street_no": "123",
+                                "postal_code": "10001"
                             },
-                            "group": {
+                            "phone_number": "+1234567890",
+                            "email": "john.doe@example.com",
+                            "is_active": True,
+                            "licence": {
                                 "id": 1,
-                                "name": "Jumpers",
-                                "max_group_members": 10
-                            },
-                            "stable": {
-                                "id": 1,
-                                "name": "Green Pastures Stables",
-                                "address": {
-                                    "id": 1,
-                                    "country": "United States",
-                                    "city": "New York",
-                                    "street": "Broadway",
-                                    "street_no": "123",
-                                    "postal_code": "10001"
-                                }
+                                "licence_level": "A"
                             }
+                        },
+                        "position": {
+                            "id": 1,
+                            "name": "Head Coach",
+                            "salary_min": "5000.00",
+                            "salary_max": "8000.00",
+                            "licence": {
+                                "id": 1,
+                                "licence_level": "Advanced"
+                            },
+                            "coaching_licence": {
+                                "id": 2,
+                                "licence_level": "Basic"
+                            },
+                            "speciality": "Jumping"
+                        },
+                        "salary": "1000",
+                        "date_employed": "1985-05-15"
+                    },
+                    "group": {
+                        "id": 1,
+                        "name": "Jumpers",
+                        "max_group_members": 10
+                    },
+                    "stable": {
+                        "id": 1,
+                        "name": "Green Pastures Stables",
+                        "address": {
+                            "id": 1,
+                            "country": "United States",
+                            "city": "New York",
+                            "street": "Broadway",
+                            "street_no": "123",
+                            "postal_code": "10001"
                         }
-                    ]
+                    }
                 }
-                """
+            ]
+        }
+        """
         try:
             data = json.loads(request.body)
             ids = data.get('ids', [])
@@ -327,10 +331,14 @@ class ClassesView:
 
             return JsonResponse({'classes': classes_list}, status=200)
 
-        except IntegrityError:
-            return JsonResponse({'error': 'Integrity error'}, status=400)
-        except DatabaseError:
-            return JsonResponse({'error': 'Database error'}, status=500)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -378,7 +386,11 @@ class ClassesView:
         """
         try:
             data = json.loads(request.body)
-            classes = data.get('members', [])
+            classes = data.get('classes', [])
+
+            if not classes:
+                return JsonResponse({'error': 'No classes provided'}, status=400)
+
             new_classes_ids = []
             with transaction.atomic():
                 for class_data in classes:
@@ -461,7 +473,11 @@ class ClassesView:
         """
         try:
             data = json.loads(request.body)
-            classes = data.get('members', [])
+            classes = data.get('classes', [])
+
+            if not classes:
+                return JsonResponse({'error': 'No classes provided'}, status=400)
+
             new_classes_ids = []
             with transaction.atomic():
                 for class_data in classes:
@@ -484,10 +500,10 @@ class ClassesView:
                     if not Stables.objects.filter(id=stable_id).exists():
                         return JsonResponse({'error': f'Stable with ID {stable_id} does not exist'}, status=400)
 
-                    new_class = Classes.objects.filter(id=class_id).update(type=type, date=date, trainer_id=trainer_id, group_id=group_id, stable_id=stable_id)
-                    new_classes_ids.append(new_class.id)
+                    Classes.objects.filter(id=class_id).update(type=type, date=date, trainer_id=trainer_id, group_id=group_id, stable_id=stable_id)
+                    new_classes_ids.append(class_id)
 
-            return JsonResponse({'message': 'Classes added successfully', 'ids': new_classes_ids}, status=200)
+            return JsonResponse({'message': 'Classes updated successfully', 'ids': new_classes_ids}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:

@@ -11,6 +11,7 @@ class MembersView:
     def get_all_members(request):
         """
         Get all members.
+        Example request JSON: N/A
         Example response JSON:
         {
             "members": [
@@ -95,6 +96,15 @@ class MembersView:
                 for member in members
             ]
             return JsonResponse({'members': data}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -103,7 +113,7 @@ class MembersView:
     def get_member_by_id(request):
         """
         Get members by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [1, 2]
         }
@@ -196,10 +206,15 @@ class MembersView:
                 for member in members
             ]
             return JsonResponse({'members': data}, status=200)
+
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
             return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -208,7 +223,7 @@ class MembersView:
     def add_member(request):
         """
         Add new members.
-        Example JSON payload:
+        Example JSON request:
         {
             "members": [
                 {
@@ -262,6 +277,10 @@ class MembersView:
         try:
             data = json.loads(request.body)
             members = data.get('members', [])
+
+            if not members:
+                return JsonResponse({'error': 'No members provided'}, status=400)
+
             new_member_ids = []
             with transaction.atomic():
                 for member_data in members:
@@ -278,7 +297,15 @@ class MembersView:
                         member_data['address_id'] = address.id
 
                     # Create Member object
-                    new_member = Members.objects.create(licence_id=licence_id, **member_data)
+
+                    new_member = Members.objects.create(name=member_data['name'], surname=member_data['surname'],
+                                                        username=member_data['username'],
+                                                        password=member_data['password'],
+                                                        date_of_birth=member_data['date_of_birth'],
+                                                        address_id=address.id,
+                                                        phone_number=member_data['phone_number'],
+                                                        email=member_data['email'],
+                                                        is_active=member_data['is_active'], licence_id=licence_id)
                     new_member_ids.append(new_member.id)
 
             return JsonResponse({'message': 'Members added successfully', 'ids': new_member_ids}, status=200)
@@ -298,7 +325,7 @@ class MembersView:
     def update_member(request):
         """
         Update members by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "members": [
                 {
@@ -356,6 +383,10 @@ class MembersView:
         try:
             data = json.loads(request.body)
             members = data.get('members', [])
+
+            if not members:
+                return JsonResponse({'error': 'No members provided'}, status=400)
+
             updated_ids = []
             with transaction.atomic():
                 for member_data in members:
@@ -369,26 +400,24 @@ class MembersView:
                     if not Licences.objects.filter(id=licence_id).exists():
                         return JsonResponse({'error': f'Licence with ID {licence_id} does not exist'}, status=400)
 
-                    # Update Address if provided
-                    if address_data:
-                        address_id = address_data.pop('id', None)
-                        if address_id:
-                            Addresses.objects.filter(id=address_id).update(**address_data)
-                        else:
-                            address = Addresses.objects.create(**address_data)
-                            address_id = address.id
+                    if not Addresses.objects.filter(id=address_data.get('id')).exists():
+                        return JsonResponse({'error': f"Address with ID {address_data.get('id')} does not exist"},
+                                            status=400)
+
+                    Addresses.objects.filter(id=address_data.get('id')).update(**address_data)
+                    member_data['address_id'] = address_data.get('id')
 
                     # Update Member
-                    Members.objects.filter(id=member_id).update(
-                        name=member_data.get('name'),
-                        surname=member_data.get('surname'),
-                        username=member_data.get('username'),
-                        date_of_birth=member_data.get('date_of_birth'),
-                        phone_number=member_data.get('phone_number'),
-                        email=member_data.get('email'),
-                        is_active=member_data.get('is_active'),
-                        licence_id=licence_id,
-                        address_id=address_id
+                    Members.objects.filter(id=member_data.get('id')).update(
+                        name=member_data['name'], surname=member_data['surname'],
+                        username=member_data['username'],
+                        password=member_data['password'],
+                        date_of_birth=member_data['date_of_birth'],
+                        address_id=address_data.get('id'),
+                        phone_number=member_data['phone_number'],
+                        email=member_data['email'],
+                        is_active=member_data['is_active'],
+                        licence_id=licence_id
                     )
                     updated_ids.append(member_id)
 
@@ -409,14 +438,14 @@ class MembersView:
     def delete_member(request):
         """
         Delete members by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [1, 2]
         }
         Example response JSON:
         {
             "message": "Members deleted successfully",
-            "deleted_ids": [1, 2]
+            "ids": [1, 2]
         }
         """
         try:
@@ -431,7 +460,7 @@ class MembersView:
                     Members.objects.filter(id=member_id).delete()
                     deleted_ids.append(member_id)
 
-            return JsonResponse({'message': 'Members deleted successfully', 'deleted_ids': deleted_ids}, status=200)
+            return JsonResponse({'message': 'Members deleted successfully', 'ids': deleted_ids}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:

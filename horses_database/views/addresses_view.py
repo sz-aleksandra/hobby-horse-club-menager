@@ -37,8 +37,20 @@ class AddressesView:
             ]
         }
         """
-        addresses = list(Addresses.objects.all().values())
-        return JsonResponse({'addresses': addresses}, status=200)
+        try:
+            addresses = list(Addresses.objects.all().values())
+            return JsonResponse({'addresses': addresses}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 
     @csrf_exempt
@@ -283,12 +295,16 @@ class AddressesView:
         Example response:
         {
             "message": "Addresses added successfully",
-            "added_ids": [1, 2]
+            "ids": [1, 2]
         }
         """
         try:
             data = json.loads(request.body)
             addresses = data.get('addresses', [])
+
+            if not addresses:
+                return JsonResponse({'error': 'No addresses provided'}, status=400)
+
             addresses_id = []
             with transaction.atomic():
                 for addr in addresses:
@@ -307,48 +323,7 @@ class AddressesView:
                         postal_code=postal_code
                     )
                     addresses_id.append(address.id)
-            return JsonResponse({'message': 'Addresses added successfully', 'added_ids': addresses_id}, status=201)
-
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
-        except KeyError as e:
-            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
-        except IntegrityError as e:
-            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
-        except DatabaseError as e:
-            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-    @staticmethod
-    @csrf_exempt
-    def delete_addresses(request):
-        """
-        Delete addresses by IDs.
-
-        Example JSON payload:
-        {
-            "ids": [1, 2, 3]
-        }
-
-        Example response:
-        {
-            "message": "Addresses deleted successfully",
-            "deleted_ids": [1, 2, 3]
-        }
-        """
-        try:
-            data = json.loads(request.body)
-            ids = data.get('ids', [])
-            deleted_ids = []
-            if not ids:
-                return JsonResponse({'error': 'At least one Address ID is required'}, status=400)
-
-            with transaction.atomic():
-                address = Addresses.objects.filter(id__in=ids).delete()
-                deleted_ids.append(address.id)
-
-            return JsonResponse({'message': 'Addresses deleted successfully', 'deleted_ids': deleted_ids}, status=200)
+            return JsonResponse({'message': 'Addresses added successfully', 'ids': addresses_id}, status=201)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
@@ -392,12 +367,16 @@ class AddressesView:
         Example response:
         {
             "message": "Addresses updated successfully",
-            "updated_ids": [1, 2]
+            "ids": [1, 2]
         }
         """
         try:
             data = json.loads(request.body)
             addresses = data.get('addresses', [])
+
+            if not addresses:
+                return JsonResponse({'error': 'No addresses provided'}, status=400)
+
             addresses_ids = []
 
             with transaction.atomic():
@@ -415,7 +394,7 @@ class AddressesView:
                     address.postal_code = addr.get('postal_code', address.postal_code)
                     address.save()
 
-            return JsonResponse({'message': 'Addresses updated successfully', 'updated_ids': addresses_ids}, status=200)
+            return JsonResponse({'message': 'Addresses updated successfully', 'ids': addresses_ids}, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
@@ -423,6 +402,46 @@ class AddressesView:
             return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
         except Addresses.DoesNotExist:
             return JsonResponse({'error': 'Address not found'}, status=404)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    @staticmethod
+    @csrf_exempt
+    def delete_addresses(request):
+        """
+        Delete addresses by IDs.
+
+        Example JSON payload:
+        {
+            "ids": [1, 2, 3]
+        }
+
+        Example response:
+        {
+            "message": "Addresses deleted successfully",
+            "ids": [1, 2, 3]
+        }
+        """
+        try:
+            data = json.loads(request.body)
+            ids = data.get('ids', [])
+            if not ids:
+                return JsonResponse({'error': 'At least one Address ID is required'}, status=400)
+
+            with transaction.atomic():
+                Addresses.objects.filter(id__in=ids).delete()
+                deleted_ids = ids
+
+            return JsonResponse({'message': 'Addresses deleted successfully', 'ids': deleted_ids}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
         except IntegrityError as e:
             return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
         except DatabaseError as e:

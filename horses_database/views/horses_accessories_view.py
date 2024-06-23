@@ -157,6 +157,7 @@ class HorsesAccessoriesView:
                 })
 
             return JsonResponse({"horses_accessories": response_data}, status=200)
+
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
@@ -220,12 +221,15 @@ class HorsesAccessoriesView:
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
         except IntegrityError as e:
             return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
         except DatabaseError as e:
             return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
 
     @staticmethod
     @csrf_exempt
@@ -277,14 +281,17 @@ class HorsesAccessoriesView:
                     if not HorsesAccessories.objects.filter(id=horse_accessory_id).exists():
                         return JsonResponse({'error': f'Horse Accessory with ID {horse_accessory_id} does not exist'}, status=400)
 
-                    horses_accessory = HorsesAccessories.objects.filter(id=horse_accessory_id).update(horse_id=horse_id, accessory_id=accessory_id)
-                    added_ids.append(horses_accessory.id)
+                    HorsesAccessories.objects.filter(id=horse_accessory_id).update(horse_id=horse_id,
+                                                                                   accessory_id=accessory_id)
+                    added_ids.append(horse_accessory_id)
 
             return JsonResponse({'message': 'Horses Accessories updated successfully', 'ids': added_ids},
                                 status=201)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
         except IntegrityError as e:
             return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
         except DatabaseError as e:
@@ -292,20 +299,21 @@ class HorsesAccessoriesView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+
     @staticmethod
     @csrf_exempt
     def delete_horses_accessory(request):
         """
         Delete existing horses accessories.
-        Example JSON payload:
+        Example JSON request:
         {
-            "accessory_ids": [1, 2, 3]
+            "horses_accessories_ids": [1, 2, 3]
         }
 
         Example JSON response:
             {
                 "message": "Horses Accessories deleted successfully",
-                "deleted_ids": [1, 3]
+                "ids": [1, 3]
             }
         """
         try:
@@ -326,13 +334,16 @@ class HorsesAccessoriesView:
                     else:
                         return JsonResponse({'error': f'Horses Accessory with id {i_id} does not exist'}, status=404)
 
-            return JsonResponse({'message': 'Horses Accessories deleted successfully', 'deleted_ids': deleted_ids}, status=200)
+            return JsonResponse({'message': 'Horses Accessories deleted successfully', 'ids': deleted_ids}, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
         except IntegrityError as e:
             return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
         except DatabaseError as e:
             return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+

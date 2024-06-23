@@ -11,6 +11,7 @@ class EmployeesView:
     def get_all_employees(request):
         """
         Get all employees.
+        Example request JSON: N/A
         Example response JSON:
         {
             "employees": [
@@ -73,7 +74,6 @@ class EmployeesView:
                 'position__coaching_licence_id', 'position__coaching_licence__licence_level',
                 'salary', 'date_employed'
             )
-            print(employees) # TODO wyjeb
 
             data = []
             for employee in employees:
@@ -130,7 +130,6 @@ class EmployeesView:
             return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-
 
     @staticmethod
     @csrf_exempt
@@ -276,6 +275,7 @@ class EmployeesView:
                         "name": "John",
                         "surname": "Doe",
                         "username": "johndoe",
+                        "password": "qwerty",
                         "date_of_birth": "1990-01-01",
                         "address": {
                             "country": "USA",
@@ -309,6 +309,10 @@ class EmployeesView:
         try:
             data = json.loads(request.body)
             employees = data.get('employees', [])
+
+            if not employees:
+                return JsonResponse({'error': 'No employees provided'}, status=400)
+
             new_employee_ids = []
             with transaction.atomic():
                 for employee_data in employees:
@@ -331,11 +335,19 @@ class EmployeesView:
                     member_data['address_id'] = address.id
 
                     # Create Member object
-                    new_member = Members.objects.create(licence_id=licence_id, **member_data)
+                    new_member = Members.objects.create(name=member_data['name'], surname=member_data['surname'],
+                                                        username=member_data['username'],
+                                                        password=member_data['password'],
+                                                        date_of_birth=member_data['date_of_birth'],
+                                                        address_id=address.id,
+                                                        phone_number=member_data['phone_number'],
+                                                        email=member_data['email'],
+                                                        is_active=member_data['is_active'], licence_id=licence_id)
 
                     # Create Employee object
-                    new_employee = Employees.objects.create(member_id=new_member.id, position_id=position_id, salary=salary, date_employed=date_employed)
-                    new_employee_ids.append(new_employee)
+                    new_employee = Employees.objects.create(member_id=new_member.id, position_id=position_id,
+                                                            salary=salary, date_employed=date_employed)
+                    new_employee_ids.append(new_employee.id)
 
             return JsonResponse({'message': 'Employees added successfully', 'ids': new_employee_ids}, status=200)
         except json.JSONDecodeError:
@@ -362,6 +374,7 @@ class EmployeesView:
                         "name": "John",
                         "surname": "Doe",
                         "username": "johndoe",
+                        "password": "qwerty",
                         "date_of_birth": "1990-01-01",
                         "address": {
                             "id": 1,
@@ -396,6 +409,10 @@ class EmployeesView:
         try:
             data = json.loads(request.body)
             employees = data.get('employees', [])
+
+            if not employees:
+                return JsonResponse({'error': 'No employees provided'}, status=400)
+
             updated_ids = []
             with transaction.atomic():
                 for employee_data in employees:
@@ -422,17 +439,26 @@ class EmployeesView:
                                             status=400)
 
                     # Update Address
-                    address = Addresses.objects.filter(id=address_data.get('id')).update(**address_data)
-                    member_data['address_id'] = address.id
+                    Addresses.objects.filter(id=address_data.get('id')).update(**address_data)
+                    member_data['address_id'] = address_data.get('id')
 
                     # Update Member
-                    new_member = Members.objects.filter(id=member_data.get('id')).update(licence_id=licence_id,
-                                                                                         **member_data)
+                    Members.objects.filter(id=member_data.get('id')).update(
+                        name=member_data['name'], surname=member_data['surname'],
+                        username=member_data['username'],
+                        password=member_data['password'],
+                        date_of_birth=member_data['date_of_birth'],
+                        address_id=address_data.get('id'),
+                        phone_number=member_data['phone_number'],
+                        email=member_data['email'],
+                        is_active=member_data['is_active'], licence_id=licence_id)
 
                     # Update Employee
-                    new_employee = Employees.objects.filter(id=employee_data.get('id')).update(member_id=new_member.id, position_id=position_id,
-                                                                                               salary=salary, date_employed=date_employed)
-                    updated_ids.append(new_employee)
+                    Employees.objects.filter(id=employee_data.get('id')).update(member_id=member_data.get('id'),
+                                                                                position_id=position_id,
+                                                                                salary=salary,
+                                                                                date_employed=date_employed)
+                    updated_ids.append(employee_data.get('id'))
 
             return JsonResponse({'message': 'Employees updated successfully', 'ids': updated_ids}, status=200)
         except json.JSONDecodeError:
@@ -451,7 +477,7 @@ class EmployeesView:
     def delete_employee(request):
         """
         Delete employees by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [1, 2]
         }

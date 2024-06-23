@@ -11,6 +11,7 @@ class GroupsView:
     def get_all_groups(request):
         """
         Get all groups.
+        Example request JSON: N/A
         Example response JSON:
         {
             "groups": [
@@ -30,6 +31,15 @@ class GroupsView:
         try:
             groups = list(Groups.objects.all().values())
             return JsonResponse({'groups': groups}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -38,7 +48,7 @@ class GroupsView:
     def get_group_by_id(request):
         """
         Get groups by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [1, 2]
         }
@@ -66,10 +76,15 @@ class GroupsView:
 
             groups = list(Groups.objects.filter(id__in=ids).values())
             return JsonResponse({'groups': groups}, status=200)
+
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
             return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -78,7 +93,7 @@ class GroupsView:
     def add_new_group(request):
         """
         Add new groups.
-        Example JSON payload:
+        Example JSON request:
         {
             "groups": [
                 {
@@ -100,6 +115,10 @@ class GroupsView:
         try:
             data = json.loads(request.body)
             groups = data.get('groups', [])
+
+            if not groups:
+                return JsonResponse({'error': 'No groups provided'}, status=400)
+
             group_ids = []
             with transaction.atomic():
                 for group in groups:
@@ -130,7 +149,7 @@ class GroupsView:
     def update_group(request):
         """
         Update groups by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "groups": [
                 {
@@ -154,6 +173,10 @@ class GroupsView:
         try:
             data = json.loads(request.body)
             groups = data.get('groups', [])
+
+            if not groups:
+                return JsonResponse({'error': 'No groups provided'}, status=400)
+
             updated_ids = []
             with transaction.atomic():
                 for group in groups:
@@ -185,7 +208,7 @@ class GroupsView:
     def delete_group(request):
         """
         Delete groups by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [4, 5]
         }

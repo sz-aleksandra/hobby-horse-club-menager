@@ -11,6 +11,7 @@ class AccessoriesView:
     def get_all_accessories(request):
         """
         Retrieve all accessories.
+        Example JSON request: N/A
         Example JSON response:
         {
           "accessories": [
@@ -51,6 +52,15 @@ class AccessoriesView:
             ]
 
             return JsonResponse({'accessories': data}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -59,7 +69,7 @@ class AccessoriesView:
     def get_accessory_by_id(request):
         """
         Retrieve accessory details by ID.
-        Example JSON payload:
+        Example JSON request:
         {
             "accessory_ids": [2, 4]
         }
@@ -114,6 +124,12 @@ class AccessoriesView:
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -122,7 +138,7 @@ class AccessoriesView:
     def add_new_accessories(request):
         """
         Add new accessories.
-        Example JSON payload:
+        Example JSON request:
         {
             "accessories": [
                 {"name": "Saddle", "type_id": 1},
@@ -133,7 +149,7 @@ class AccessoriesView:
         Example JSON response:
         {
             "message": "Accessories added successfully",
-            "added_ids": [1, 2, 3]
+            "ids": [1, 2, 3]
         }
         """
         try:
@@ -153,17 +169,18 @@ class AccessoriesView:
                     if not name or not type_id:
                         return JsonResponse({'error': 'Name and type_id are required for each accessory'}, status=400)
 
-                    accessory_type = AccessoryTypes.objects.filter(id=type_id).first()
-                    if not accessory_type:
+                    if not AccessoryTypes.objects.filter(id=type_id).exists():
                         return JsonResponse({'error': f'Accessory type with id {type_id} does not exist'}, status=404)
 
-                    accessory = Accessories.objects.create(name=name, type=accessory_type)
+                    accessory = Accessories.objects.create(name=name, type_id=type_id)
                     added_ids.append(accessory.id)
 
-            return JsonResponse({'message': 'Accessories added successfully', 'added_ids': added_ids}, status=201)
+            return JsonResponse({'message': 'Accessories added successfully', 'ids': added_ids}, status=201)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
         except IntegrityError as e:
             return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
         except DatabaseError as e:
@@ -176,7 +193,7 @@ class AccessoriesView:
     def update_accessories(request):
         """
         Update existing accessories.
-        Example JSON payload:
+        Example JSON request:
         {
             "accessories": [
                 {"id": 1, "name": "Updated Saddle", "type_id": 3},
@@ -187,7 +204,7 @@ class AccessoriesView:
         Example JSON response:
         {
             "message": "Accessories updated successfully",
-            "updated_ids": [1, 2]
+            "ids": [1, 2]
         }
         """
         try:
@@ -197,28 +214,32 @@ class AccessoriesView:
             if not accessories_data:
                 return JsonResponse({'error': 'No accessories provided'}, status=400)
 
+            updated_ids = []
+
             with transaction.atomic():
                 for accessory_data in accessories_data:
-                    id = accessory_data.get('id')
+                    a_id = accessory_data.get('id')
                     name = accessory_data.get('name')
                     type_id = accessory_data.get('type_id')
 
-                    if not id or not name or not type_id:
-                        return JsonResponse({'error': 'ID, name, and type_id are required for each accessory'},
-                                            status=400)
+                    if not name:
+                        return JsonResponse({'error': 'Name is required for each accessory'}, status=400)
 
-                    accessory = Accessories.objects.filter(id=id).first()
-                    if accessory:
-                        accessory.name = name
-                        accessory.type_id = type_id
-                        accessory.save()
-                    else:
-                        return JsonResponse({'error': f'Accessory with id {id} does not exist'}, status=404)
+                    if not Accessories.objects.filter(id=a_id).exists():
+                        return JsonResponse({'error': f'Accessory with ID {a_id} does not exist'}, status=400)
 
-            return JsonResponse({'message': 'Accessories updated successfully'}, status=200)
+                    if not AccessoryTypes.objects.filter(id=type_id).exists():
+                        return JsonResponse({'error': f'Accessory Type with ID {type_id} does not exist'}, status=400)
+
+                    Accessories.objects.filter(id=a_id).update(name=name, type_id=type_id)
+                    updated_ids.append(a_id)
+
+            return JsonResponse({'message': 'Accessories updated successfully', 'ids': updated_ids}, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
         except IntegrityError as e:
             return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
         except DatabaseError as e:
@@ -239,7 +260,7 @@ class AccessoriesView:
         Example JSON response:
             {
                 "message": "Accessories deleted successfully",
-                "deleted_ids": [1, 3]
+                "ids": [1, 3]
             }
         """
         try:
@@ -260,10 +281,12 @@ class AccessoriesView:
                     else:
                         return JsonResponse({'error': f'Accessory with id {i_id} does not exist'}, status=404)
 
-            return JsonResponse({'message': 'Accessories deleted successfully', 'deleted_ids': deleted_ids}, status=200)
+            return JsonResponse({'message': 'Accessories deleted successfully', 'ids': deleted_ids}, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
         except IntegrityError as e:
             return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
         except DatabaseError as e:

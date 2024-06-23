@@ -159,7 +159,6 @@ class TournamentsView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
-
     @staticmethod
     @csrf_exempt
     def get_tournament_by_id(request):
@@ -354,8 +353,8 @@ class TournamentsView:
             new_tournament_ids = []
             with transaction.atomic():
                 for tournament_data in tournaments:
-                    address_data = tournament_data.pop('address', None)
-                    judge_id = tournament_data.get('licence', {}).get('id')
+                    address_data = tournament_data.pop('address')
+                    judge_id = tournament_data.get('judge', {}).get('id')
 
                     # Check if Licence ID exists
                     if not Employees.objects.filter(id=judge_id).exists():
@@ -367,10 +366,11 @@ class TournamentsView:
                         tournament_data['address_id'] = address.id
 
                     # Create Tournament object
-                    new_member = Members.objects.create(name=tournament_data.get('name'), address=address.id, judge_id=judge_id)
-                    new_tournament_ids.append(new_member.id)
+                    new_tournament = Tournaments.objects.create(name=tournament_data.get('name'), address_id=address.id,
+                                                                judge_id=judge_id)
+                    new_tournament_ids.append(new_tournament.id)
 
-            return JsonResponse({'message': 'Tournaments added successfully', 'ids': new_tournament_ids}, status=200)
+            return JsonResponse({'message': 'Tournaments added successfully', 'ids': new_tournament_ids}, status=201)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
@@ -393,6 +393,7 @@ class TournamentsView:
                     "id": 1
                     "name": "Championship",
                     "address": {
+                        "id": 1
                         "country": "USA",
                         "city": "New York",
                         "street": "Broadway",
@@ -419,9 +420,9 @@ class TournamentsView:
             with transaction.atomic():
                 for tournament_data in tournaments:
                     tournament_id = tournament_data.get('id')
-                    address_data = tournament_data.pop('address', None)
+                    address_data = tournament_data.pop('address')
                     address_id = address_data.get('id')
-                    judge_id = tournament_data.get('licence', {}).get('id')
+                    judge_id = tournament_data.get('judge', {}).get('id')
 
                     # Check if Licence ID exists
                     if not Employees.objects.filter(id=judge_id).exists():
@@ -434,15 +435,19 @@ class TournamentsView:
                         return JsonResponse({'error': f'Tournament with ID {tournament_id} does not exist'}, status=400)
 
                     # Update Address
-                    address = Addresses.objects.filter(id=address_id).update(country=address_data.get('country'), city=address_data.get('city'),
-                                                                             street=address_data.get('street'), street_no=address_data.get('street_no'),
-                                                                             postal_code=address_data.get('postal_code'))
+                    address = Addresses.objects.filter(id=address_id).update(country=address_data.get('country'),
+                                                                             city=address_data.get('city'),
+                                                                             street=address_data.get('street'),
+                                                                             street_no=address_data.get('street_no'),
+                                                                             postal_code=address_data.get(
+                                                                                 'postal_code'))
 
                     # Update Tournament
-                    new_member = Tournaments.objects.filter(id=tournament_id).update(name=tournament_data.get('name'),
-                                                                                     address=address.id,
-                                                                                     judge_id=judge_id)
-                    updated_ids.append(new_member.id)
+                    Tournaments.objects.filter(id=tournament_id).update(
+                        name=tournament_data.get('name'),
+                        address_id=address_id,
+                        judge_id=judge_id)
+                    updated_ids.append(tournament_id)
 
             return JsonResponse({'message': 'Tournaments updated successfully', 'ids': updated_ids}, status=200)
         except json.JSONDecodeError:
@@ -468,14 +473,14 @@ class TournamentsView:
         Example response JSON:
         {
             "message": "Tournaments deleted successfully",
-            "deleted_ids": [1, 2]
+            "ids": [1, 2]
         }
         """
         try:
             data = json.loads(request.body)
             ids = data.get('ids', [])
             if not ids:
-                return JsonResponse({'error': 'At least one Member ID is required'}, status=400)
+                return JsonResponse({'error': 'At least one Tournament ID is required'}, status=400)
 
             deleted_ids = []
             with transaction.atomic():
@@ -483,7 +488,7 @@ class TournamentsView:
                     Tournaments.objects.filter(id=tournament_id).delete()
                     deleted_ids.append(tournament_id)
 
-            return JsonResponse({'message': 'Tournaments deleted successfully', 'deleted_ids': deleted_ids}, status=200)
+            return JsonResponse({'message': 'Tournaments deleted successfully', 'ids': deleted_ids}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:

@@ -11,6 +11,7 @@ class StablesView:
     def get_all_stables(request):
         """
         Get all stables.
+        Example request JSON: N/A
         Example response JSON:
         {
             "stables": [
@@ -63,15 +64,24 @@ class StablesView:
                 for stable in stables
             ]
             return JsonResponse({'stables': data}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
 
     @staticmethod
     @csrf_exempt
     def get_stable_by_id(request):
         """
         Get stables by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [1, 2]
         }
@@ -136,6 +146,10 @@ class StablesView:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
             return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -144,7 +158,7 @@ class StablesView:
     def add_stable(request):
         """
         Add new stables.
-        Example JSON payload:
+        Example JSON request:
         {
             "stables": [
                 {
@@ -178,6 +192,10 @@ class StablesView:
         try:
             data = json.loads(request.body)
             stables = data.get('stables', [])
+
+            if not stables:
+                return JsonResponse({'error': 'No stables provided'}, status=400)
+
             stable_ids = []
             with transaction.atomic():
                 for stable in stables:
@@ -224,7 +242,7 @@ class StablesView:
     def update_stable(request):
         """
         Update stables by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "stables": [
                 {
@@ -262,6 +280,10 @@ class StablesView:
         try:
             data = json.loads(request.body)
             stables = data.get('stables', [])
+
+            if not stables:
+                return JsonResponse({'error': 'No stables provided'}, status=400)
+
             updated_ids = []
             with transaction.atomic():
                 for stable in stables:
@@ -313,14 +335,14 @@ class StablesView:
     def delete_stable(request):
         """
         Delete stables by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [4, 5]
         }
         Example response JSON:
         {
             "message": "Stables deleted successfully",
-            "deleted_ids": [4, 5]
+            "ids": [4, 5]
         }
         """
         try:
@@ -334,7 +356,7 @@ class StablesView:
                 for stable_id in ids:
                     Stables.objects.filter(id=stable_id).delete()
                     deleted_ids.append(stable_id)
-            return JsonResponse({'message': 'Stables deleted successfully', 'deleted_ids': deleted_ids}, status=200)
+            return JsonResponse({'message': 'Stables deleted successfully', 'ids': deleted_ids}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:

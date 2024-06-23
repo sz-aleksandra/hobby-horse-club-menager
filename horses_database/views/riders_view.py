@@ -11,6 +11,7 @@ class RidersView:
     def get_all_riders(request):
         """
         Get all riders.
+        Example request JSON: N/A
         Example response JSON:
         {
             "riders": [
@@ -117,6 +118,14 @@ class RidersView:
                 data.append(rider_data)
 
             return JsonResponse({'riders': data}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -125,7 +134,7 @@ class RidersView:
     def get_rider_by_id(request):
         """
         Get riders by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [1, 2]
         }
@@ -255,11 +264,11 @@ class RidersView:
                         "email": rider['member__email'],
                         "is_active": rider['member__is_active'],
                         "licence": {
-                            "id": rider['member__licence_id'],
-                            "licence_level": rider['member__licence_licence_level'],
+                            "id": rider['member__licence__id'],
+                            "licence_level": rider['member__licence__licence_level'],
                         }
                     },
-                    "parent_consent_id": rider['parent_consent_id'],
+                    "parent_consent_id": rider['parent_consent'],
                     "group": {
                         "id": rider['group_id'],
                         "name": rider['group__name'],
@@ -284,15 +293,20 @@ class RidersView:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
             return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
 
     @staticmethod
     @csrf_exempt
     def add_rider(request):
         """
         Add new riders.
-        Example JSON payload:
+        Example JSON request:
         {
             "riders": [
                 {
@@ -300,6 +314,7 @@ class RidersView:
                         "name": "John",
                         "surname": "Doe",
                         "username": "johndoe",
+                        "password": "qwerty",
                         "date_of_birth": "1990-01-01",
                         "address": {
                             "country": "USA",
@@ -334,6 +349,10 @@ class RidersView:
         try:
             data = json.loads(request.body)
             riders = data.get('riders', [])
+
+            if not riders:
+                return JsonResponse({'error': 'No riders provided'}, status=400)
+
             new_rider_ids = []
             with transaction.atomic():
                 for rider_data in riders:
@@ -352,6 +371,7 @@ class RidersView:
                         name=member_data.get('name'),
                         surname=member_data.get('surname'),
                         username=member_data.get('username'),
+                        password=member_data.get('password'),
                         date_of_birth=member_data.get('date_of_birth'),
                         address_id=address.id,
                         phone_number=member_data.get('phone_number'),
@@ -387,7 +407,7 @@ class RidersView:
     def update_rider(request):
         """
         Update riders by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "riders": [
                 {
@@ -397,6 +417,7 @@ class RidersView:
                         "name": "Updated John",
                         "surname": "Doe",
                         "username": "johndoe",
+                        "password": "qwerty',
                         "date_of_birth": "1990-01-01",
                         "address": {
                             "id": 1,
@@ -455,6 +476,10 @@ class RidersView:
         try:
             data = json.loads(request.body)
             riders = data.get('riders', [])
+
+            if not riders:
+                return JsonResponse({'error': 'No riders provided'}, status=400)
+
             updated_ids = []
             with transaction.atomic():
                 for rider_data in riders:
@@ -494,6 +519,7 @@ class RidersView:
                         name=member_data.get('name'),
                         surname=member_data.get('surname'),
                         username=member_data.get('username'),
+                        password=member_data.get('password'),
                         date_of_birth=member_data.get('date_of_birth'),
                         phone_number=member_data.get('phone_number'),
                         email=member_data.get('email'),
@@ -510,7 +536,7 @@ class RidersView:
                         horse_id=horse_id
                     )
                     updated_ids.append(rider_id)
-            return JsonResponse({'message': 'Members updated successfully', 'ids': updated_ids}, status=200)
+            return JsonResponse({'message': 'Riders updated successfully', 'ids': updated_ids}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
@@ -527,7 +553,7 @@ class RidersView:
     def delete_rider(request):
         """
         Delete riders by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [1, 2]
         }

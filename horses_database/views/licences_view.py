@@ -11,6 +11,7 @@ class LicencesView:
     def get_all_licences(request):
         """
         Get all licences.
+        Example request JSON: N/A
         Example response JSON:
         {
             "licences": [
@@ -28,6 +29,15 @@ class LicencesView:
         try:
             licences = list(Licences.objects.all().values())
             return JsonResponse({'licences': licences}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -36,7 +46,7 @@ class LicencesView:
     def get_licence_by_id(request):
         """
         Get licences by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [1, 2]
         }
@@ -62,10 +72,15 @@ class LicencesView:
 
             licences = list(Licences.objects.filter(id__in=ids).values())
             return JsonResponse({'licences': licences}, status=200)
+
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
             return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -74,7 +89,7 @@ class LicencesView:
     def add_new_licence(request):
         """
         Add new licences.
-        Example JSON payload:
+        Example JSON request:
         {
             "licences": [
                 {
@@ -94,6 +109,10 @@ class LicencesView:
         try:
             data = json.loads(request.body)
             licences = data.get('licences', [])
+
+            if not licences:
+                return JsonResponse({'error': 'No licences provided'}, status=400)
+
             licence_ids = []
             with transaction.atomic():
                 for licence in licences:
@@ -122,7 +141,7 @@ class LicencesView:
     def update_licence(request):
         """
         Update licences by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "licences": [
                 {
@@ -144,6 +163,10 @@ class LicencesView:
         try:
             data = json.loads(request.body)
             licences = data.get('licences', [])
+
+            if not licences:
+                return JsonResponse({'error': 'No licences provided'}, status=400)
+
             updated_ids = []
             with transaction.atomic():
                 for licence in licences:
@@ -173,14 +196,14 @@ class LicencesView:
     def delete_licence(request):
         """
         Delete licences by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [4, 5]
         }
         Example response JSON:
         {
             "message": "Licences deleted successfully",
-            "deleted_ids": [4, 5]
+            "ids": [4, 5]
         }
         """
         try:
@@ -192,9 +215,9 @@ class LicencesView:
             deleted_ids = []
             with transaction.atomic():
                 for licence_id in ids:
-                    Licence.objects.filter(id=licence_id).delete()
+                    Licences.objects.filter(id=licence_id).delete()
                     deleted_ids.append(licence_id)
-            return JsonResponse({'message': 'Licences deleted successfully', 'deleted_ids': deleted_ids}, status=200)
+            return JsonResponse({'message': 'Licences deleted successfully', 'ids': deleted_ids}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:

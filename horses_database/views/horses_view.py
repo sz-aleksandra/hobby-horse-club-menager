@@ -11,6 +11,7 @@ class HorsesView:
     def get_all_horses(request):
         """
         Get all horses.
+        Example request JSON: N/A
         Example response JSON:
         {
             "horses": [
@@ -40,6 +41,15 @@ class HorsesView:
         try:
             horses = list(Horses.objects.all().values())
             return JsonResponse({'horses': horses}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -48,7 +58,7 @@ class HorsesView:
     def get_horses_by_id(request):
         """
         Get horses by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [1, 2]
         }
@@ -86,10 +96,15 @@ class HorsesView:
 
             horses = list(Horses.objects.filter(id__in=ids).values())
             return JsonResponse({'horses': horses}, status=200)
+
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
             return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -98,7 +113,7 @@ class HorsesView:
     def add_horse(request):
         """
         Add new horses.
-        Example JSON payload:
+        Example JSON request:
         {
             "horses": [
                 {
@@ -130,6 +145,10 @@ class HorsesView:
         try:
             data = json.loads(request.body)
             horses = data.get('horses', [])
+
+            if not horses:
+                return JsonResponse({'error': 'No horses provided'}, status=400)
+
             horse_ids = []
             with transaction.atomic():
                 for horse in horses:
@@ -157,6 +176,7 @@ class HorsesView:
                     )
                     horse_ids.append(new_horse.id)
             return JsonResponse({'message': 'Horses added successfully', 'ids': horse_ids}, status=201)
+
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
@@ -173,7 +193,7 @@ class HorsesView:
     def update_horse(request):
         """
         Update horses by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "horses": [
                 {
@@ -207,6 +227,10 @@ class HorsesView:
         try:
             data = json.loads(request.body)
             horses = data.get('horses', [])
+
+            if not horses:
+                return JsonResponse({'error': 'No horses provided'}, status=400)
+
             updated_ids = []
             with transaction.atomic():
                 for horse in horses:
@@ -251,14 +275,14 @@ class HorsesView:
     def delete_horse(request):
         """
         Delete horses by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [4, 5]
         }
         Example response JSON:
         {
             "message": "Horses deleted successfully",
-            "deleted_ids": [4, 5]
+            "ids": [4, 5]
         }
         """
         try:
@@ -272,7 +296,7 @@ class HorsesView:
                 for horse_id in ids:
                     Horses.objects.filter(id=horse_id).delete()
                     deleted_ids.append(horse_id)
-            return JsonResponse({'message': 'Horses deleted successfully', 'deleted_ids': deleted_ids}, status=200)
+            return JsonResponse({'message': 'Horses deleted successfully', 'ids': deleted_ids}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:

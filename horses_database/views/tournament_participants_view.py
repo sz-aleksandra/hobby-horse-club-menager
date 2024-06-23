@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction, IntegrityError, DatabaseError
-from horses_database.models import TournamentParticipants, Tournaments, Employees, Riders
+from horses_database.models import TournamentParticipants, Tournaments, Members
 import json
 
 
@@ -11,6 +11,7 @@ class TournamentParticipantsView:
     def get_all_tournaments_participants(request):
         """
         Get all tournament participants.
+        Example request JSON: N/A
         Example response JSON:
         {
             "tournament_participants": [
@@ -468,6 +469,10 @@ class TournamentParticipantsView:
         try:
             data = json.loads(request.body)
             tournament_participants = data.get('tournament_participants', [])
+
+            if not tournament_participants:
+                return JsonResponse({'error': 'No tournament participants provided'}, status=400)
+
             new_tournament_participants_id = []
             with transaction.atomic():
                 for tournament_participant_data in tournament_participants:
@@ -481,8 +486,8 @@ class TournamentParticipantsView:
                     if not Tournaments.objects.filter(id=tournament_id).exists():
                         return JsonResponse({'error': f'Tournament with ID {tournament_id} does not exist'}, status=400)
 
-                    if not Riders.objects.filter(id=contestant_id).exists():
-                        return JsonResponse({'error': f'Rider with ID {contestant_id} does not exist'}, status=400)
+                    if not Members.objects.filter(id=contestant_id).exists():
+                        return JsonResponse({'error': f'Member with ID {contestant_id} does not exist'}, status=400)
 
                     new_tournament_participant = TournamentParticipants.objects.create(tournament_id=tournament_id,
                                                                                        contestant_id=contestant_id,
@@ -530,6 +535,10 @@ class TournamentParticipantsView:
         try:
             data = json.loads(request.body)
             tournament_participants = data.get('tournament_participants', [])
+
+            if not tournament_participants:
+                return JsonResponse({'error': 'No tournament participants provided'}, status=400)
+
             updated_ids = []
             with transaction.atomic():
                 for tournament_participant_data in tournament_participants:
@@ -544,15 +553,15 @@ class TournamentParticipantsView:
                     if not Tournaments.objects.filter(id=tournament_id).exists():
                         return JsonResponse({'error': f'Tournament with ID {tournament_id} does not exist'}, status=400)
 
-                    if not Riders.objects.filter(id=contestant_id).exists():
-                        return JsonResponse({'error': f'Rider with ID {contestant_id} does not exist'}, status=400)
+                    if not Members.objects.filter(id=contestant_id).exists():
+                        return JsonResponse({'error': f'Member with ID {contestant_id} does not exist'}, status=400)
 
                     if not TournamentParticipants.objects.filter(id=tournament_part_id).exists():
                         return JsonResponse({'error': f'Tournament Participant with ID {contestant_id} does not exist'}, status=400)
 
                     new_tournament_participant = TournamentParticipants.objects.filter(id=tournament_part_id).update(
                         tournament_id=tournament_id, contestant_id=contestant_id, contestant_place=contestant_place)
-                    updated_ids.append(new_tournament_participant.id)
+                    updated_ids.append(tournament_part_id)
 
             return JsonResponse({'message': 'Tournament Participants updated successfully', 'ids': updated_ids}, status=200)
         except json.JSONDecodeError:

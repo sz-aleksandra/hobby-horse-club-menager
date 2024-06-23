@@ -11,6 +11,7 @@ class PositionsHistoryView:
     def get_all_positions_history(request):
         """
         Get all positions history.
+        Example request JSON: N/A
         Example response JSON:
         {
             "positions_history": [
@@ -315,6 +316,10 @@ class PositionsHistoryView:
         try:
             data = json.loads(request.body)
             positions_history = data.get('positions_history', [])
+
+            if not positions_history:
+                return JsonResponse({'error': 'No positions history provided'}, status=400)
+
             position_ids = []
             with transaction.atomic():
                 for position in positions_history:
@@ -392,6 +397,10 @@ class PositionsHistoryView:
         try:
             data = json.loads(request.body)
             positions_history = data.get('positions_history', [])
+
+            if not positions_history:
+                return JsonResponse({'error': 'No positions history provided'}, status=400)
+
             position_ids = []
             with transaction.atomic():
                 for position in positions_history:
@@ -413,13 +422,13 @@ class PositionsHistoryView:
                     if not Positions.objects.filter(id=position_id).exists():
                         return JsonResponse({'error': f'Position with ID {position_id} does not exist'}, status=400)
 
-                    new_positions_history = PositionsHistory.objects.filter(id=ph_id).update(
+                    PositionsHistory.objects.filter(id=ph_id).update(
                         employee_id=employee_id,
                         position_id=position_id,
                         date_start=date_start,
                         date_end=date_end
                     )
-                    position_ids.append(new_positions_history.id)
+                    position_ids.append(ph_id)
             return JsonResponse({'message': 'Positions History added successfully', 'ids': position_ids}, status=201)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
@@ -444,7 +453,7 @@ class PositionsHistoryView:
         Example response JSON:
         {
             "message": "Positions History deleted successfully",
-            "deleted_ids": [1, 2]
+            "ids": [1, 2]
         }
         """
         try:
@@ -458,7 +467,7 @@ class PositionsHistoryView:
                 for position_id in ids:
                     PositionsHistory.objects.filter(id=position_id).delete()
                     deleted_ids.append(position_id)
-            return JsonResponse({'message': 'Positions History deleted successfully', 'deleted_ids': deleted_ids}, status=200)
+            return JsonResponse({'message': 'Positions History deleted successfully', 'ids': deleted_ids}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:

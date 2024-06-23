@@ -28,6 +28,15 @@ class AccessoryTypesView:
         try:
             accessory_types = list(AccessoryTypes.objects.all().values())
             return JsonResponse({'accessory_types': accessory_types}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -62,10 +71,15 @@ class AccessoryTypesView:
 
             accessory_types = list(AccessoryTypes.objects.filter(id__in=ids).values())
             return JsonResponse({'accessory_types': accessory_types}, status=200)
+
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
             return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -94,6 +108,10 @@ class AccessoryTypesView:
         try:
             data = json.loads(request.body)
             accessory_types = data.get('accessory_types', [])
+
+            if not accessory_types:
+                return JsonResponse({'error': 'No accessory types provided'}, status=400)
+
             accessory_type_ids = []
             with transaction.atomic():
                 for accessory_type in accessory_types:
@@ -144,6 +162,10 @@ class AccessoryTypesView:
         try:
             data = json.loads(request.body)
             accessory_types = data.get('accessory_types', [])
+
+            if not accessory_types:
+                return JsonResponse({'error': 'No accessory types provided'}, status=400)
+
             updated_ids = []
             with transaction.atomic():
                 for accessory_type in accessory_types:
@@ -180,7 +202,7 @@ class AccessoryTypesView:
         Example response JSON:
         {
             "message": "Accessory types deleted successfully",
-            "deleted_ids": [4, 5]
+            "ids": [4, 5]
         }
         """
         try:
@@ -194,7 +216,7 @@ class AccessoryTypesView:
                 for accessory_type_id in ids:
                     AccessoryTypes.objects.filter(id=accessory_type_id).delete()
                     deleted_ids.append(accessory_type_id)
-            return JsonResponse({'message': 'Accessory types deleted successfully', 'deleted_ids': deleted_ids}, status=200)
+            return JsonResponse({'message': 'Accessory types deleted successfully', 'ids': deleted_ids}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:

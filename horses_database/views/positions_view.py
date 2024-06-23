@@ -74,6 +74,15 @@ class PositionsView:
                 for position in positions
             ]
             return JsonResponse({'positions': data}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -82,7 +91,7 @@ class PositionsView:
     def get_position_by_id(request):
         """
         Get positions by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "ids": [1, 2]
         }
@@ -114,8 +123,8 @@ class PositionsView:
                         "licence_level": "Basic"
                     },
                     "coaching_licence": {
-                        "id": null,
-                        "licence_level": null
+                        "id": 1,
+                        "licence_level": "Normal"
                     },
                     "speciality": "Dressage"
                 }
@@ -154,10 +163,15 @@ class PositionsView:
                 for position in positions
             ]
             return JsonResponse({'positions': data}, status=200)
+
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:
             return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -166,7 +180,7 @@ class PositionsView:
     def add_position(request):
         """
         Add new positions.
-        Example JSON payload:
+        Example JSON request:
         {
             "positions": [
                 {
@@ -188,7 +202,7 @@ class PositionsView:
                     "licence": {
                         "id": 2
                     },
-                    "coaching_licence": null,
+                    "coaching_licence": 1,
                     "speciality": "Dressage"
                 }
             ]
@@ -202,14 +216,18 @@ class PositionsView:
         try:
             data = json.loads(request.body)
             positions = data.get('positions', [])
+
+            if not positions:
+                return JsonResponse({'error': 'No positions provided'}, status=400)
+
             position_ids = []
             with transaction.atomic():
                 for position in positions:
                     name = position.get('name')
                     salary_min = position.get('salary_min')
                     salary_max = position.get('salary_max')
-                    licence_id = position.get('licence', {}).get('id')
-                    coaching_licence_id = position.get('coaching_licence', {}).get('id') if position.get('coaching_licence') else None
+                    licence_id = position.get('licence').get('id')
+                    coaching_licence_id = position.get('coaching_licence').get('id')
                     speciality = position.get('speciality')
 
                     if not name or not salary_min or not salary_max or not licence_id or not speciality:
@@ -241,7 +259,7 @@ class PositionsView:
     def update_position(request):
         """
         Update positions by IDs.
-        Example JSON payload:
+        Example JSON request:
         {
             "positions": [
                 {
@@ -281,6 +299,10 @@ class PositionsView:
         try:
             data = json.loads(request.body)
             positions = data.get('positions', [])
+
+            if not positions:
+                return JsonResponse({'error': 'No positions provided'}, status=400)
+
             updated_ids = []
             with transaction.atomic():
                 for position in positions:
@@ -328,7 +350,7 @@ class PositionsView:
         Example response JSON:
         {
             "message": "Positions deleted successfully",
-            "deleted_ids": [1, 2]
+            "ids": [1, 2]
         }
         """
         try:
@@ -342,7 +364,7 @@ class PositionsView:
                 for position_id in ids:
                     Positions.objects.filter(id=position_id).delete()
                     deleted_ids.append(position_id)
-            return JsonResponse({'message': 'Positions deleted successfully', 'deleted_ids': deleted_ids}, status=200)
+            return JsonResponse({'message': 'Positions deleted successfully', 'ids': deleted_ids}, status=200)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except KeyError as e:

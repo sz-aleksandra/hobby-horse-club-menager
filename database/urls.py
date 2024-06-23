@@ -122,6 +122,7 @@ urlpatterns = [
     path('employees/delete/', EmployeesView.delete_employee, name='delete_employee'),
     path('employees/login_employee/', EmployeesView.login_employee, name='login_employee'),
     path('employees/login_owner/', EmployeesView.login_owner, name='login_owner'),
+    path('employees/get_classes_for_employee/', EmployeesView.get_classes_for_employee, name='get_classes_for_employee'),
     path('employees/deactivate_account/', EmployeesView.deactivate_account, name='deactivate_employee_account'),
 
     path('tournaments/', TournamentsView.get_all_tournaments, name='get_all_tournaments'),

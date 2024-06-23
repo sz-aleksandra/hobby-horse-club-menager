@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction, IntegrityError, DatabaseError
-from horses_database.models import Riders, Members, Groups, Horses, Addresses, Licences
+from horses_database.models import Riders, Members, Addresses, Licences, Classes
 import json
 
 
@@ -630,3 +630,181 @@ class RidersView:
             return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
+    @staticmethod
+    @csrf_exempt
+    def get_classes_for_rider(request):
+        """
+        Get classes for rider
+        Example JSON request:
+        {
+            "id": 1
+        }
+        Example JSON response:
+        {
+            "classes": [
+                {
+                    "id": 1,
+                    "type": "Training",
+                    "date": "2023-06-15",
+                    "trainer": {
+                        "id": 1,
+                        "member": {
+                            "id": 1,
+                            "name": "John",
+                            "surname": "Doe",
+                            "username": "johndoe",
+                            "date_of_birth": "1990-01-01",
+                            "address": {
+                                "id": 1,
+                                "country": "USA",
+                                "city": "New York",
+                                "street": "Broadway",
+                                "street_no": "123",
+                                "postal_code": "10001"
+                            },
+                            "phone_number": "+1234567890",
+                            "email": "john.doe@example.com",
+                            "is_active": True,
+                            "licence": {
+                                "id": 1,
+                                "licence_level": "A"
+                            }
+                        },
+                        "position": {
+                            "id": 1,
+                            "name": "Head Coach",
+                            "salary_min": "5000.00",
+                            "salary_max": "8000.00",
+                            "licence": {
+                                "id": 1,
+                                "licence_level": "Advanced"
+                            },
+                            "coaching_licence": {
+                                "id": 2,
+                                "licence_level": "Basic"
+                            },
+                            "speciality": "Jumping"
+                        },
+                        "salary": "1000",
+                        "date_employed": "1985-05-15"
+                    },
+                    "group": {
+                        "id": 1,
+                        "name": "Jumpers",
+                        "max_group_members": 10
+                    },
+                    "stable": {
+                        "id": 1,
+                        "name": "Green Pastures Stables",
+                        "address": {
+                            "id": 1,
+                            "country": "United States",
+                            "city": "New York",
+                            "street": "Broadway",
+                            "street_no": "123",
+                            "postal_code": "10001"
+                        }
+                    }
+                }
+            ]
+        }
+        """
+        try:
+            data = json.loads(request.body)
+            rider_id = data.get('id')
+
+            if not rider_id :
+                return JsonResponse({'error': 'No id provided'}, status=400)
+            try:
+                rider = Riders.objects.get(id=rider_id)
+            except Riders.DoesNotExist:
+                return JsonResponse({'error': 'Invalid rider id'}, status=401)
+
+            classes = Classes.objects.filter(group_id=rider.group_id).select_related(
+                'trainer__member__address', 'trainer__member__licence',
+                'trainer__position__licence', 'trainer__position__coaching_licence',
+                'group', 'stable__address'
+            ).all()
+
+            classes_list = []
+            for class_ in classes:
+                class_data = {
+                    "id": class_.id,
+                    "type": class_.type,
+                    "date": str(class_.date),
+                    "trainer": {
+                        "id": class_.trainer.id,
+                        "member": {
+                            "id": class_.trainer.member.id,
+                            "name": class_.trainer.member.name,
+                            "surname": class_.trainer.member.surname,
+                            "username": class_.trainer.member.username,
+                            "date_of_birth": str(class_.trainer.member.date_of_birth),
+                            "address": {
+                                "id": class_.trainer.member.address.id,
+                                "country": class_.trainer.member.address.country,
+                                "city": class_.trainer.member.address.city,
+                                "street": class_.trainer.member.address.street,
+                                "street_no": class_.trainer.member.address.street_no,
+                                "postal_code": class_.trainer.member.address.postal_code
+                            },
+                            "phone_number": class_.trainer.member.phone_number,
+                            "email": class_.trainer.member.email,
+                            "is_active": class_.trainer.member.is_active,
+                            "licence": {
+                                "id": class_.trainer.member.licence.id,
+                                "licence_level": class_.trainer.member.licence.licence_level
+                            }
+                        },
+                        "position": {
+                            "id": class_.trainer.position.id,
+                            "name": class_.trainer.position.name,
+                            "salary_min": str(class_.trainer.position.salary_min),
+                            "salary_max": str(class_.trainer.position.salary_max),
+                            "licence": {
+                                "id": class_.trainer.position.licence.id,
+                                "licence_level": class_.trainer.position.licence.licence_level
+                            },
+                            "coaching_licence": {
+                                "id": class_.trainer.position.coaching_licence.id,
+                                "licence_level": class_.trainer.position.coaching_licence.licence_level
+                            },
+                            "speciality": class_.trainer.position.speciality
+                        },
+                        "salary": str(class_.trainer.salary),
+                        "date_employed": str(class_.trainer.date_employed)
+                    },
+                    "group": {
+                        "id": class_.group.id,
+                        "name": class_.group.name,
+                        "max_group_members": class_.group.max_group_members
+                    },
+                    "stable": {
+                        "id": class_.stable.id,
+                        "name": class_.stable.name,
+                        "address": {
+                            "id": class_.stable.address.id,
+                            "country": class_.stable.address.country,
+                            "city": class_.stable.address.city,
+                            "street": class_.stable.address.street,
+                            "street_no": class_.stable.address.street_no,
+                            "postal_code": class_.stable.address.postal_code
+                        }
+                    }
+                }
+                classes_list.append(class_data)
+
+            return JsonResponse({'classes': classes_list}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        pass

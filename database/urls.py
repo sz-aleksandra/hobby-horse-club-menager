@@ -111,6 +111,7 @@ urlpatterns = [
     path('riders/update/', RidersView.update_rider, name='update_rider'),
     path('riders/delete/', RidersView.delete_rider, name='delete_rider'),
     path('riders/login_rider/', RidersView.login_rider, name='login_rider'),
+    path('riders/get_classes_for_rider/', RidersView.get_classes_for_rider, name='get_classes_for_rider'),
 
     path('employees/', EmployeesView.get_all_employees, name='get_all_employees'),
     path('employees/get_all', EmployeesView.get_all_employees, name='get_all_employees'),

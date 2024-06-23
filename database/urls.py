@@ -131,6 +131,8 @@ urlpatterns = [
     path('tournaments/add/', TournamentsView.add_tournament, name='add_tournament'),
     path('tournaments/update/', TournamentsView.update_tournament, name='update_tournament'),
     path('tournaments/delete/', TournamentsView.delete_tournament, name='delete_tournament'),
+    path('tournaments/get_for_rider/', TournamentsView.get_tournaments_for_rider, name='get_tournaments_for_rider'),
+    path('tournaments/get_for_employee/', TournamentsView.get_tournaments_for_employee, name='get_tournaments_for_employee'),
 
     path('classes/', ClassesView.get_all_classes, name='get_all_classes'),
     path('classes/get_all', ClassesView.get_all_classes, name='get_all_classes'),

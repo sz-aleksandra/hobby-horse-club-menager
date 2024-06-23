@@ -12,10 +12,10 @@ CREATE TABLE Licences (
     licence_level VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE Groups (
+CREATE TABLE `Groups` (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    max_group_members INT NOT NULL,
+    max_group_members INT NOT NULL
 );
 
 CREATE TABLE AccessoryTypes (
@@ -91,7 +91,7 @@ CREATE TABLE Riders (
     group_id INT NOT NULL,
     horse_id INT NOT NULL,
     FOREIGN KEY (member_id) REFERENCES Members(id) ON DELETE CASCADE,
-    FOREIGN KEY (group_id) REFERENCES Groups(id) ON DELETE RESTRICT,
+    FOREIGN KEY (group_id) REFERENCES `Groups`(id) ON DELETE RESTRICT,
     FOREIGN KEY (horse_id) REFERENCES Horses(id) ON DELETE RESTRICT
 );
 
@@ -126,7 +126,7 @@ CREATE TABLE Classes (
     group_id INT NOT NULL,
     stable_id INT NOT NULL,
     FOREIGN KEY (trainer_id) REFERENCES Employees(id) ON DELETE RESTRICT,
-    FOREIGN KEY (group_id) REFERENCES Groups(id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES `Groups`(id) ON DELETE CASCADE,
     FOREIGN KEY (stable_id) REFERENCES Stables(id) ON DELETE CASCADE
 );
 
@@ -146,5 +146,5 @@ CREATE TABLE Tournament_Participants (
     contestant_id INT NOT NULL,
     contestant_place INT,
     FOREIGN KEY (tournament_id) REFERENCES Tournaments(id) ON DELETE CASCADE,
-    FOREIGN KEY (contestant_id) REFERENCES Members(id) ON DELETE CASCADE
+    FOREIGN KEY (contestant_id) REFERENCES Riders(id) ON DELETE CASCADE
 );

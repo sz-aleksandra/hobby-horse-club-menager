@@ -3,6 +3,8 @@ package bd2.gui.SignUpLogIn;
 import bd2.logic.ErrorCodes;
 
 import javax.swing.*;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,8 +13,6 @@ abstract public class RegisterUserFormTemplate extends FormGUITemplate {
     public RegisterUserFormTemplate(int userId, String userType) {
         super(userId, userType);
     }
-
-    protected abstract List <Integer> validateCredentials(HashMap<String, String> textFieldsValues);
 
     protected abstract void createUser(HashMap<String, String> textFieldsValues);
 
@@ -26,7 +26,7 @@ abstract public class RegisterUserFormTemplate extends FormGUITemplate {
         // Get values
         HashMap<String, String> formFieldsValues = getFieldValues();
         // Validate values
-        List<Integer> errorCodes = validateCredentials(formFieldsValues);
+		List <Integer> errorCodes = new ArrayList<>();
         // Create user and open Home Page
         if (errorCodes.isEmpty()) {
             createUser(formFieldsValues);

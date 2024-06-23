@@ -66,8 +66,8 @@ class Positions(models.Model):
     name = models.CharField(max_length=255)
     salary_min = models.DecimalField(max_digits=10, decimal_places=2)
     salary_max = models.DecimalField(max_digits=10, decimal_places=2)
-    licence = models.ForeignKey(Licences, related_name='positions', on_delete=models.SET_NULL, null=True, blank=True)
-    coaching_licence = models.ForeignKey(Licences, related_name='coaching_positions', on_delete=models.SET_NULL, null=True, blank=True)
+    licence = models.ForeignKey(Licences, related_name='positions', on_delete=models.RESTRICT)
+    coaching_licence = models.ForeignKey(Licences, related_name='coaching_positions', on_delete=models.RESTRICT)
     speciality = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
@@ -91,8 +91,8 @@ class Members(models.Model):
 class Riders(models.Model):
     member = models.ForeignKey(Members, on_delete=models.CASCADE)
     parent_consent = models.BooleanField()
-    group = models.ForeignKey(Groups, on_delete=models.RESTRICT)
-    horse = models.ForeignKey(Horses, on_delete=models.RESTRICT)
+    group = models.ForeignKey(Groups, on_delete=models.RESTRICT, null=True)
+    horse = models.ForeignKey(Horses, on_delete=models.RESTRICT, null=True)
 
     class Meta:
         db_table = 'Riders'
@@ -129,14 +129,14 @@ class Tournaments(models.Model):
     name = models.CharField(max_length=255)
     date = models.DateField()
     address = models.ForeignKey(Addresses, on_delete=models.RESTRICT)
-    judge = models.ForeignKey(Employees, on_delete=models.RESTRICT)
+    judge = models.ForeignKey(Employees, on_delete=models.RESTRICT, null=True)
 
     class Meta:
         db_table = 'Tournaments'
 
 class TournamentParticipants(models.Model):
     tournament = models.ForeignKey(Tournaments, on_delete=models.CASCADE)
-    contestant = models.ForeignKey(Riders, on_delete=models.CASCADE)
+    contestant = models.ForeignKey(Riders, on_delete=models.RESTRICT)
     contestant_place = models.IntegerField(null=True, blank=True)
 
     class Meta:

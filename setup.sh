@@ -28,6 +28,10 @@ else
     python manage.py migrate
 
     # Wgraj dane z insert_data.sql
+    echo "Pushing triggers..."
+    docker cp sql_scripts/triggers.sql "${CONTAINER_NAME}":/triggers
+    docker exec horses-database /bin/sh -c 'mysql -u root -ppassword </triggers'
+
     echo "Inserting data..."
     docker cp sql_scripts/insert_data.sql "${CONTAINER_NAME}":/initialize.sql
     docker exec horses-database /bin/sh -c 'mysql -u root -ppassword </initialize.sql'

@@ -118,16 +118,16 @@ INSERT INTO Positions_History (employee_id, position_id, date_start, date_end) V
 
 -- Inserty do tabeli Classes
 INSERT INTO Classes (type, date, trainer_id, group_id, stable_id) VALUES
-('Jazda rekreacyjna', '2024-06-01', 1, 1, 1),
-('Jazda sportowa', '2024-06-02', 2, 2, 2),
-('Ujeżdżenie', '2024-06-03', 3, 3, 3),
-('Skoki przez przeszkody', '2024-06-04', 4, 1, 4),
-('Kros', '2024-06-05', 5, 2, 5),
-('Teren', '2024-06-06', 1, 2, 1),
-('Wyjazd na zawody', '2024-06-07', 2, 2, 2),
-('Trening specjalistyczny', '2024-06-08', 3, 3, 3),
-('Ćwiczenia z końmi', '2024-06-09', 4, 3, 4),
-('Klinika szkoleniowa', '2024-06-10', 5, 3, 5);
+('Jazda rekreacyjna', '2025-06-01', 1, 1, 1),
+('Jazda sportowa', '2025-06-02', 2, 2, 2),
+('Ujeżdżenie', '2025-06-03', 3, 3, 3),
+('Skoki przez przeszkody', '2025-06-04', 4, 1, 4),
+('Kros', '2025-06-05', 5, 2, 5),
+('Teren', '2025-06-06', 1, 2, 1),
+('Wyjazd na zawody', '2025-06-07', 2, 2, 2),
+('Trening specjalistyczny', '2025-06-08', 3, 3, 3),
+('Ćwiczenia z końmi', '2025-06-09', 4, 3, 4),
+('Klinika szkoleniowa', '2025-06-10', 5, 3, 5);
 
 -- Inserty do tabeli Tournaments
 INSERT INTO Tournaments (name, date, address_id, judge_id) VALUES

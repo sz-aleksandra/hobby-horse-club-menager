@@ -22,7 +22,8 @@ class TournamentsViewTests(TestCase):
                                                  speciality="Jumping")
         self.employee = Employees.objects.create(member=self.member, position=self.position, salary=1000,
                                                  date_employed=datetime(1985, 5, 15))
-        self.tournament = Tournaments.objects.create(name='Test Tournament', address=self.address, judge=self.employee)
+        self.tournament = Tournaments.objects.create(name='Test Tournament', date=datetime(2025, 5, 15),
+                                                     address=self.address, judge=self.employee)
         self.sample_tournament_data = {
             "tournaments": [
                 {

@@ -510,3 +510,89 @@ class EmployeesView:
             return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
+    @staticmethod
+    @csrf_exempt
+    def login_employee(request):
+        """
+        Login as employee
+        Example JSON request:
+        {
+            "username": login,
+            "password": password
+        }
+        Example JSON response:
+        {
+            "id": 2
+        }
+        """
+        try:
+            data = json.loads(request.body)
+            login = data.get('login')
+            password = data.get('password')
+
+            if not login or not password:
+                return JsonResponse({'error': 'No login or password provided'}, status=400)
+
+            try:
+                employee = Employees.objects.get(member__username=login)
+            except Employees.DoesNotExist:
+                return JsonResponse({'error': 'Invalid login'}, status=401)
+
+            if not password == employee.member.password:
+                return JsonResponse({'error': 'Invalid password'}, status=401)
+
+            return JsonResponse({'id': employee.id}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    @staticmethod
+    @csrf_exempt
+    def login_owner(request):
+        """
+        Login as owner
+        Example JSON request:
+        {
+            "username": login,
+            "password": password
+        }
+        Example JSON response:
+        {
+            "id": 2
+        }
+        """
+        try:
+            data = json.loads(request.body)
+            login = data.get('login')
+            password = data.get('password')
+
+            if not login or not password:
+                return JsonResponse({'error': 'No login or password provided'}, status=400)
+
+            try:
+                employee = Employees.objects.get(member__username=login, position__name='Owner')
+            except Employees.DoesNotExist:
+                return JsonResponse({'error': 'Invalid login'}, status=401)
+
+            if not password == employee.member.password:
+                return JsonResponse({'error': 'Invalid password'}, status=401)
+
+            return JsonResponse({'id': employee.id}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

@@ -586,9 +586,6 @@ class TournamentParticipantsView:
                     contestant_id = tournament_participant_data.get('contestant', {}).get('id')
                     contestant_place = tournament_participant_data.get('contestant_place')
 
-                    if not contestant_place:
-                        return JsonResponse({'error': 'Contestant place is required'}, status=400)
-
                     if not Tournaments.objects.filter(id=tournament_id).exists():
                         return JsonResponse({'error': f'Tournament with ID {tournament_id} does not exist'}, status=400)
 

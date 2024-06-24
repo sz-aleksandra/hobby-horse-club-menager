@@ -250,7 +250,7 @@ public class HomePageGUI extends BaseGUI {
     }
 
 	void seeGroupAction() {
-        new GroupScrollGUI(userId, userType).createGUI();
+        new GroupsScrollGUI(userId, userType).createGUI();
         frame.setVisible(false);
     }
 

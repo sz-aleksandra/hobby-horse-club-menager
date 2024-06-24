@@ -9,7 +9,6 @@ class TestHorsesView(TestCase):
         self.client = Client()
 
     def test_get_all_horses(self):
-        # Create sample horses
         Horses.objects.create(
             breed='Thoroughbred',
             height='16.00',
@@ -29,13 +28,11 @@ class TestHorsesView(TestCase):
             hairstyle='Short and Smooth'
         )
 
-        # Test GET request
         response = self.client.get(reverse('get_all_horses'))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()['horses']), 2)  # Check if two horses are returned
+        self.assertEqual(len(response.json()['horses']), 2)
 
     def test_get_horses_by_id(self):
-        # Create sample horses
         horse1 = Horses.objects.create(
             breed='Thoroughbred',
             height='16.00',
@@ -55,14 +52,12 @@ class TestHorsesView(TestCase):
             hairstyle='Short and Smooth'
         )
 
-        # Test POST request
         data = {'ids': [horse1.id, horse2.id]}
         response = self.client.post(reverse('get_horse_by_id'), json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()['horses']), 2)  # Check if two horses are returned
+        self.assertEqual(len(response.json()['horses']), 2)
 
     def test_add_horse(self):
-        # Test POST request
         data = {
             'horses': [
                 {
@@ -78,11 +73,10 @@ class TestHorsesView(TestCase):
         }
         response = self.client.post(reverse('add_horse'), json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 201)
-        self.assertIn('message', response.json())  # Check if 'message' key is present
-        self.assertIn('ids', response.json())  # Check if 'ids' key is present
+        self.assertIn('message', response.json())
+        self.assertIn('ids', response.json())
 
     def test_update_horse(self):
-        # Create a sample horse
         horse = Horses.objects.create(
             breed='Thoroughbred',
             height='16.00',
@@ -93,7 +87,6 @@ class TestHorsesView(TestCase):
             hairstyle='Mane and Tail'
         )
 
-        # Test POST request
         data = {
             'horses': [
                 {
@@ -110,11 +103,10 @@ class TestHorsesView(TestCase):
         }
         response = self.client.post(reverse('update_horse'), json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
-        self.assertIn('message', response.json())  # Check if 'message' key is present
-        self.assertIn('ids', response.json())  # Check if 'ids' key is present
+        self.assertIn('message', response.json())
+        self.assertIn('ids', response.json())
 
     def test_delete_horse(self):
-        # Create a sample horse
         horse = Horses.objects.create(
             breed='Thoroughbred',
             height='16.00',
@@ -125,9 +117,8 @@ class TestHorsesView(TestCase):
             hairstyle='Mane and Tail'
         )
 
-        # Test POST request
         data = {'ids': [horse.id]}
         response = self.client.post(reverse('delete_horse'), json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
-        self.assertIn('message', response.json())  # Check if 'message' key is present
-        self.assertIn('ids', response.json())  # Check if 'ids' key is present
+        self.assertIn('message', response.json())
+        self.assertIn('ids', response.json())

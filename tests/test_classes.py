@@ -9,65 +9,55 @@ from horses_database.models import Classes, Employees, Groups, Stables, Addresse
 class ClassesViewTests(TestCase):
 
     def setUp(self):
-        # Create sample data for testing
-        # Create an address
         self.address = Addresses.objects.create(country="USA", city="New York", street="Broadway", street_no="123",
                                                 postal_code="10001")
 
-        # Create a licence
         self.licence = Licences.objects.create(licence_level="A")
 
-        # Create a position
         self.position = Positions.objects.create(name="Head Coach", salary_min=5000.00, salary_max=8000.00,
                                                  licence=self.licence, coaching_licence=self.licence,
                                                  speciality="Jumping")
 
-        # Create a member
         self.member = Members.objects.create(name="John", surname="Doe", username="johndoe",
                                              date_of_birth=datetime(1990, 1, 1), address=self.address,
                                              phone_number="+1234567890", email="john.doe@example.com", is_active=True,
                                              licence=self.licence)
 
-        # Create a trainer
         self.trainer = Employees.objects.create(member=self.member, position=self.position, salary=1000,
                                                 date_employed=datetime(1985, 5, 15))
 
-        # Create a group
         self.group = Groups.objects.create(name="Jumpers", max_group_members=10)
 
-        # Create a stable
         self.stable_address = Addresses.objects.create(country="United States", city="New York", street="Broadway",
                                                        street_no="123", postal_code="10001")
         self.stable = Stables.objects.create(name="Green Pastures Stables", address=self.stable_address)
 
-        # Create classes
         self.class1 = Classes.objects.create(type="Training", date=timezone.now(), trainer=self.trainer,
                                              group=self.group, stable=self.stable)
         self.class2 = Classes.objects.create(type="Jumping", date=timezone.now(), trainer=self.trainer,
                                              group=self.group, stable=self.stable)
 
     def test_get_all_classes(self):
-        url = reverse('get_all_classes')  # Assuming 'get_all_classes' is the URL name or pattern
+        url = reverse('get_all_classes')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         classes_data = json.loads(response.content.decode('utf-8'))
         self.assertIn('classes', classes_data)
         classes = classes_data['classes']
-        self.assertEqual(len(classes), 2)  # Assuming you have 2 classes created
-        # Add more assertions based on your expected JSON structure and data
+        self.assertEqual(len(classes), 2)
 
     def test_get_class_by_id(self):
-        url = reverse('get_class_by_id')  # Assuming 'get_class_by_id' is the URL name or pattern
+        url = reverse('get_class_by_id')
         data = {'ids': [self.class1.id]}
         response = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         classes_data = json.loads(response.content.decode('utf-8'))
         self.assertIn('classes', classes_data)
         classes = classes_data['classes']
-        self.assertEqual(len(classes), 1)  # Expecting one class in response
+        self.assertEqual(len(classes), 1)
 
     def test_add_class(self):
-        url = reverse('add_class')  # Assuming 'add_class' is the URL name or pattern
+        url = reverse('add_class')
         data = {
             'classes': [
                 {
@@ -90,7 +80,7 @@ class ClassesViewTests(TestCase):
         self.assertEqual(new_class.type, 'New Class')
 
     def test_update_class(self):
-        url = reverse('update_class')  # Assuming 'update_class' is the URL name or pattern
+        url = reverse('update_class')
         data = {
             'classes': [
                 {
@@ -114,7 +104,7 @@ class ClassesViewTests(TestCase):
         self.assertEqual(updated_class.type, 'Updated Class')
 
     def test_delete_class(self):
-        url = reverse('delete_class')  # Assuming 'delete_class' is the URL name or pattern
+        url = reverse('delete_class')
         data = {'ids': [self.class1.id, self.class2.id]}
         response = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)

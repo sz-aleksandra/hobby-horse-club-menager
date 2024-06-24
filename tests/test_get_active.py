@@ -44,10 +44,8 @@ class TestGetActive(TestCase):
         self.address_emp = Addresses.objects.create(country="USA", city="New York", street="Broadway", street_no="123",
                                                     postal_code="10001")
 
-        # Create a licence
         self.licence_emp = Licences.objects.create(licence_level="A")
 
-        # Create a member
         self.member_emp = Members.objects.create(name="John", surname="Doe", username="johndoe",
                                                  date_of_birth=datetime(1990, 1, 1), address=self.address,
                                                  phone_number="+1234567890", email="john.doe@example.com",
@@ -60,12 +58,10 @@ class TestGetActive(TestCase):
                                                      is_active=True,
                                                      licence=self.licence)
 
-        # Create a position
         self.position_emp = Positions.objects.create(name="Head Coach", salary_min=5000.00, salary_max=8000.00,
                                                      licence=self.licence, coaching_licence=self.licence,
                                                      speciality="Jumping")
 
-        # Create employees
         self.employee = Employees.objects.create(member=self.member_emp, position=self.position_emp, salary=1000,
                                                  date_employed=datetime(1985, 5, 15))
 

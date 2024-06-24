@@ -287,16 +287,13 @@ class MembersView:
                     address_data = member_data.pop('address', None)
                     licence_id = member_data.get('licence', {}).get('id')
 
-                    # Check if Licence ID exists
                     if not Licences.objects.filter(id=licence_id).exists():
                         return JsonResponse({'error': f'Licence with ID {licence_id} does not exist'}, status=400)
 
-                    # Create Address object
                     if address_data:
                         address = Addresses.objects.create(**address_data)
                         member_data['address_id'] = address.id
 
-                    # Create Member object
 
                     new_member = Members.objects.create(name=member_data['name'], surname=member_data['surname'],
                                                         username=member_data['username'],
@@ -394,7 +391,6 @@ class MembersView:
                     address_data = member_data.get('address')
                     licence_id = member_data.get('licence', {}).get('id')
 
-                    # Check if Member and Licence IDs exist
                     if not Members.objects.filter(id=member_id).exists():
                         return JsonResponse({'error': f'Member with ID {member_id} does not exist'}, status=400)
                     if not Licences.objects.filter(id=licence_id).exists():
@@ -407,7 +403,6 @@ class MembersView:
                     Addresses.objects.filter(id=address_data.get('id')).update(**address_data)
                     member_data['address_id'] = address_data.get('id')
 
-                    # Update Member
                     Members.objects.filter(id=member_data.get('id')).update(
                         name=member_data['name'], surname=member_data['surname'],
                         username=member_data['username'],

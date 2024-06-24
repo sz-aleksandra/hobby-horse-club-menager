@@ -114,6 +114,8 @@ urlpatterns = [
     path('riders/get_classes_for_rider/', RidersView.get_classes_for_rider, name='get_classes_for_rider'),
     path('riders/deactivate_account/', RidersView.deactivate_account, name='deactivate_rider_account'),
     path('riders/get_active_riders/', RidersView.get_active_riders, name='get_active_riders'),
+    path('riders/add_group_to_rider/', RidersView.add_to_group, name='add_group_to_rider'),
+    path('riders/add_horse_to_rider/', RidersView.add_horse, name='add_horse_to_rider'),
 
     path('employees/', EmployeesView.get_all_employees, name='get_all_employees'),
     path('employees/get_all/', EmployeesView.get_all_employees, name='get_all_employees'),

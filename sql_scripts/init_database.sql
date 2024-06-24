@@ -61,8 +61,8 @@ CREATE TABLE Positions (
     name VARCHAR(255) NOT NULL,
     salary_min DECIMAL(10, 2) NOT NULL,
     salary_max DECIMAL(10, 2) NOT NULL,
-    licence_id INT,
-    coaching_licence_id INT,
+    licence_id INT NOT NULL,
+    coaching_licence_id INT NOT NULL,
     speciality VARCHAR(255),
     FOREIGN KEY (licence_id) REFERENCES Licences(id),
     FOREIGN KEY (coaching_licence_id) REFERENCES Licences(id)
@@ -78,7 +78,7 @@ CREATE TABLE Members (
     address_id INT NOT NULL,
     phone_number VARCHAR(20),
     email VARCHAR(255),
-    is_active BOOLEAN DEFAULT TRUE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
     licence_id INT NOT NULL,
     FOREIGN KEY (address_id) REFERENCES Addresses(id) ON DELETE RESTRICT,
     FOREIGN KEY (licence_id) REFERENCES Licences(id) ON DELETE RESTRICT
@@ -88,8 +88,8 @@ CREATE TABLE Riders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     member_id INT NOT NULL,
     parent_consent BOOLEAN NOT NULL,
-    group_id INT NOT NULL,
-    horse_id INT NOT NULL,
+    group_id INT,
+    horse_id INT,
     FOREIGN KEY (member_id) REFERENCES Members(id) ON DELETE CASCADE,
     FOREIGN KEY (group_id) REFERENCES `Groups`(id) ON DELETE RESTRICT,
     FOREIGN KEY (horse_id) REFERENCES Horses(id) ON DELETE RESTRICT
@@ -135,7 +135,7 @@ CREATE TABLE Tournaments (
     name VARCHAR(255) NOT NULL,
     date DATE NOT NULL,
     address_id INT NOT NULL,
-    judge_id INT NOT NULL,
+    judge_id INT,
     FOREIGN KEY (address_id) REFERENCES Addresses(id) ON DELETE RESTRICT,
     FOREIGN KEY (judge_id) REFERENCES Employees(id) ON DELETE RESTRICT
 );

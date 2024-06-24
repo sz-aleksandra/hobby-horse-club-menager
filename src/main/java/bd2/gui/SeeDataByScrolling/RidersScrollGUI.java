@@ -1,34 +1,67 @@
 package bd2.gui.SeeDataByScrolling;
 
 import bd2.gui.AddDataByForm.AddRiderGUI;
+import bd2.logic.ErrorCodes;
+import com.google.gson.JsonObject;
+import kotlin.Pair;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
+import java.util.*;
+import java.util.List;
+
+import static bd2.DBRequests.base_url;
+import static bd2.DBRequests.postMethod;
 
 public class RidersScrollGUI extends DataScrollTemplate {
 
-    //[MOCK]
     @Override
     protected void getElementsData() {
-        this.fittingElementsIds = new Integer[]{1,2,3,4,5,6,7,8,9,10,12,13,14,15,16};
-        this.nrOfElements = fittingElementsIds.length;
+        String url = base_url + "riders/get_active_riders/";
+
+        Pair<Integer, JsonObject> response = postMethod(url, new HashMap<>());
+        if (response != null) {
+            JsonObject responseData = response.getSecond();
+            this.nrOfElements = responseData.getAsJsonArray("riders").size();
+            this.fittingElementsIds = new Integer[this.nrOfElements];
+            for (int i = 0; i < responseData.getAsJsonArray("riders").size(); i++) {
+                this.fittingElementsIds[i] = responseData.getAsJsonArray("riders").get(i).getAsJsonObject().get("id").getAsInt();
+            }
+        }
+        else {
+            this.nrOfElements = 0;
+            this.fittingElementsIds = new Integer[]{};
+        }
     }
 
-    // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> dataInfo = new HashMap<>();
-        dataInfo.put("name", "Ola");
-        dataInfo.put("surname", "Nowak");
-        dataInfo.put("username", "kochamkonieOla123");
-        dataInfo.put("date_of_birth", "2009-05-10");
-        dataInfo.put("email", "ola.kochamkonie.nowak@email.com");
-        dataInfo.put("phone_number", "+48437987171");
-        dataInfo.put("address", "ul. Krakowska 23, Warszawa 02-526, Polska");
-        dataInfo.put("has_parent_consent", "yes");
-        dataInfo.put("licence_nr", "R5I90032EA");
-        return dataInfo;
+        String url = base_url + "riders/get_by_id/";
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("ids", List.of(elementId));
+
+        Pair<Integer, JsonObject> response = postMethod(url, data);
+        if (response != null) {
+            JsonObject responseData = response.getSecond().getAsJsonArray("riders").get(0).getAsJsonObject();
+            HashMap<String, String> dataInfo = new HashMap<>();
+            JsonObject member = responseData.get("member").getAsJsonObject();
+            dataInfo.put("name", member.get("name").getAsString());
+            dataInfo.put("surname", member.get("surname").getAsString());
+            dataInfo.put("username", member.get("username").getAsString());
+            dataInfo.put("date_of_birth", member.get("date_of_birth").getAsString());
+            dataInfo.put("email", member.get("email").getAsString());
+            dataInfo.put("phone_number", member.get("phone_number").getAsString());
+            JsonObject address = member.get("address").getAsJsonObject();
+            dataInfo.put("address", "ul. " + address.get("street").getAsString() + " " + address.get("street_no").getAsString() + ", " + address.get("city").getAsString() + " " + address.get("postal_code").getAsString() + ", " + address.get("country").getAsString());
+            dataInfo.put("has_parent_consent", responseData.get("parent_consent_id").getAsBoolean() ? "yes" : "no");
+            dataInfo.put("licence_nr", member.get("licence").getAsJsonObject().get("licence_level").getAsString());
+            return dataInfo;
+
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
@@ -38,7 +71,7 @@ public class RidersScrollGUI extends DataScrollTemplate {
         addJLabel("System username: " + dataInfo.get("username") + ", Date of birth: " + dataInfo.get("date_of_birth"), Color.BLACK, fontSmaller, dataInfoPanel, elementWidth, elementHeight);
         addJLabel("Contact: " + dataInfo.get("email") + ", " + dataInfo.get("phone_number"), Color.BLACK, fontSmaller, dataInfoPanel, elementWidth, elementHeight);
         addJLabel(dataInfo.get("address"), Color.BLACK, fontSmaller, dataInfoPanel, elementWidth, elementHeight);
-        addJLabel("Parent consent: " + dataInfo.get("has_parent_consent") + ", Licence no: " + dataInfo.get("licence_nr"), Color.BLACK, fontSmaller, dataInfoPanel, elementWidth, elementHeight);
+        addJLabel("Parent consent: " + dataInfo.get("has_parent_consent") + ", Licence: " + dataInfo.get("licence_nr"), Color.BLACK, fontSmaller, dataInfoPanel, elementWidth, elementHeight);
     }
 
     @Override
@@ -55,7 +88,43 @@ public class RidersScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleRemoveData(int elementId) {
+        String[] options = {"No", "Yes"};
+        int pickedOption = JOptionPane.showOptionDialog(null, "This action is irreversible. Are you sure you want to continue?",
+                "Confirm action", 0, 0, null, options, "No");
 
+        if (pickedOption == 1) {
+            List<Integer> errorCodes = new ArrayList<>();
+            String url = base_url + "riders/deactivate_account/";
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", elementId);
+
+            Pair<Integer, JsonObject> response = postMethod(url, data);
+
+            if (response != null) {
+                JsonObject responseData = response.getSecond();
+                int response_code = response.getFirst();
+                if (response_code != 200) {
+                    errorCodes.add(response_code);
+                }
+            }
+            else {
+                errorCodes.add(-1);
+            }
+
+            if (errorCodes.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Rider deleted successfully.");
+                new RidersScrollGUI(userId, userType).createGUI();
+                frame.setVisible(false);
+            } else {
+                StringBuilder errorText = new StringBuilder();
+                for (Integer errorCode : errorCodes) {
+                    errorText.append(ErrorCodes.getErrorDescription(errorCode)).append(" ");
+                }
+
+                JOptionPane.showMessageDialog(frame, errorText.toString());
+            }
+        }
     }
 
     public RidersScrollGUI(int userId, String userType){

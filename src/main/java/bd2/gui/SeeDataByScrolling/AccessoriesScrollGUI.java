@@ -1,18 +1,35 @@
 package bd2.gui.SeeDataByScrolling;
 
 import bd2.gui.AddDataByForm.AddAccessoryGUI;
+import com.google.gson.JsonObject;
+import kotlin.Pair;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 
+import static bd2.DBRequests.base_url;
+import static bd2.DBRequests.postMethod;
+
 public class AccessoriesScrollGUI extends DataScrollTemplate {
 
-    // [MOCK]
     @Override
     protected void getElementsData() {
-        this.fittingElementsIds = new Integer[]{1,2,3,4,5,6,7,8,9};
-        this.nrOfElements = fittingElementsIds.length;
+        String url = base_url + "accessories/get_all/";
+
+        Pair<Integer, JsonObject> response = postMethod(url, new HashMap<>());
+        if (response != null) {
+            JsonObject responseData = response.getSecond();
+            this.nrOfElements = responseData.getAsJsonArray("accessories").size();
+            this.fittingElementsIds = new Integer[this.nrOfElements];
+            for (int i = 0; i < responseData.getAsJsonArray("accessories").size(); i++) {
+                this.fittingElementsIds[i] = responseData.getAsJsonArray("accessories").get(i).getAsJsonObject().get("id").getAsInt();
+            }
+        }
+        else {
+            this.nrOfElements = 0;
+            this.fittingElementsIds = new Integer[]{};
+        }
     }
 
     // [MOCK]

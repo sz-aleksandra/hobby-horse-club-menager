@@ -36,7 +36,6 @@ public class EmployeesScrollGUI extends DataScrollTemplate {
         }
     }
 
-    // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
         String url = base_url + "employees/get_by_id/";

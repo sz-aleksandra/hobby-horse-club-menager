@@ -11,6 +11,29 @@ public class AddAccessoryGUI extends AddDataTemplate {
         super(userId, userType, "Add Accessory");
     }
 
+    public AddAccessoryGUI(int userId, String userType, int editedElementId) {
+        super(userId, userType, "Edit Accessory");
+        this.editedElementId = editedElementId;
+        this.editMode = true;
+    }
+
+    @Override
+    protected void createCustomGUI() {
+        super.createCustomGUI();
+        if (this.editMode) {
+            populateFieldValues(getAccessoryDataFromDB(this.editedElementId));
+        }
+    }
+
+    // [MOCK]
+    HashMap<String, String> getAccessoryDataFromDB(int elementId) {
+        HashMap<String, String> myMap = new HashMap<String, String>() {{
+            put("Name", "Siodlo");
+            put("Info", "Fajne");
+        }};
+        return myMap;
+    }
+
     @Override
     protected String[] getFieldLabels() {
         String[] fieldLabels = {"Name", "Info"};

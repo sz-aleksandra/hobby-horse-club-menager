@@ -11,6 +11,29 @@ public class AddTrainingGUI extends AddDataTemplate {
         super(userId, userType, "Add Training");
     }
 
+    public AddTrainingGUI(int userId, String userType, int editedElementId) {
+        super(userId, userType, "Edit Training");
+        this.editedElementId = editedElementId;
+        this.editMode = true;
+    }
+
+    @Override
+    protected void createCustomGUI() {
+        super.createCustomGUI();
+        if (this.editMode) {
+            populateFieldValues(getTrainingDataFromDB(this.editedElementId));
+        }
+    }
+
+    // [MOCK]
+    HashMap<String, String> getTrainingDataFromDB(int elementId) {
+        HashMap<String, String> myMap = new HashMap<String, String>() {{
+            put("Type", "Spring Training");
+        }};
+        return myMap;
+    }
+
+
     @Override
     protected String[] getFieldLabels() {
         String[] fieldLabels = {"Type", "Day of the week", "Hour (+AM/PM)", "Trainer", "Group", "Stable"};

@@ -96,7 +96,8 @@ public class GroupScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleEditData(int elementId) {
-
+        new AddGroupGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

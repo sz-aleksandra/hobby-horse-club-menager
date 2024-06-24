@@ -11,6 +11,28 @@ public class AddGroupGUI extends AddDataTemplate {
         super(userId, userType, "Add Group");
     }
 
+    public AddGroupGUI(int userId, String userType, int editedElementId) {
+        super(userId, userType, "Edit Group");
+        this.editedElementId = editedElementId;
+        this.editMode = true;
+    }
+
+    @Override
+    protected void createCustomGUI() {
+        super.createCustomGUI();
+        if (this.editMode) {
+            populateFieldValues(getGroupDataFromDB(this.editedElementId));
+        }
+    }
+
+    // [MOCK]
+    HashMap<String, String> getGroupDataFromDB(int elementId) {
+        HashMap<String, String> myMap = new HashMap<String, String>() {{
+            put("Group trainings", "Training id 1,Training id 3,Training id 4");
+        }};
+        return myMap;
+    }
+
     @Override
     protected String[] getFieldLabels() {
         String[] fieldLabels = {"Group trainings"};

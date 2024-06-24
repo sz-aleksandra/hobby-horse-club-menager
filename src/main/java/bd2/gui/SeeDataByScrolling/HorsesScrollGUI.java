@@ -99,7 +99,8 @@ public class HorsesScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleEditData(int elementId) {
-
+        new AddHorseGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

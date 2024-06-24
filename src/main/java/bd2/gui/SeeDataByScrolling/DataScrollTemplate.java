@@ -3,8 +3,14 @@ package bd2.gui.SeeDataByScrolling;
 import bd2.gui.components.RoundedButton;
 import bd2.gui.components.ScrollElementButton;
 
+import bd2.logic.*;
+
 import javax.swing.*;
+
+import com.google.gson.JsonParser;
+
 import java.awt.*;
+import java.net.http.HttpResponse;
 
 public abstract class DataScrollTemplate extends ScrollGUITemplate {
 
@@ -53,16 +59,16 @@ public abstract class DataScrollTemplate extends ScrollGUITemplate {
     }
 
     protected boolean doesEmployeeHaveWritePermissions(){
-        //[MOCK], pobrac z bazy danych informacje o nazwie pozycji
-        String employeePositionName;
-        if (userId == 1) {
-            employeePositionName = "Owner";
-        } else if (userId == 2) {
-            employeePositionName = "Cleaner";
-        } else {
-            employeePositionName = "Trainer";
-        }
-        return new TableAccessChecker().getAccessType(pageName, employeePositionName).equals("Write");
+		String positionName = "";
+        try {
+            	HttpResponse<String> response = getMemberInfo.getInfo(userId, false);
+				positionName = JsonParser.parseString(response.body()).getAsJsonObject()
+							.getAsJsonArray("employees").get(0).getAsJsonObject()
+							.getAsJsonObject("position").get("name").getAsString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        return "Write".equals(new TableAccessChecker().getAccessType(pageName, positionName));
     }
 
     protected void createCustomGUI() {

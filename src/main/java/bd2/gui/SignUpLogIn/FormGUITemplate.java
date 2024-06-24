@@ -29,6 +29,9 @@ public abstract class FormGUITemplate extends BaseGUI {
     protected String pageName = "";
     protected String finishFormButtonText = "";
 
+    protected boolean editMode = false;
+    protected int editedElementId;
+
     public FormGUITemplate(int userId, String userType) {
         super(userId, userType);
     }
@@ -323,5 +326,7 @@ public abstract class FormGUITemplate extends BaseGUI {
                 }
             }
         }
+//        mainPanel.revalidate();
+//        mainPanel.repaint();
     }
 }

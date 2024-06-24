@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import kotlin.Pair;
 
 import java.util.HashMap;
+import java.util.Map;
+
 import static bd2.DBRequests.base_url;
 import static bd2.DBRequests.postMethod;
 
@@ -13,6 +15,29 @@ public class AddStableGUI extends AddDataTemplate {
 
     public AddStableGUI(int userId, String userType) {
         super(userId, userType, "Add Stable");
+    }
+
+    public AddStableGUI(int userId, String userType, int editedElementId) {
+        super(userId, userType, "Edit Stable");
+        this.editedElementId = editedElementId;
+        this.editMode = true;
+    }
+
+    @Override
+    protected void createCustomGUI() {
+        super.createCustomGUI();
+        if (this.editMode) {
+            populateFieldValues(getStableDataFromDB(this.editedElementId));
+        }
+    }
+
+    // [MOCK]
+    HashMap<String, String> getStableDataFromDB(int elementId) {
+        HashMap<String, String> myMap = new HashMap<String, String>() {{
+            put("Name", "Fajna Stajnia");
+            put("Street", "ul. Kolorowa");
+        }};
+        return myMap;
     }
 
     @Override
@@ -42,6 +67,8 @@ public class AddStableGUI extends AddDataTemplate {
     @Override
     protected Pair<Integer, String> addToDB(HashMap<String, String> textFieldsValues) {
         String url = base_url + "stables/add/";
+
+        //[MOCK] dodac if (this.editMode) -> stables/update
 
         JsonObject stable = new JsonObject();
         stable.addProperty("name", textFieldsValues.get("Name"));

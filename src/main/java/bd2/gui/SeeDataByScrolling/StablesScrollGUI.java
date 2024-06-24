@@ -70,7 +70,7 @@ public class StablesScrollGUI extends DataScrollTemplate {
         frame.setVisible(false);
     }
 
-    // [MOCK]
+    // @TODO: implement edit data
     @Override
     protected void handleEditData(int elementId) {
         System.out.println("Edit stable");

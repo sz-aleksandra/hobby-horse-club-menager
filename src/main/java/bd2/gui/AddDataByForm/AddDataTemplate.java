@@ -17,7 +17,6 @@ abstract public class AddDataTemplate extends FormGUITemplate {
 
     @Override
     protected void finishFormButtonClicked(){
-
         HashMap<String, String> formFieldsValues = getFieldValues();
         Pair<Integer, String> response = addToDB(formFieldsValues);
         if (response.getFirst() == 200 || response.getFirst() == 201) {

@@ -336,6 +336,12 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Username must be unique', MYSQL_ERRNO = 1201;
 END IF;
 
+IF NEW.email IS NOT NULL AND INSTR(NEW.email, '@') = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Email must contain "@" symbol', MYSQL_ERRNO = 1202;
+END IF;
+END //
+
+
 IF NEW.date_of_birth >= CURDATE() THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Date of birth must be in the past', MYSQL_ERRNO = 1202;
 END IF;
@@ -427,9 +433,47 @@ END IF;
 END//
 
 
+CREATE TRIGGER before_insert_or_update_employees
+    BEFORE INSERT ON Employees
+    FOR EACH ROW
+BEGIN
+    DECLARE required_licence_level INT;
+
+    SELECT CAST(RIGHT(licence_id, 1) AS UNSIGNED)
+    INTO required_licence_level
+    FROM Positions
+    WHERE id = NEW.position_id;
+
+    IF NEW.position_id IS NOT NULL AND NEW.member_id IS NOT NULL THEN
+        DECLARE employee_licence_level INT;
+
+    SELECT CAST(RIGHT(licence_id, 1) AS UNSIGNED)
+    INTO employee_licence_level
+    FROM Members
+    WHERE id = NEW.member_id;
+
+    IF employee_licence_level < required_licence_level THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Employee does not meet the required licence level for the position', MYSQL_ERRNO = 1302;
+END IF;
+END IF;
+END //
 
 
+CREATE TRIGGER before_insert_tournaments
+    BEFORE INSERT ON Tournaments
+    FOR EACH ROW
+BEGIN
+    DECLARE judge_coaching_licence_level INT;
 
+    SELECT CAST(RIGHT(coaching_licence_id, 1) AS UNSIGNED)
+    INTO judge_coaching_licence_level
+    FROM Employees
+    WHERE id = NEW.judge_id;
+
+    IF judge_coaching_licence_level < 4 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Judge must have a Coaching Licence Level of 4 or higher', MYSQL_ERRNO = 2001;
+END IF;
+END //
 
 
 

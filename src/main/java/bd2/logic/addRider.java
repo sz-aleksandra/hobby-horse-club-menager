@@ -1,5 +1,6 @@
 package bd2.logic;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.gson.JsonArray;
@@ -30,6 +31,13 @@ public class addRider {
         String group = textFieldsValues.get("Group");
         String license = textFieldsValues.get("License level");
 
+		getMapsnIds mapsNIds = new getMapsnIds();
+		HashMap<String, Integer> groups = mapsNIds.getGroupMap();
+		HashMap<String, Integer> licences = mapsNIds.getLicenceMap();
+
+		Integer groupId = groups.get(group);
+		Integer licenseId = licences.get(license);
+
         try {
             JsonObject riders = new JsonObject();
 
@@ -53,14 +61,14 @@ public class addRider {
             member.addProperty("is_active", true);
 
             JsonObject licence = new JsonObject();
-            licence.addProperty("id", Integer.parseInt(license));
+            licence.addProperty("id", licenseId);
             member.add("licence", licence);
 
             riders.add("member", member);
             riders.addProperty("parent_consent", parentConsent);
 
             JsonObject groupObject = new JsonObject();
-            groupObject.addProperty("id", Integer.parseInt(group));
+            groupObject.addProperty("id", groupId);
             riders.add("group", groupObject);
 
             JsonObject horseObject = new JsonObject();

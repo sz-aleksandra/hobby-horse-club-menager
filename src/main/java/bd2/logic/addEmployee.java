@@ -33,6 +33,11 @@ public class addEmployee {
         String salary = textFieldsValues.get("Salary (PLN)");
         String dateEmployed = textFieldsValues.get("Date employed");
 
+		getMapsnIds mapsNIds = new getMapsnIds();
+		HashMap<String, Integer> licences = mapsNIds.getLicenceMap();
+
+		Integer licenseId = licences.get(license);
+
         try {
             JsonObject employees = new JsonObject();
 
@@ -56,7 +61,7 @@ public class addEmployee {
             member.addProperty("is_active", true);
 
             JsonObject licence = new JsonObject();
-            licence.addProperty("id", Integer.parseInt(license));
+            licence.addProperty("id", licenseId);
             member.add("licence", licence);
 
             employees.add("member", member);

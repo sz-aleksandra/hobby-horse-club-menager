@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction, IntegrityError, DatabaseError
-from horses_database.models import Riders, Members, Addresses, Licences, Classes
+from horses_database.models import Riders, Members, Addresses, Licences, Classes, Groups, Horses
 import json
 
 
@@ -422,7 +422,6 @@ class RidersView:
             return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-
 
     @staticmethod
     @csrf_exempt
@@ -952,6 +951,96 @@ class RidersView:
             rider.member.is_active = False
             rider.member.save()
             return JsonResponse({'message': 'Successfully deactivated account', 'id': rider.id}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    @staticmethod
+    @csrf_exempt
+    def add_to_group(request):
+        """
+        Example JSON request:
+        {
+            "rider_id": 1,
+            "group_id": 1
+        }
+        Example JSON response:
+        {
+            'message': 'Successfully added rider to group',
+            'rider_id': 1
+        }
+        """
+        try:
+            data = json.loads(request.body)
+            rider_id = data.get('rider_id')
+            group_id = data.get('group_id')
+            if not rider_id or not group_id:
+                return JsonResponse({'error': 'Rider_id and group_id must be provided'}, status=400)
+            try:
+                rider = Riders.objects.get(id=rider_id)
+            except Riders.DoesNotExist:
+                return JsonResponse({'error': 'Invalid rider id'}, status=401)
+
+            if not Groups.objects.filter(id=group_id).exists():
+                return JsonResponse({'error': f'Group with ID {group_id} does not exist'}, status=400)
+
+            rider.group_id = group_id
+            rider.save()
+
+            return JsonResponse({'message': 'Successfully added rider to group', 'rider_id': rider.id}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    @staticmethod
+    @csrf_exempt
+    def add_horse(request):
+        """
+        Example JSON request:
+        {
+            "rider_id": 1,
+            "horse_id": 1
+        }
+        Example JSON response:
+        {
+            'message': 'Successfully added horse to rider',
+            'rider_id': 1
+        }
+        """
+        try:
+            data = json.loads(request.body)
+            rider_id = data.get('rider_id')
+            horse_id = data.get('horse_id')
+            if not rider_id or not horse_id:
+                return JsonResponse({'error': 'Rider_id and horse_id must be provided'}, status=400)
+            try:
+                rider = Riders.objects.get(id=rider_id)
+            except Riders.DoesNotExist:
+                return JsonResponse({'error': 'Invalid rider id'}, status=401)
+
+            if not Horses.objects.filter(id=horse_id).exists():
+                return JsonResponse({'error': f'Group with ID {horse_id} does not exist'}, status=400)
+
+            rider.horse_id = horse_id
+            rider.save()
+
+            return JsonResponse({'message': 'Successfully added horse to rider', 'rider_id': rider.id}, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)

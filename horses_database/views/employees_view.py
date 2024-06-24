@@ -447,18 +447,15 @@ class EmployeesView:
                     salary = employee_data.get('salary')
                     date_employed = employee_data.get('date_employed')
 
-                    # Check if Licence ID exists
                     if not Licences.objects.filter(id=licence_id).exists():
                         return JsonResponse({'error': f'Licence with ID {licence_id} does not exist'}, status=400)
 
                     if not Positions.objects.filter(id=position_id).exists():
                         return JsonResponse({'error': f'Position with ID {position_id} does not exist'}, status=400)
 
-                    # Create Address object
                     address = Addresses.objects.create(**address_data)
                     member_data['address_id'] = address.id
 
-                    # Create Member object
                     new_member = Members.objects.create(name=member_data['name'], surname=member_data['surname'],
                                                         username=member_data['username'],
                                                         password=member_data['password'],
@@ -468,7 +465,6 @@ class EmployeesView:
                                                         email=member_data['email'],
                                                         is_active=member_data['is_active'], licence_id=licence_id)
 
-                    # Create Employee object
                     new_employee = Employees.objects.create(member_id=new_member.id, position_id=position_id,
                                                             salary=salary, date_employed=date_employed)
                     new_employee_ids.append(new_employee.id)
@@ -547,7 +543,6 @@ class EmployeesView:
                     salary = employee_data.get('salary')
                     date_employed = employee_data.get('date_employed')
 
-                    # Check if Licence ID exists
                     if not Licences.objects.filter(id=licence_id).exists():
                         return JsonResponse({'error': f'Licence with ID {licence_id} does not exist'}, status=400)
 
@@ -562,11 +557,9 @@ class EmployeesView:
                         return JsonResponse({'error': f"Employee with ID {employee_data.get('id')} does not exist"},
                                             status=400)
 
-                    # Update Address
                     Addresses.objects.filter(id=address_data.get('id')).update(**address_data)
                     member_data['address_id'] = address_data.get('id')
 
-                    # Update Member
                     Members.objects.filter(id=member_data.get('id')).update(
                         name=member_data['name'], surname=member_data['surname'],
                         username=member_data['username'],
@@ -577,7 +570,6 @@ class EmployeesView:
                         email=member_data['email'],
                         is_active=member_data['is_active'], licence_id=licence_id)
 
-                    # Update Employee
                     Employees.objects.filter(id=employee_data.get('id')).update(member_id=member_data.get('id'),
                                                                                 position_id=position_id,
                                                                                 salary=salary,

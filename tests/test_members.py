@@ -7,7 +7,6 @@ from horses_database.models import Members, Addresses, Licences
 class MembersViewTests(TestCase):
 
     def setUp(self):
-        # Create sample data for testing
         self.address1 = Addresses.objects.create(country="USA", city="New York", street="Broadway", street_no="123", postal_code="10001")
         self.address2 = Addresses.objects.create(country="Canada", city="Toronto", street="King Street", street_no="456", postal_code="M5V 1J4")
         self.licence1 = Licences.objects.create(licence_level="Advanced")

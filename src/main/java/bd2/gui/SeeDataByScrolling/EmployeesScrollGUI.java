@@ -77,17 +77,16 @@ public class EmployeesScrollGUI extends DataScrollTemplate {
         addJLabel(dataInfo.get("address"), Color.BLACK, fontSmaller, dataInfoPanel, elementWidth, elementHeight);
     }
 
-    // @TODO: implement add data
     @Override
     protected void handleAddData() {
         new AddEmployeeGUI(userId, userType).createGUI();
         frame.setVisible(false);
     }
 
-    // @TODO: implement edit data
     @Override
     protected void handleEditData(int elementId) {
-        System.out.println("Edit employee");
+        new AddEmployeeGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

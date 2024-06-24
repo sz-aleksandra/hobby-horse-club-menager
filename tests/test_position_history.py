@@ -56,7 +56,6 @@ class PositionsHistoryViewTests(TestCase):
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertIn('ids', response_data)
         new_position_history_id = response_data['ids'][0]
-        # Ensure the new position history is created
         self.assertTrue(PositionsHistory.objects.filter(id=new_position_history_id).exists())
 
     def test_update_position_history(self):
@@ -91,5 +90,4 @@ class PositionsHistoryViewTests(TestCase):
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertIn('ids', response_data)
         deleted_position_history_id = response_data['ids'][0]
-        # Ensure the position history is deleted
         self.assertFalse(PositionsHistory.objects.filter(id=deleted_position_history_id).exists())

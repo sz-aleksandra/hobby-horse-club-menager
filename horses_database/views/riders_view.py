@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction, IntegrityError, DatabaseError
-from horses_database.models import Riders, Members, Addresses, Licences, Classes
+from horses_database.models import Riders, Members, Addresses, Licences, Classes, Groups, Horses
 import json
 
 
@@ -98,7 +98,7 @@ class RidersView:
                             "licence_level": rider['member__licence__licence_level'],
                         }
                     },
-                    "parent_consent": rider['parent_consent'],  # Poprawiona nazwa pola
+                    "parent_consent": rider['parent_consent'],
                     "group": {
                         "id": rider['group_id'],
                         "name": rider['group__name'],
@@ -221,7 +221,7 @@ class RidersView:
                             "licence_level": rider['member__licence__licence_level'],
                         }
                     },
-                    "parent_consent": rider['parent_consent'],  # Poprawiona nazwa pola
+                    "parent_consent": rider['parent_consent'],
                     "group": {
                         "id": rider['group_id'],
                         "name": rider['group__name'],
@@ -423,7 +423,6 @@ class RidersView:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
-
     @staticmethod
     @csrf_exempt
     def add_rider(request):
@@ -484,11 +483,9 @@ class RidersView:
                     horse_id = rider_data.get('horse', {}).get('id')
                     parent_consent = rider_data.get('parent_consent', False)
 
-                    # Create Address object
                     address_data = member_data.get('address', {})
                     address = Addresses.objects.create(**address_data)
 
-                    # Create Member object
                     licence_id = member_data.get('licence', {}).get('id')
                     new_member = Members.objects.create(
                         name=member_data.get('name'),
@@ -503,7 +500,6 @@ class RidersView:
                         licence_id=licence_id,
                     )
 
-                    # Create Rider object
                     new_rider = Riders.objects.create(
                         member_id=new_member.id,
                         group_id=group_id,
@@ -621,13 +617,11 @@ class RidersView:
                             {'error': 'ID, member_id, group_id, horse_id are required fields'},
                             status=400
                         )
-                    # Check if Member and Licence IDs exist
                     if not Members.objects.filter(id=member_id).exists():
                         return JsonResponse({'error': f'Member with ID {member_id} does not exist'}, status=400)
                     if not Licences.objects.filter(id=licence_id).exists():
                         return JsonResponse({'error': f'Licence with ID {licence_id} does not exist'}, status=400)
 
-                    # Update Address if provided
                     if address_data.get('id'):
                         Addresses.objects.filter(id=address_data.get('id')).update(
                             country=address_data.get('country'),
@@ -637,7 +631,6 @@ class RidersView:
                             postal_code=address_data.get('postal_code')
                         )
 
-                    # Update Member
                     Members.objects.filter(id=member_id).update(
                         name=member_data.get('name'),
                         surname=member_data.get('surname'),
@@ -651,7 +644,6 @@ class RidersView:
                         address_id=address_data.get('id')
                     )
 
-                    # Update rider
                     Riders.objects.filter(id=rider_id).update(
                         member_id=member_id,
                         parent_consent=parent_consent,
@@ -959,6 +951,96 @@ class RidersView:
             rider.member.is_active = False
             rider.member.save()
             return JsonResponse({'message': 'Successfully deactivated account', 'id': rider.id}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    @staticmethod
+    @csrf_exempt
+    def add_to_group(request):
+        """
+        Example JSON request:
+        {
+            "rider_id": 1,
+            "group_id": 1
+        }
+        Example JSON response:
+        {
+            'message': 'Successfully added rider to group',
+            'rider_id': 1
+        }
+        """
+        try:
+            data = json.loads(request.body)
+            rider_id = data.get('rider_id')
+            group_id = data.get('group_id')
+            if not rider_id or not group_id:
+                return JsonResponse({'error': 'Rider_id and group_id must be provided'}, status=400)
+            try:
+                rider = Riders.objects.get(id=rider_id)
+            except Riders.DoesNotExist:
+                return JsonResponse({'error': 'Invalid rider id'}, status=401)
+
+            if not Groups.objects.filter(id=group_id).exists():
+                return JsonResponse({'error': f'Group with ID {group_id} does not exist'}, status=400)
+
+            rider.group_id = group_id
+            rider.save()
+
+            return JsonResponse({'message': 'Successfully added rider to group', 'rider_id': rider.id}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    @staticmethod
+    @csrf_exempt
+    def add_horse(request):
+        """
+        Example JSON request:
+        {
+            "rider_id": 1,
+            "horse_id": 1
+        }
+        Example JSON response:
+        {
+            'message': 'Successfully added horse to rider',
+            'rider_id': 1
+        }
+        """
+        try:
+            data = json.loads(request.body)
+            rider_id = data.get('rider_id')
+            horse_id = data.get('horse_id')
+            if not rider_id or not horse_id:
+                return JsonResponse({'error': 'Rider_id and horse_id must be provided'}, status=400)
+            try:
+                rider = Riders.objects.get(id=rider_id)
+            except Riders.DoesNotExist:
+                return JsonResponse({'error': 'Invalid rider id'}, status=401)
+
+            if not Horses.objects.filter(id=horse_id).exists():
+                return JsonResponse({'error': f'Group with ID {horse_id} does not exist'}, status=400)
+
+            rider.horse_id = horse_id
+            rider.save()
+
+            return JsonResponse({'message': 'Successfully added horse to rider', 'rider_id': rider.id}, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)

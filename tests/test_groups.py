@@ -10,7 +10,6 @@ class GroupsViewTestCase(TestCase):
         self.client = Client()
 
     def test_get_all_groups(self):
-        # Create sample groups
         Groups.objects.create(name="Group A", max_group_members=10)
         Groups.objects.create(name="Group B", max_group_members=15)
 
@@ -49,7 +48,6 @@ class GroupsViewTestCase(TestCase):
         self.assertTrue('ids' in data)
         self.assertEqual(len(data['ids']), 2)
 
-        # Verify if groups were actually created in the database
         self.assertEqual(Groups.objects.filter(name='Group C').count(), 1)
         self.assertEqual(Groups.objects.filter(name='Group D').count(), 1)
 
@@ -67,7 +65,6 @@ class GroupsViewTestCase(TestCase):
         self.assertTrue('ids' in data)
         self.assertEqual(len(data['ids']), 2)
 
-        # Verify if groups were actually updated in the database
         updated_group_a = Groups.objects.get(id=group_a.id)
         updated_group_b = Groups.objects.get(id=group_b.id)
         self.assertEqual(updated_group_a.name, 'Updated Group A')
@@ -86,5 +83,4 @@ class GroupsViewTestCase(TestCase):
         self.assertTrue('deleted_ids' in data)
         self.assertEqual(len(data['deleted_ids']), 2)
 
-        # Verify if groups were actually deleted from the database
         self.assertEqual(Groups.objects.filter(id__in=data['deleted_ids']).count(), 0)

@@ -49,7 +49,8 @@ public class RidersScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleEditData(int elementId) {
-
+        new AddRiderGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

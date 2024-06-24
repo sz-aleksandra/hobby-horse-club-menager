@@ -43,7 +43,7 @@ public class RiderFormGUI extends RegisterUserFormTemplate {
             years[i] = baseYear-i;
         }
 
-        Object[] fieldParameters = {15, 15, 15, 15, new Integer[][]{days, months, years}, 20, 10, 15, 15, 15, 6, 6, 40, 6, 6, 6};
+        Object[] fieldParameters = {15, 15, 15, 15, new Integer[][]{days, months, years}, 20, 10, 15, 15, 15, 6, 6, 20, 6, 6, 6};
         // new String[][]{new String[]{"Credit card", "Debet card", "Bank transfer", "BLIK", "Cash"}}
         return fieldParameters;
     }

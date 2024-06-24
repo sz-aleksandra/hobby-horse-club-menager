@@ -33,7 +33,7 @@ public class EmployeeFormGUI extends RegisterUserFormTemplate {
 
     @Override
     protected String[] getFieldTypes() {
-        String[] fieldTypes = {"text", "password", "text", "text", "comboBoxDate", "text", "text", "text", "text", "text", "text", "text", "text", "text", "text", "comboBoxDate"};
+        String[] fieldTypes = {"text", "password", "text", "text", "comboBoxDate", "text", "text", "text", "text", "text", "text", "text", "text", "comboBoxString", "text", "comboBoxDate"};
         return fieldTypes;
     }
 
@@ -55,7 +55,9 @@ public class EmployeeFormGUI extends RegisterUserFormTemplate {
             years[i] = baseYear-i;
         }
 
-        Object[] fieldParameters = {15, 15, 15, 15, new Integer[][]{days, months, years}, 20, 10, 15, 15, 6, 15, 6, 6, 15, 10, new Integer[][]{days, months, years}};
+        String[][] positions = new String[][]{{"Trainer", "Senior Trainer","Instructor","Senior Instructor","Director of Training","Veterinarian","Caretaker", "Administrator","Coordinator","Technician","IT Specialist","Marketer","HR"}};
+
+        Object[] fieldParameters = {15, 15, 15, 15, new Integer[][]{days, months, years}, 20, 10, 15, 15, 6, 15, 6, 6, positions, 10, new Integer[][]{days, months, years}};
 
         return fieldParameters;
     }

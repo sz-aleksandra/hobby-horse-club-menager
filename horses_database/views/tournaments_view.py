@@ -361,17 +361,14 @@ class TournamentsView:
                     address_data = tournament_data.pop('address')
                     judge_id = tournament_data.get('judge', {}).get('id')
 
-                    # Check if Licence ID exists
                     if judge_id:
                         if not Employees.objects.filter(id=judge_id).exists():
                             return JsonResponse({'error': f'Employee with ID {judge_id} does not exist'}, status=400)
 
-                    # Create Address object
                     if address_data:
                         address = Addresses.objects.create(**address_data)
                         tournament_data['address_id'] = address.id
 
-                    # Create Tournament object
                     new_tournament = Tournaments.objects.create(name=tournament_data.get('name'),
                                                                 date=tournament_data.get('date'),
                                                                 address_id=address.id,
@@ -433,7 +430,6 @@ class TournamentsView:
                     address_id = address_data.get('id')
                     judge_id = tournament_data.get('judge', {}).get('id')
 
-                    # Check if Licence ID exists
                     if not Employees.objects.filter(id=judge_id).exists():
                         return JsonResponse({'error': f'Employee with ID {judge_id} does not exist'}, status=400)
 
@@ -443,7 +439,6 @@ class TournamentsView:
                     if not Tournaments.objects.filter(id=tournament_id).exists():
                         return JsonResponse({'error': f'Tournament with ID {tournament_id} does not exist'}, status=400)
 
-                    # Update Address
                     address = Addresses.objects.filter(id=address_id).update(country=address_data.get('country'),
                                                                              city=address_data.get('city'),
                                                                              street=address_data.get('street'),
@@ -451,7 +446,6 @@ class TournamentsView:
                                                                              postal_code=address_data.get(
                                                                                  'postal_code'))
 
-                    # Update Tournament
                     Tournaments.objects.filter(id=tournament_id).update(
                         name=tournament_data.get('name'),
                         date=tournament_data.get('date'),

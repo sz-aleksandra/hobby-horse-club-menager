@@ -98,7 +98,7 @@ class RidersView:
                             "licence_level": rider['member__licence__licence_level'],
                         }
                     },
-                    "parent_consent": rider['parent_consent'],  # Poprawiona nazwa pola
+                    "parent_consent": rider['parent_consent'],
                     "group": {
                         "id": rider['group_id'],
                         "name": rider['group__name'],
@@ -221,7 +221,7 @@ class RidersView:
                             "licence_level": rider['member__licence__licence_level'],
                         }
                     },
-                    "parent_consent": rider['parent_consent'],  # Poprawiona nazwa pola
+                    "parent_consent": rider['parent_consent'],
                     "group": {
                         "id": rider['group_id'],
                         "name": rider['group__name'],
@@ -484,11 +484,9 @@ class RidersView:
                     horse_id = rider_data.get('horse', {}).get('id')
                     parent_consent = rider_data.get('parent_consent', False)
 
-                    # Create Address object
                     address_data = member_data.get('address', {})
                     address = Addresses.objects.create(**address_data)
 
-                    # Create Member object
                     licence_id = member_data.get('licence', {}).get('id')
                     new_member = Members.objects.create(
                         name=member_data.get('name'),
@@ -503,7 +501,6 @@ class RidersView:
                         licence_id=licence_id,
                     )
 
-                    # Create Rider object
                     new_rider = Riders.objects.create(
                         member_id=new_member.id,
                         group_id=group_id,
@@ -621,13 +618,11 @@ class RidersView:
                             {'error': 'ID, member_id, group_id, horse_id are required fields'},
                             status=400
                         )
-                    # Check if Member and Licence IDs exist
                     if not Members.objects.filter(id=member_id).exists():
                         return JsonResponse({'error': f'Member with ID {member_id} does not exist'}, status=400)
                     if not Licences.objects.filter(id=licence_id).exists():
                         return JsonResponse({'error': f'Licence with ID {licence_id} does not exist'}, status=400)
 
-                    # Update Address if provided
                     if address_data.get('id'):
                         Addresses.objects.filter(id=address_data.get('id')).update(
                             country=address_data.get('country'),
@@ -637,7 +632,6 @@ class RidersView:
                             postal_code=address_data.get('postal_code')
                         )
 
-                    # Update Member
                     Members.objects.filter(id=member_id).update(
                         name=member_data.get('name'),
                         surname=member_data.get('surname'),
@@ -651,7 +645,6 @@ class RidersView:
                         address_id=address_data.get('id')
                     )
 
-                    # Update rider
                     Riders.objects.filter(id=rider_id).update(
                         member_id=member_id,
                         parent_consent=parent_consent,

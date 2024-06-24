@@ -30,7 +30,6 @@ public class AddHorseGUI extends AddDataTemplate {
         }
     }
 
-    // [MOCK]
     HashMap<String, String> getHorseDataFromDB(int elementId) {
         HashMap<String, String> myMap = new HashMap<String, String>() {{
             put("Bread", "Appaloosa");

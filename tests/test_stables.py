@@ -8,7 +8,6 @@ class StablesViewTestCase(TestCase):
     def setUp(self):
         self.client = Client()
 
-        # Tworzenie przykładowych adresów
         self.address1 = Addresses.objects.create(
             country='United States',
             city='Test City 1',
@@ -25,7 +24,6 @@ class StablesViewTestCase(TestCase):
             postal_code='20000'
         )
 
-        # Tworzenie przykładowych stajni z powiązanymi adresami
         self.stable1 = Stables.objects.create(
             name='Test Stable 1',
             address=self.address1
@@ -80,7 +78,6 @@ class StablesViewTestCase(TestCase):
         self.assertEqual(response_data['message'], 'Stables added successfully')
         self.assertEqual(len(response_data['ids']), 2)
 
-        # Sprawdzanie, czy stajnie zostały dodane do bazy danych
         new_stables = Stables.objects.filter(id__in=response_data['ids'])
         self.assertEqual(new_stables.count(), 2)
 
@@ -119,7 +116,6 @@ class StablesViewTestCase(TestCase):
         self.assertEqual(response_data['message'], 'Stables updated successfully')
         self.assertEqual(len(response_data['ids']), 2)
 
-        # Sprawdzanie, czy stajnie zostały zaktualizowane w bazie danych
         updated_stable1 = Stables.objects.get(id=self.stable1.id)
         updated_stable2 = Stables.objects.get(id=self.stable2.id)
         self.assertEqual(updated_stable1.name, 'Updated Test Stable 1')

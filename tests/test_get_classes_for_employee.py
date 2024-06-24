@@ -67,7 +67,6 @@ class GetClassesForEmployeeTestCase(TestCase):
         self.client = Client()
 
     def test_get_classes_for_employee_valid_id(self):
-        # Test retrieving classes for a valid employee ID
         url = reverse('get_classes_for_employee')
         data = {'id': self.employee.id}
         response = self.client.post(url, json.dumps(data), content_type='application/json')
@@ -79,12 +78,10 @@ class GetClassesForEmployeeTestCase(TestCase):
         self.assertEqual(len(classes), 1)
         class_data = classes[0]
 
-        # Validate class data structure
         self.assertEqual(class_data['id'], self.class_.id)
         self.assertEqual(class_data['type'], self.class_.type)
         self.assertEqual(class_data['date'], '2023-06-15')
 
-        # Validate trainer data
         trainer_data = class_data['trainer']
         self.assertEqual(trainer_data['id'], self.employee.id)
         self.assertEqual(trainer_data['member']['id'], self.member.id)
@@ -92,13 +89,11 @@ class GetClassesForEmployeeTestCase(TestCase):
         self.assertEqual(trainer_data['salary'], '1000.00')
         self.assertEqual(trainer_data['date_employed'], '1985-05-15')
 
-        # Validate group data
         group_data = class_data['group']
         self.assertEqual(group_data['id'], self.group.id)
         self.assertEqual(group_data['name'], self.group.name)
         self.assertEqual(group_data['max_group_members'], self.group.max_group_members)
 
-        # Validate stable data
         stable_data = class_data['stable']
         self.assertEqual(stable_data['id'], self.stable.id)
         self.assertEqual(stable_data['name'], self.stable.name)

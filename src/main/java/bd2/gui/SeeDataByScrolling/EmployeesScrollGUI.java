@@ -50,7 +50,8 @@ public class EmployeesScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleEditData(int elementId) {
-
+        new AddEmployeeGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

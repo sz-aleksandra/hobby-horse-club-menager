@@ -307,7 +307,7 @@ public abstract class FormGUITemplate extends BaseGUI {
                 List<JComboBox> processedDateComboBoxes = dateComboBoxes.get(dateComboBoxesLabels.indexOf(fieldLabel));
                 LocalDate processedDate = LocalDate.parse(fieldValue);
                 processedDateComboBoxes.get(0).setSelectedItem(processedDate.getDayOfMonth());
-                processedDateComboBoxes.get(1).setSelectedItem(processedDate.getMonth());
+                processedDateComboBoxes.get(1).setSelectedItem(processedDate.getMonthValue());
                 processedDateComboBoxes.get(2).setSelectedItem(processedDate.getYear());
             }
             else if (checkBoxesLabels.contains(fieldLabel)) {

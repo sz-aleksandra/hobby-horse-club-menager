@@ -66,7 +66,7 @@ class DeactivateAccountTestCase(TestCase):
 
     def test_deactivate_account_missing_id(self):
         url = reverse('deactivate_rider_account')
-        data = {}  # No ID provided
+        data = {}
         response = self.client.post(url, json.dumps(data), content_type='application/json')
 
         self.assertEqual(response.status_code, 400)

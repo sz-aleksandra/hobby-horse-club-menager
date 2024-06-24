@@ -80,7 +80,6 @@ class HorsesAccessoriesViewTestCase(TestCase):
         self.assertTrue('ids' in data)
         self.assertEqual(len(data['ids']), 1)
 
-        # Verify if horses accessory was actually created in the database
         created_horses_accessory = HorsesAccessories.objects.get(id=data['ids'][0])
         self.assertEqual(created_horses_accessory.horse.id, new_horse.id)
         self.assertEqual(created_horses_accessory.accessory.id, new_accessory.id)
@@ -112,7 +111,6 @@ class HorsesAccessoriesViewTestCase(TestCase):
         self.assertTrue('ids' in data)
         self.assertEqual(len(data['ids']), 1)
 
-        # Verify if horses accessory was actually updated in the database
         updated_horses_accessory = HorsesAccessories.objects.get(id=self.horses_accessory.id)
         self.assertEqual(updated_horses_accessory.horse.id, updated_horse.id)
         self.assertEqual(updated_horses_accessory.accessory.id, updated_accessory.id)
@@ -127,6 +125,5 @@ class HorsesAccessoriesViewTestCase(TestCase):
         self.assertTrue('ids' in data)
         self.assertEqual(len(data['ids']), 1)
 
-        # Verify if horses accessory was actually deleted from the database
         with self.assertRaises(HorsesAccessories.DoesNotExist):
             HorsesAccessories.objects.get(id=self.horses_accessory.id)

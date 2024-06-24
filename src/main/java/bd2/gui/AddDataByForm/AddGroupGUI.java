@@ -1,11 +1,9 @@
 package bd2.gui.AddDataByForm;
 
 import bd2.gui.SeeDataByScrolling.GroupsScrollGUI;
-import bd2.gui.SeeDataByScrolling.HorsesScrollGUI;
+import kotlin.Pair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class AddGroupGUI extends AddDataTemplate {
 
@@ -39,21 +37,12 @@ public class AddGroupGUI extends AddDataTemplate {
     }
 
     @Override
-    protected List<Integer> validateInput(HashMap<String, String> textFieldsValues) {
-        /*List <Integer> errorCodes = new ClientValidator(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Name"), textFieldsValues.get("Surname"),
-                textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
-                textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), LocalDate.parse(textFieldsValues.get("Date of birth")),
-                textFieldsValues.get("Nationality"), textFieldsValues.get("Gender")).validateCredentials();*/
-        List <Integer> errorCodes = new ArrayList<>(); // [MOCK]
-        return errorCodes;
-    }
-
-    @Override
-    protected void addToDB(HashMap<String, String> textFieldsValues) {
+    protected Pair<Integer, String> addToDB(HashMap<String, String> textFieldsValues) {
         /*new AddNewUser(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Name"), textFieldsValues.get("Surname"),
                 textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
                 textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), LocalDate.parse(textFieldsValues.get("Date of birth")),
                 textFieldsValues.get("Nationality"), textFieldsValues.get("Gender"), true).insertIntoDatabase(); [MOCK]*/
+        return null;
     }
 
     public static void main(String[] args) {

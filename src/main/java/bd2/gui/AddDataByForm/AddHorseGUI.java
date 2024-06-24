@@ -35,13 +35,11 @@ public class AddHorseGUI extends AddDataTemplate {
         }
     }
 
-    // [MOCK]
     HashMap<String, String> getHorseDataFromDB(int elementId) {
 		HashMap<String, String> horseMap = new HashMap<>();
 
         try {
             HttpResponse<String> response = getInfoById.getInfo(elementId, "horses/get_by_id/");
-			
             JsonObject jsonObject = JsonParser.parseString(response.body()).getAsJsonObject();
 
             JsonArray jsonHorsesArray = jsonObject.getAsJsonArray("horses");

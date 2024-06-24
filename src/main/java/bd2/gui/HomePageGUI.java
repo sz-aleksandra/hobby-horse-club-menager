@@ -132,20 +132,34 @@ public class HomePageGUI extends BaseGUI {
             buttonsRow1.add(seeTrainingsButton); buttonsRow1.add(Box.createHorizontalGlue());
             buttonsRow1.add(seeTournamentsButton); buttonsRow1.add(Box.createHorizontalGlue());
 
-            JPanel buttonsRow2 = new JPanel();
+			JPanel buttonsRow2 = new JPanel();
             buttonsRow2.setLayout(new BoxLayout(buttonsRow2, BoxLayout.LINE_AXIS));
             buttonsRow2.setBackground(bgColor);
+            seeStablesButton = new MenuButton("See stables", "/icons/stable.png");
+            seeStablesButton.addActionListener(e->seeStablesAction());
+            seeHorsesButton = new MenuButton("See horses", "/icons/horse.png");
+            seeHorsesButton.addActionListener(e->seeHorsesAction());
+            seeAccessoriesButton = new MenuButton("See accessories", "/icons/accessory.png");
+            seeAccessoriesButton.addActionListener(e->seeAccessoriesAction());
+            buttonsRow2.add(seeStablesButton); buttonsRow2.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            buttonsRow2.add(seeHorsesButton); buttonsRow2.add(Box.createHorizontalGlue());
+            buttonsRow2.add(seeAccessoriesButton); buttonsRow2.add(Box.createHorizontalGlue());
+
+            JPanel buttonsRow3 = new JPanel();
+            buttonsRow3.setLayout(new BoxLayout(buttonsRow3, BoxLayout.LINE_AXIS));
+            buttonsRow3.setBackground(bgColor);
             seeLicenceButton = new MenuButton("See your licence", "/icons/licence.png");
             seeLicenceButton.addActionListener(e->seeLicenceAction());
             deactivateAccountButton = new MenuButton("Deactivate account", "/icons/deactivate.png");
             deactivateAccountButton.fillColor = statusWrongLighter;
             deactivateAccountButton.hoverColor = statusWrong;
             deactivateAccountButton.addActionListener(e->deactivateAccountAction());
-            buttonsRow2.add(seeLicenceButton); buttonsRow2.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
-            buttonsRow2.add(deactivateAccountButton); buttonsRow2.add(Box.createHorizontalGlue());
+            buttonsRow3.add(seeLicenceButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
+            buttonsRow3.add(deactivateAccountButton); buttonsRow3.add(Box.createHorizontalGlue());
 
             buttonsRowsPanel.add(buttonsRow1); buttonsRowsPanel.add(Box.createVerticalGlue());
             buttonsRowsPanel.add(buttonsRow2); buttonsRowsPanel.add(Box.createVerticalGlue());
+            buttonsRowsPanel.add(buttonsRow3); buttonsRowsPanel.add(Box.createVerticalGlue());
         } else if (userType.equals("Employee")) {
             JPanel buttonsRow1 = new JPanel();
             buttonsRow1.setLayout(new BoxLayout(buttonsRow1, BoxLayout.LINE_AXIS));

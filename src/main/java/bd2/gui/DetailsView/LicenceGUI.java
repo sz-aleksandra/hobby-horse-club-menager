@@ -4,8 +4,15 @@ import bd2.gui.BaseGUI;
 import bd2.gui.HomePageGUI;
 import bd2.gui.components.LogoPanel;
 import bd2.gui.components.UndoButton;
+import bd2.logic.getInfoById;
+import bd2.logic.getMemberInfo;
+
 import javax.swing.*;
+
+import com.google.gson.JsonParser;
+
 import java.awt.*;
+import java.net.http.HttpResponse;
 
 public class LicenceGUI extends BaseGUI {
 
@@ -31,12 +38,31 @@ public class LicenceGUI extends BaseGUI {
         licenceInfoPanel.setMaximumSize(new Dimension(frameWidth, frameHeight - logoPanelHeight - footerHeight - gap - gap2*2));
 
         licenceInfoPanel.add(Box.createVerticalGlue());
-        boolean hasLicence = true; //[MOCK]
-        if (hasLicence) {
-            //[MOCK]:
-            JLabel licenceNumber = new JLabel("Licence number: " + "R5I90032EA", JLabel.LEFT);
+
+		String name = "";
+		String surname = "";
+		String licenceLevel = "";
+
+		try {
+            HttpResponse<String> response = getInfoById.getInfo(userId, "members/get_by_id/");
+			
+			String memberName = JsonParser.parseString(response.body()).getAsJsonObject()
+					   .getAsJsonArray("members").get(0).getAsJsonObject().get("name").getAsString();
+			String memberSurname = JsonParser.parseString(response.body()).getAsJsonObject()
+					   .getAsJsonArray("members").get(0).getAsJsonObject().get("surname").getAsString();
+			String memberLicence = JsonParser.parseString(response.body()).getAsJsonObject()
+					   .getAsJsonArray("members").get(0).getAsJsonObject().getAsJsonObject("licence").get("licence_level").getAsString();
+			name = memberName;
+			surname = memberSurname;
+			licenceLevel = memberLicence;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+        if ((!licenceLevel.equals("No licence")) && (!licenceLevel.equals("No Coaching Licence"))) {
+            JLabel licenceNumber = new JLabel(licenceLevel, JLabel.LEFT);
             licenceNumber.setFont(fontBiggerBold);
-            JLabel licenceHolder = new JLabel("Issued for: " + "Ola" + " " + "Nowak", JLabel.LEFT);
+            JLabel licenceHolder = new JLabel("Issued for: " + name + " " + surname, JLabel.LEFT);
             licenceHolder.setFont(fontBiggerBold);
             JLabel licenceInfo = new JLabel("*This licence allows you to lawfully ride hobby horses.", JLabel.LEFT);
             licenceInfo.setFont(fontBigger);

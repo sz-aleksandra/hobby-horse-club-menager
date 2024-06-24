@@ -3,11 +3,17 @@ package bd2.gui.SeeDataByScrolling;
 import bd2.gui.AddDataByForm.AddHorseGUI;
 import bd2.gui.components.ScrollElementButton;
 import bd2.logic.ErrorCodes;
+import bd2.logic.getInfoById;
+
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import kotlin.Pair;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.List;
 
@@ -15,11 +21,21 @@ import static bd2.DBRequests.base_url;
 import static bd2.DBRequests.postMethod;
 
 public class HorsesScrollGUI extends DataScrollTemplate {
-
-	boolean[] doesUserChooseThisHorse = {true, false, false, true, false, true, true};
+	boolean[] doesUserChooseThisHorse;
+	int horseId = 0;
 
     @Override
     protected void getElementsData() {
+
+		try {
+			HttpResponse<String> response = getInfoById.getInfo(userId, "riders/get_by_id/");
+				
+			horseId = JsonParser.parseString(response.body()).getAsJsonObject()
+					.getAsJsonArray("riders").get(0).getAsJsonObject().getAsJsonObject("horse").get("id").getAsInt();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
         String url = base_url + "horses/get_all/";
 
         Pair<Integer, JsonObject> response = postMethod(url, new HashMap<>());
@@ -35,6 +51,11 @@ public class HorsesScrollGUI extends DataScrollTemplate {
             this.nrOfElements = 0;
             this.fittingElementsIds = new Integer[]{};
         }
+
+		doesUserChooseThisHorse = new boolean[this.fittingElementsIds.length];
+		if (horseId != 0) {
+			doesUserChooseThisHorse[horseId - 1] = true;
+		}
     }
 
     @Override
@@ -81,20 +102,20 @@ public class HorsesScrollGUI extends DataScrollTemplate {
         if (userType.equals("Rider")) {
             if (this.doesUserChooseThisHorse[indexOfElementInFittingElements])
             {
-                ScrollElementButton unregisterButton = new ScrollElementButton("Cancel", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
+                ScrollElementButton unregisterButton = new ScrollElementButton("Select", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
                 unregisterButton.addActionListener(actionEvent -> {
                     //[MOCK]
                     this.doesUserChooseThisHorse[indexOfElementInFittingElements] = false;
-                    JOptionPane.showMessageDialog(frame, "Successfully cancelled trainings.");
+                    JOptionPane.showMessageDialog(frame, "Successfully selected horse!");
                     switchRegisterButtons(elementId, dataPanel);
                 });
                 dataPanel.add(unregisterButton);
             } else {
-                ScrollElementButton registerButton = new ScrollElementButton("Register", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
+                ScrollElementButton registerButton = new ScrollElementButton("Deselect", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
                 registerButton.addActionListener(actionEvent -> {
                     //[MOCK]
                     this.doesUserChooseThisHorse[indexOfElementInFittingElements] = true;
-                    JOptionPane.showMessageDialog(frame, "Successfully registered for trainings!");
+                    JOptionPane.showMessageDialog(frame, "Successfully deselected horse!");
                     switchRegisterButtons(elementId, dataPanel);
                 });
                 dataPanel.add(registerButton);

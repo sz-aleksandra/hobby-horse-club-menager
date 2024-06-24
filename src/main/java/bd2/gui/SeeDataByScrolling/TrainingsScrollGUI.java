@@ -1,36 +1,85 @@
 package bd2.gui.SeeDataByScrolling;
 
-import bd2.gui.AddDataByForm.AddStableGUI;
-import bd2.gui.AddDataByForm.AddTournamentGUI;
 import bd2.gui.AddDataByForm.AddTrainingGUI;
 import bd2.gui.components.ScrollElementButton;
+import bd2.logic.ErrorCodes;
+import com.google.gson.JsonObject;
+import kotlin.Pair;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static bd2.DBRequests.base_url;
+import static bd2.DBRequests.postMethod;
 
 public class TrainingsScrollGUI extends DataScrollTemplate {
-
-    //[MOCK] Tworze tymczasowe pole klasy, powinna to byc funkcja z logic, ktora wykonujemy gdy chcemy sprawdzic czy danu user jest na trening juz zapisany
-    boolean[] isUserRegisteredForTraining = {true, false, false, true, false, true, true};
-
-    //[MOCK]
     @Override
     protected void getElementsData() {
-        this.fittingElementsIds = new Integer[]{1, 2, 3, 4, 5, 6, 7};
-        this.nrOfElements = fittingElementsIds.length;
+        String url;
+        Map<String, Object> data = new HashMap<>();
+        if (userType.equals("Rider")) {
+            url = base_url + "riders/get_classes_for_rider/";
+            data.put("id", userId);
+        }
+        else {
+            url = base_url + "employees/get_by_id/";
+            data.put("ids", List.of(userId));
+
+            Pair<Integer, JsonObject> responseInternal = postMethod(url, data);
+            if (responseInternal != null) {
+                JsonObject rDataInternal = responseInternal.getSecond().get("employees").getAsJsonArray().get(0).getAsJsonObject();
+                if (rDataInternal.get("position").getAsJsonObject().get("name").getAsString().equals("Owner")) {
+                    url = base_url + "classes/get_all/";
+                }
+                else {
+                    url = base_url + "employees/get_classes_for_employee/";
+                    data.put("id", userId);
+                }
+            }
+        }
+
+        Pair<Integer, JsonObject> response = postMethod(url, data);
+        if (response != null) {
+            JsonObject responseData = response.getSecond();
+            this.nrOfElements = responseData.getAsJsonArray("classes").size();
+            this.fittingElementsIds = new Integer[this.nrOfElements];
+            for (int i = 0; i < responseData.getAsJsonArray("classes").size(); i++) {
+                this.fittingElementsIds[i] = responseData.getAsJsonArray("classes").get(i).getAsJsonObject().get("id").getAsInt();
+            }
+        }
+        else {
+            this.nrOfElements = 0;
+            this.fittingElementsIds = new Integer[]{};
+        }
     }
 
-    // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> dataInfo = new HashMap<>();
-        dataInfo.put("type", "Jumping");
-        dataInfo.put("date", "Mondays, 3PM");
-        dataInfo.put("trainer", "Adam Kaczka");
-        dataInfo.put("group", "3");
-        dataInfo.put("stable", "Horse Palace, ul. Ogrodowa 5");
-        return dataInfo;
+        String url = base_url + "classes/get_by_id/";
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("ids", List.of(elementId));
+
+        Pair<Integer, JsonObject> response = postMethod(url, data);
+        if (response != null) {
+            JsonObject responseData = response.getSecond().getAsJsonArray("classes").get(0).getAsJsonObject();
+            HashMap<String, String> dataInfo = new HashMap<>();
+            dataInfo.put("type", responseData.get("type").getAsString());
+            dataInfo.put("date", responseData.get("date").getAsString());
+            String trainer = responseData.get("trainer").getAsJsonObject().get("member").getAsJsonObject().get("name").getAsString()
+                    + " " + responseData.get("trainer").getAsJsonObject().get("member").getAsJsonObject().get("surname").getAsString();
+            dataInfo.put("trainer", trainer);
+            dataInfo.put("group", responseData.get("group").getAsJsonObject().get("name").getAsString());
+            dataInfo.put("stable", responseData.get("stable").getAsJsonObject().get("name").getAsString());
+            return dataInfo;
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
@@ -83,7 +132,43 @@ public class TrainingsScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleRemoveData(int elementId) {
-        // Handle remove data
+        System.out.println("Removing training with id: " + elementId);
+        String[] options = {"No", "Yes"};
+        int pickedOption = JOptionPane.showOptionDialog(null, "This action is irreversible. Are you sure you want to continue?",
+                "Confirm action", 0, 0, null, options, "No");
+
+        if (pickedOption == 1) {
+            List<Integer> errorCodes = new ArrayList<>();
+            String url = base_url + "classes/delete/";
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("ids", List.of(elementId));
+
+            Pair<Integer, JsonObject> response = postMethod(url, data);
+
+            if (response != null) {
+                JsonObject responseData = response.getSecond();
+                int response_code = response.getFirst();
+                if (response_code != 200) {
+                    errorCodes.add(response_code);
+                }
+            } else {
+                errorCodes.add(-1);
+            }
+
+            if (errorCodes.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Training deleted successfully.");
+                new TrainingsScrollGUI(userId, userType).createGUI();
+                frame.setVisible(false);
+            } else {
+                StringBuilder errorText = new StringBuilder();
+                for (Integer errorCode : errorCodes) {
+                    errorText.append(ErrorCodes.getErrorDescription(errorCode)).append(" ");
+                }
+
+                JOptionPane.showMessageDialog(frame, errorText.toString());
+            }
+        }
     }
 
     public TrainingsScrollGUI(int userId, String userType) {

@@ -1,29 +1,61 @@
 package bd2.gui.SeeDataByScrolling;
 
 import bd2.gui.AddDataByForm.AddPositionGUI;
+import bd2.logic.ErrorCodes;
+import com.google.gson.JsonObject;
+import kotlin.Pair;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static bd2.DBRequests.base_url;
+import static bd2.DBRequests.postMethod;
 
 public class PositionsScrollGUI extends DataScrollTemplate {
 
-    // [MOCK]
     @Override
     protected void getElementsData() {
-        this.fittingElementsIds = new Integer[]{1,2,3,4};
-        this.nrOfElements = fittingElementsIds.length;
+        String url = base_url + "positions/get_all/";
+
+        Pair<Integer, JsonObject> response = postMethod(url, new HashMap<>());
+        if (response != null) {
+            JsonObject responseData = response.getSecond();
+            this.nrOfElements = responseData.getAsJsonArray("positions").size();
+            this.fittingElementsIds = new Integer[this.nrOfElements];
+            for (int i = 0; i < responseData.getAsJsonArray("positions").size(); i++) {
+                this.fittingElementsIds[i] = responseData.getAsJsonArray("positions").get(i).getAsJsonObject().get("id").getAsInt();
+            }
+        }
+        else {
+            this.nrOfElements = 0;
+            this.fittingElementsIds = new Integer[]{};
+        }
     }
 
-    // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> dataInfo = new HashMap<>();
-        dataInfo.put("name", "Trainer");
-        dataInfo.put("salary_min", "2400");
-        dataInfo.put("salary_max", "6000");
-        dataInfo.put("speciality", "Jumping Trainings");
-        return dataInfo;
+        String url = base_url + "positions/get_by_id/";
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("ids", List.of(elementId));
+
+        Pair<Integer, JsonObject> response = postMethod(url, data);
+        if (response != null) {
+            JsonObject responseData = response.getSecond();
+            HashMap<String, String> dataInfo = new HashMap<>();
+            dataInfo.put("name", responseData.getAsJsonArray("positions").get(0).getAsJsonObject().get("name").getAsString());
+            dataInfo.put("salary_min", responseData.getAsJsonArray("positions").get(0).getAsJsonObject().get("salary_min").getAsString());
+            dataInfo.put("salary_max", responseData.getAsJsonArray("positions").get(0).getAsJsonObject().get("salary_max").getAsString());
+            dataInfo.put("speciality", responseData.getAsJsonArray("positions").get(0).getAsJsonObject().get("speciality").getAsString());
+            return dataInfo;
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
@@ -42,13 +74,12 @@ public class PositionsScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleEditData(int elementId) {
-        new AddPositionGUI(userId, userType, elementId).createGUI();
-        frame.setVisible(false);
+        // not used
     }
 
     @Override
     protected void handleRemoveData(int elementId) {
-
+        // not used
     }
 
     public PositionsScrollGUI(int userId, String userType){

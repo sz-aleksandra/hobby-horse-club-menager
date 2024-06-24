@@ -3,16 +3,10 @@ package bd2.gui;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.awt.*;
 import java.io.File;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +76,7 @@ public class HomePageGUI extends BaseGUI {
 				String memberName = JsonParser.parseString(response.body()).getAsJsonObject()
 						   .getAsJsonArray("employees").get(0).getAsJsonObject()
 						   .getAsJsonObject("member").get("name").getAsString();
-				name = memberName + "(" + positionName+ ")";
+				name = memberName + " (" + positionName+ ")";
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

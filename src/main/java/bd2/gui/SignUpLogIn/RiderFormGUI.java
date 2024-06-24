@@ -1,21 +1,10 @@
 package bd2.gui.SignUpLogIn;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.Year;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import bd2.logic.addRider;
-import okhttp3.*;
+import kotlin.Pair;
 
 public class RiderFormGUI extends RegisterUserFormTemplate {
 
@@ -60,8 +49,8 @@ public class RiderFormGUI extends RegisterUserFormTemplate {
     }
 
     @Override
-    protected void createUser(HashMap<String, String> textFieldsValues) {
-        addRider.add(textFieldsValues);
+    protected Pair<Integer, String> createUser(HashMap<String, String> textFieldsValues) {
+        return addRider.add(textFieldsValues);
     }
 
 

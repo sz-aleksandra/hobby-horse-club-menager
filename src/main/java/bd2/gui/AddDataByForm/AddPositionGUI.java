@@ -1,9 +1,14 @@
 package bd2.gui.AddDataByForm;
 
 import bd2.gui.SeeDataByScrolling.PositionsScrollGUI;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import kotlin.Pair;
 
 import java.util.HashMap;
+
+import static bd2.DBRequests.base_url;
+import static bd2.DBRequests.postMethod;
 
 public class AddPositionGUI extends AddDataTemplate {
 
@@ -60,11 +65,34 @@ public class AddPositionGUI extends AddDataTemplate {
 
     @Override
     protected Pair<Integer, String> addToDB(HashMap<String, String> textFieldsValues) {
-        /*new AddNewUser(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Name"), textFieldsValues.get("Surname"),
-                textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
-                textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), LocalDate.parse(textFieldsValues.get("Date of birth")),
-                textFieldsValues.get("Nationality"), textFieldsValues.get("Gender"), true).insertIntoDatabase(); [MOCK]*/
-        return null;
+//        String url = base_url + "positions/add/";
+//
+//        JsonObject position = new JsonObject();
+//        position.addProperty("name", textFieldsValues.get("Name"));
+//        position.addProperty("salary_min", textFieldsValues.get("Minimal salary"));
+//        position.addProperty("salary_max", textFieldsValues.get("Maximal salary"));
+//        position.addProperty("speciality", textFieldsValues.get("Speciality"));
+//
+//        JsonArray positionsArray = new JsonArray();
+//        positionsArray.add(position);
+//
+//        JsonObject data = new JsonObject();
+//        data.add("positions", positionsArray);
+//
+//        Pair<Integer, JsonObject> response = postMethod(url, data);
+//        if (response != null) {
+//            if (response.getFirst() == 200 || response.getFirst() == 201) {
+//                return new Pair<>(response.getFirst(), "");
+//            }
+//            else {
+//                String errorMsg = response.getSecond().get("error").getAsString();
+//                return new Pair<>(response.getFirst(), errorMsg);
+//            }
+//        }
+//        else {
+//            return new Pair<>(-1, "Unknown error");
+//        }
+        return new Pair<>(-1, "Not implemented");
     }
 
 

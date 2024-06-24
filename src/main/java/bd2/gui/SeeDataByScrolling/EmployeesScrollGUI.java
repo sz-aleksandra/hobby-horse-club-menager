@@ -1,36 +1,71 @@
 package bd2.gui.SeeDataByScrolling;
 
 import bd2.gui.AddDataByForm.AddEmployeeGUI;
+import bd2.logic.ErrorCodes;
+import com.google.gson.JsonObject;
+import kotlin.Pair;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static bd2.DBRequests.base_url;
+import static bd2.DBRequests.postMethod;
 
 public class EmployeesScrollGUI extends DataScrollTemplate {
 
-    //[MOCK]
     @Override
     protected void getElementsData() {
-        this.fittingElementsIds = new Integer[]{1,2,3,4,5,6,7,8,9,10,11,12};
-        this.nrOfElements = fittingElementsIds.length;
+        String url = base_url + "employees/get_active_employees/";
+
+        Pair<Integer, JsonObject> response = postMethod(url, new HashMap<>());
+        if (response != null) {
+            JsonObject responseData = response.getSecond();
+            this.nrOfElements = responseData.getAsJsonArray("employees").size();
+            this.fittingElementsIds = new Integer[this.nrOfElements];
+            for (int i = 0; i < responseData.getAsJsonArray("employees").size(); i++) {
+                this.fittingElementsIds[i] = responseData.getAsJsonArray("employees").get(i).getAsJsonObject().get("id").getAsInt();
+            }
+        }
+        else {
+            this.nrOfElements = 0;
+            this.fittingElementsIds = new Integer[]{};
+        }
     }
 
     // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> dataInfo = new HashMap<>();
-        dataInfo.put("name", "Adam");
-        dataInfo.put("surname", "Kaczka");
-        dataInfo.put("position", "Trainer");
-        dataInfo.put("salary", "3000");
-        dataInfo.put("date_employed", "2020-01-15");
-        dataInfo.put("username", "akaczka");
-        dataInfo.put("date_of_birth", "1985-04-12");
-        dataInfo.put("email", "adam.kaczka@email.com");
-        dataInfo.put("phone_number", "+48000123456");
-        dataInfo.put("address", "ul. Marszałkowska 10, Warszawa 00-001, Polska");
+        String url = base_url + "employees/get_by_id/";
 
-        return dataInfo;
+        Map<String, Object> data = new HashMap<>();
+        data.put("ids", List.of(elementId));
+
+        Pair<Integer, JsonObject> response = postMethod(url, data);
+        if (response != null) {
+            JsonObject responseData = response.getSecond().getAsJsonArray("employees").get(0).getAsJsonObject();
+            HashMap<String, String> dataInfo = new HashMap<>();
+            JsonObject member = responseData.get("member").getAsJsonObject();
+            dataInfo.put("name", member.get("name").getAsString());
+            dataInfo.put("surname", member.get("surname").getAsString());
+            JsonObject position = responseData.get("position").getAsJsonObject();
+            dataInfo.put("position", position.get("name").getAsString());
+            dataInfo.put("salary", responseData.get("salary").getAsString());
+            dataInfo.put("date_employed", responseData.get("date_employed").getAsString());
+            dataInfo.put("username", member.get("username").getAsString());
+            dataInfo.put("date_of_birth", member.get("date_of_birth").getAsString());
+            dataInfo.put("email", member.get("email").getAsString());
+            dataInfo.put("phone_number", member.get("phone_number").getAsString());
+            JsonObject address = member.get("address").getAsJsonObject();
+            dataInfo.put("address", "ul. " + address.get("street").getAsString() + " " + address.get("street_no").getAsString() + ", " + address.get("city").getAsString() + " " + address.get("postal_code").getAsString() + ", " + address.get("country").getAsString());
+            return dataInfo;
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
@@ -56,7 +91,43 @@ public class EmployeesScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleRemoveData(int elementId) {
+        String[] options = {"No", "Yes"};
+        int pickedOption = JOptionPane.showOptionDialog(null, "This action is irreversible. Are you sure you want to continue?",
+                "Confirm action", 0, 0, null, options, "No");
 
+        if (pickedOption == 1) {
+            List<Integer> errorCodes = new ArrayList<>();
+            String url = base_url + "employees/deactivate_account/";
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", elementId);
+
+            Pair<Integer, JsonObject> response = postMethod(url, data);
+
+            if (response != null) {
+                JsonObject responseData = response.getSecond();
+                int response_code = response.getFirst();
+                if (response_code != 200) {
+                    errorCodes.add(responseData.get("error_code").getAsInt());
+                }
+            }
+            else {
+                errorCodes.add(-1);
+            }
+
+            if (errorCodes.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Employee deleted successfully.");
+                new EmployeesScrollGUI(userId, userType).createGUI();
+                frame.setVisible(false);
+            } else {
+                StringBuilder errorText = new StringBuilder();
+                for (Integer errorCode : errorCodes) {
+                    errorText.append(ErrorCodes.getErrorDescription(errorCode)).append(" ");
+                }
+
+                JOptionPane.showMessageDialog(frame, errorText.toString());
+            }
+        }
     }
 
     public EmployeesScrollGUI(int userId, String userType){

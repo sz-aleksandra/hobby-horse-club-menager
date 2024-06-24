@@ -1,12 +1,10 @@
 package bd2.gui.SignUpLogIn;
 
-import bd2.logic.ErrorCodes;
+import kotlin.Pair;
 
 import javax.swing.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 abstract public class RegisterUserFormTemplate extends FormGUITemplate {
 
@@ -14,7 +12,7 @@ abstract public class RegisterUserFormTemplate extends FormGUITemplate {
         super(userId, userType);
     }
 
-    protected abstract void createUser(HashMap<String, String> textFieldsValues);
+    protected abstract Pair<Integer, String> createUser(HashMap<String, String> textFieldsValues);
 
     @Override
     protected void setFinishFormButtonText() {
@@ -22,27 +20,15 @@ abstract public class RegisterUserFormTemplate extends FormGUITemplate {
     }
 
     @Override
-    protected void finishFormButtonClicked(){
-        // Get values
+    protected void finishFormButtonClicked() {
         HashMap<String, String> formFieldsValues = getFieldValues();
-        // Validate values
-		List <Integer> errorCodes = new ArrayList<>();
-        // Create user and open Home Page
-        if (errorCodes.isEmpty()) {
-            createUser(formFieldsValues);
+        Pair<Integer, String> response = createUser(formFieldsValues);
+        if (response.getFirst() == 200 || response.getFirst() == 201) {
             JOptionPane.showMessageDialog(frame, "Success! Created user!");
             undoBtnClickedAction();
         }
-        // Errors occured, display them on screen
         else {
-            String statusLabelText = "<html>"; String spacingCharacter = "<br/>";
-            if (errorCodes.size() > 10) spacingCharacter = " | ";
-            for (Integer code : errorCodes) {
-                statusLabelText = statusLabelText + ErrorCodes.getErrorDescription(code) + spacingCharacter;
-            }
-            statusLabelText = statusLabelText + "</html>";
-            statusLabel.setText(statusLabelText);
-            statusLabel.setForeground(statusWrong);
+            JOptionPane.showMessageDialog(frame, "Error! " + response.getSecond());
         }
     }
 

@@ -1,20 +1,18 @@
 package bd2.logic;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.HashMap;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import kotlin.Pair;
+
+import static bd2.DBRequests.base_url;
+import static bd2.DBRequests.postMethod;
 
 public class addRider {
-    private static final HttpClient client = HttpClient.newHttpClient();
-    private static final Gson gson = new Gson();
+    public static Pair<Integer, String> add(HashMap<String, String> textFieldsValues) {
+        String url = base_url + "riders/add/";
 
-    public static void add(HashMap<String, String> textFieldsValues) {
         String username = textFieldsValues.get("Username");
         String password = textFieldsValues.get("Password");
         String name = textFieldsValues.get("Name");
@@ -75,17 +73,23 @@ public class addRider {
             JsonObject data = new JsonObject();
             data.add("riders", ridersArray);
 
-            String jsonData = gson.toJson(data);
+            Pair<Integer, JsonObject> response = postMethod(url, data);
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://127.0.0.1:8000/riders/add/"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonData))
-                    .build();
-
-            System.out.println(client.send(request, HttpResponse.BodyHandlers.ofString()));
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (response != null) {
+                if (response.getFirst() == 200 || response.getFirst() == 201) {
+                    return new Pair<>(response.getFirst(), "");
+                }
+                else {
+                    String errorMsg = response.getSecond().get("error").getAsString();
+                    return new Pair<>(response.getFirst(), errorMsg);
+                }
+            }
+            else {
+                return new Pair<>(-1, "Unknown error");
+            }
+        }
+        catch (Exception e) {
+            return new Pair<>(-1, "Invalid data");
         }
     }
 }

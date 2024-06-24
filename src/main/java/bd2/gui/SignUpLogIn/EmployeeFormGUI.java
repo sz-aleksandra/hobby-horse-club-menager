@@ -1,22 +1,10 @@
 package bd2.gui.SignUpLogIn;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.Year;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import bd2.logic.addEmployee;
-import bd2.logic.getAllInfo;
+import kotlin.Pair;
 
 public class EmployeeFormGUI extends RegisterUserFormTemplate {
 
@@ -63,8 +51,8 @@ public class EmployeeFormGUI extends RegisterUserFormTemplate {
     }
 
     @Override
-    protected void createUser(HashMap<String, String> textFieldsValues) {
-		addEmployee.add(textFieldsValues);
+    protected Pair<Integer, String> createUser(HashMap<String, String> textFieldsValues) {
+		return addEmployee.add(textFieldsValues);
     }
 
     public static void main(String[] args) {

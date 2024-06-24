@@ -108,7 +108,7 @@ public class EmployeesScrollGUI extends DataScrollTemplate {
                 JsonObject responseData = response.getSecond();
                 int response_code = response.getFirst();
                 if (response_code != 200) {
-                    errorCodes.add(responseData.get("error_code").getAsInt());
+                    errorCodes.add(response_code);
                 }
             }
             else {

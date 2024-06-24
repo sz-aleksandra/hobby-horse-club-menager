@@ -12,6 +12,7 @@ import kotlin.Pair;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
 
+import static bd2.DBRequests.base_url;
 import static bd2.DBRequests.postMethod;
 
 public class AddStableGUI extends AddDataTemplate {
@@ -95,12 +96,7 @@ public class AddStableGUI extends AddDataTemplate {
 
     @Override
     protected Pair<Integer, String> addToDB(HashMap<String, String> textFieldsValues) {
-		String url;
-        if (this.editMode) {
-			url = "http://127.0.0.1:8000/stables/update/";
-		} else {
-			url = "http://127.0.0.1:8000/stables/add/";
-		}
+        String url = base_url + "stables/" + (this.editMode ? "update/" : "add/");
 
         JsonObject stable = new JsonObject();
         stable.addProperty("id", editedElementId);
@@ -119,8 +115,6 @@ public class AddStableGUI extends AddDataTemplate {
 
         JsonObject data = new JsonObject();
         data.add("stables", stablesArray);
-
-		System.out.println(data);
 
         Pair<Integer, JsonObject> response = postMethod(url, data);
         if (response != null) {

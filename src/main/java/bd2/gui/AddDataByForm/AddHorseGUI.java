@@ -1,9 +1,14 @@
 package bd2.gui.AddDataByForm;
 
 import bd2.gui.SeeDataByScrolling.HorsesScrollGUI;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import kotlin.Pair;
 
 import java.util.HashMap;
+
+import static bd2.DBRequests.base_url;
+import static bd2.DBRequests.postMethod;
 
 public class AddHorseGUI extends AddDataTemplate {
 
@@ -67,11 +72,36 @@ public class AddHorseGUI extends AddDataTemplate {
 
     @Override
     protected Pair<Integer, String> addToDB(HashMap<String, String> textFieldsValues) {
-        /*new AddNewUser(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Name"), textFieldsValues.get("Surname"),
-                textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
-                textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), LocalDate.parse(textFieldsValues.get("Date of birth")),
-                textFieldsValues.get("Nationality"), textFieldsValues.get("Gender"), true).insertIntoDatabase(); [MOCK]*/
-        return null;
+        String url = base_url + "horses/" + (this.editMode ? "update/" : "add/");
+
+        JsonObject horse = new JsonObject();
+        horse.addProperty("id", editedElementId);
+        horse.addProperty("breed", textFieldsValues.get("Bread"));
+        horse.addProperty("origin", textFieldsValues.get("Origin"));
+        horse.addProperty("height", textFieldsValues.get("Height"));
+        horse.addProperty("age", textFieldsValues.get("Age"));
+        horse.addProperty("color", textFieldsValues.get("Color"));
+        horse.addProperty("eye_color", textFieldsValues.get("Eye color"));
+        horse.addProperty("hairstyle", textFieldsValues.get("Hairstyle"));
+        JsonArray horsesArray = new JsonArray();
+        horsesArray.add(horse);
+
+        JsonObject data = new JsonObject();
+        data.add("horses", horsesArray);
+
+        Pair<Integer, JsonObject> response = postMethod(url, data);
+        if (response != null) {
+            if (response.getFirst() == 200 || response.getFirst() == 201) {
+                return new Pair<>(response.getFirst(), "");
+            }
+            else {
+                String errorMsg = response.getSecond().get("error").getAsString();
+                return new Pair<>(response.getFirst(), errorMsg);
+            }
+        }
+        else {
+            return new Pair<>(-1, "Unknown error");
+        }
     }
 
 

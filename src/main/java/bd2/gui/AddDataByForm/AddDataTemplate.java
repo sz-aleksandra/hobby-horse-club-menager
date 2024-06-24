@@ -1,15 +1,14 @@
 package bd2.gui.AddDataByForm;
 
 import bd2.gui.SignUpLogIn.FormGUITemplate;
+import kotlin.Pair;
+
 import javax.swing.*;
 import java.util.HashMap;
-import java.util.List;
 
 abstract public class AddDataTemplate extends FormGUITemplate {
 
-    protected abstract List <Integer> validateInput(HashMap<String, String> textFieldsValues);
-
-    protected abstract void addToDB(HashMap<String, String> textFieldsValues);
+    protected abstract Pair<Integer, String> addToDB(HashMap<String, String> textFieldsValues);
 
     @Override
     protected void setFinishFormButtonText() {
@@ -20,14 +19,13 @@ abstract public class AddDataTemplate extends FormGUITemplate {
     protected void finishFormButtonClicked(){
 
         HashMap<String, String> formFieldsValues = getFieldValues();
-        List<Integer> errorCodes = validateInput(formFieldsValues);
-        if (errorCodes.isEmpty()) {
-            addToDB(formFieldsValues);
+        Pair<Integer, String> response = addToDB(formFieldsValues);
+        if (response.getFirst() == 200 || response.getFirst() == 201) {
             JOptionPane.showMessageDialog(frame, "Success! Added to database.");
             undoBtnClickedAction();
         }
         else {
-            JOptionPane.showMessageDialog(frame, "There are errors in your input.");
+            JOptionPane.showMessageDialog(frame, "Error! " + response.getSecond());
         }
     }
 

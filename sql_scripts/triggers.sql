@@ -79,7 +79,8 @@ BEGIN
     SELECT COUNT(*)
     INTO username_count
     FROM Members
-    WHERE username = NEW.username;
+    WHERE username = NEW.username
+    AND id != NEW.id;
 
     IF username_count > 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Username must be unique', MYSQL_ERRNO = 1201;

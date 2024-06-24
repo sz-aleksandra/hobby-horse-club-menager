@@ -1,17 +1,22 @@
 package bd2.gui.AddDataByForm;
 
 import bd2.gui.SeeDataByScrolling.StablesScrollGUI;
+import bd2.logic.*;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import kotlin.Pair;
 
+import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-import static bd2.DBRequests.base_url;
 import static bd2.DBRequests.postMethod;
 
 public class AddStableGUI extends AddDataTemplate {
+	protected int addressId;
 
     public AddStableGUI(int userId, String userType) {
         super(userId, userType, "Add Stable");
@@ -31,13 +36,38 @@ public class AddStableGUI extends AddDataTemplate {
         }
     }
 
-    // [MOCK]
     HashMap<String, String> getStableDataFromDB(int elementId) {
-        HashMap<String, String> myMap = new HashMap<String, String>() {{
-            put("Name", "Fajna Stajnia");
-            put("Street", "ul. Kolorowa");
-        }};
-        return myMap;
+		HashMap<String, String> stableMap = new HashMap<>();
+
+        try {
+            HttpResponse<String> response = getInfoById.getInfo(elementId, "stables/get_by_id/");
+
+			System.out.println(response.body());
+
+            JsonObject jsonObject = JsonParser.parseString(response.body()).getAsJsonObject();
+
+            JsonArray jsonPositionsArray = jsonObject.getAsJsonArray("stables");
+			JsonObject stable = jsonPositionsArray.get(0).getAsJsonObject();
+            String name = stable.get("name").getAsString();
+            JsonObject address = stable.getAsJsonObject("address");
+            int address_id = address.get("id").getAsInt();
+            String country = address.get("country").getAsString();
+            String city = address.get("city").getAsString();
+            String street = address.get("street").getAsString();
+            String streetNo = address.get("street_no").getAsString();
+            String postalCode = address.get("postal_code").getAsString();
+
+			stableMap.put("Name", name);
+			addressId = address_id;
+			stableMap.put("Country", country);
+			stableMap.put("City", city);
+			stableMap.put("Street", street);
+			stableMap.put("Street number", streetNo);
+			stableMap.put("Postal Code", postalCode);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return stableMap;
     }
 
     @Override
@@ -66,13 +96,18 @@ public class AddStableGUI extends AddDataTemplate {
 
     @Override
     protected Pair<Integer, String> addToDB(HashMap<String, String> textFieldsValues) {
-        String url = base_url + "stables/add/";
-
-        //[MOCK] dodac if (this.editMode) -> stables/update
+		String url;
+        if (this.editMode) {
+			url = "http://127.0.0.1:8000/stables/update/";
+		} else {
+			url = "http://127.0.0.1:8000/stables/add/";
+		}
 
         JsonObject stable = new JsonObject();
+        stable.addProperty("id", editedElementId);
         stable.addProperty("name", textFieldsValues.get("Name"));
         JsonObject address = new JsonObject();
+        address.addProperty("id", addressId);
         address.addProperty("country", textFieldsValues.get("Country"));
         address.addProperty("city", textFieldsValues.get("City"));
         address.addProperty("street", textFieldsValues.get("Street"));
@@ -86,6 +121,7 @@ public class AddStableGUI extends AddDataTemplate {
         JsonObject data = new JsonObject();
         data.add("stables", stablesArray);
 
+		System.out.println(data);
 
         Pair<Integer, JsonObject> response = postMethod(url, data);
         if (response != null) {

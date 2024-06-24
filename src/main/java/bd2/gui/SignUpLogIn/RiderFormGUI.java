@@ -1,10 +1,18 @@
 package bd2.gui.SignUpLogIn;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import okhttp3.*;
 
@@ -53,6 +61,7 @@ public class RiderFormGUI extends RegisterUserFormTemplate {
     @Override
     protected void createUser(HashMap<String, String> textFieldsValues) {
         String username = textFieldsValues.get("Username");
+        String password = textFieldsValues.get("Password");
         String name = textFieldsValues.get("Name");
         String surname = textFieldsValues.get("Surname");
         String dateOfBirth = textFieldsValues.get("Date of birth");
@@ -67,30 +76,65 @@ public class RiderFormGUI extends RegisterUserFormTemplate {
         String horseNo = textFieldsValues.get("Horse no");
         String group = textFieldsValues.get("Group");
         String license = textFieldsValues.get("License level");
-		
-		String json = "{ \"riders\": [ { \"member\": { \"name\": \"" + name + "\", \"surname\": \"" + surname + "\", \"username\": \"" + username + "\", \"date_of_birth\": \"" + dateOfBirth + "\", \"address\": { \"country\": \"" + country + "\", \"city\": \"" + city + "\", \"street\": \"" + street + "\", \"street_no\": \"" + streetNo + "\", \"postal_code\": \"" + postalCode + "\" }, \"phone_number\": \"" + phoneNumber + "\", \"email\": \"" + email + "\", \"is_active\": true, \"licence\": { \"id\": \"" + license + "\" } }, \"parent_consent\": " + parentConsent + ", \"group\": { \"id\": \"" + group + "\" }, \"horse\": { \"id\": \"" + horseNo + "\" } } ] }";
 
-        OkHttpClient client = new OkHttpClient();
+		try {
+			HttpClient client = HttpClient.newHttpClient();
+			Gson gson = new Gson();
+			
+			JsonObject riders = new JsonObject();
 
-        RequestBody body = RequestBody.create(
-                json, MediaType.get("application/json; charset=utf-8"));
+			JsonObject member = new JsonObject();
+			member.addProperty("name", name);
+			member.addProperty("surname", surname);
+			member.addProperty("username", username);
+			member.addProperty("password", password);
+			member.addProperty("date_of_birth", dateOfBirth);
 
-        Request request = new Request.Builder()
-                .url("http://localhost:8000/riders/add/")
-                .post(body)
-                .build();
+			JsonObject address = new JsonObject();
+			address.addProperty("country", country);
+			address.addProperty("city", city);
+			address.addProperty("street", street);
+			address.addProperty("street_no", streetNo);
+			address.addProperty("postal_code", postalCode);
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
+			member.add("address", address);
+			member.addProperty("phone_number", phoneNumber);
+			member.addProperty("email", email);
+			member.addProperty("is_active", true);
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                System.out.println(response.body().string());
-            }
-        });
+			JsonObject licence = new JsonObject();
+			licence.addProperty("id", Integer.parseInt(license));
+			member.add("licence", licence);
+
+			riders.add("member", member);
+			riders.addProperty("parent_consent", parentConsent);
+
+			JsonObject groupObject = new JsonObject();
+			groupObject.addProperty("id", Integer.parseInt(group));
+			riders.add("group", groupObject);
+
+			JsonObject horseObject = new JsonObject();
+			horseObject.addProperty("id", Integer.parseInt(horseNo));
+			riders.add("horse", horseObject);
+
+			JsonArray ridersArray = new JsonArray();
+			ridersArray.add(riders);
+
+			JsonObject data = new JsonObject();
+			data.add("riders", ridersArray);
+
+			String jsonData = gson.toJson(data);
+
+			HttpRequest request = HttpRequest.newBuilder()
+					.uri(URI.create("http://127.0.0.1:8000/riders/add/"))
+					.header("Content-Type", "application/json")
+					.POST(HttpRequest.BodyPublishers.ofString(jsonData))
+					.build();
+
+			System.out.println(client.send(request, HttpResponse.BodyHandlers.ofString()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 
 

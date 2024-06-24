@@ -17,10 +17,9 @@ import static bd2.DBRequests.postMethod;
 
 public class EmployeesScrollGUI extends DataScrollTemplate {
 
-    //[MOCK]
     @Override
     protected void getElementsData() {
-        String url = base_url + "employees/get_all/";
+        String url = base_url + "employees/get_active_employees/";
 
         Pair<Integer, JsonObject> response = postMethod(url, new HashMap<>());
         if (response != null) {
@@ -119,7 +118,7 @@ public class EmployeesScrollGUI extends DataScrollTemplate {
 
             if (errorCodes.isEmpty()) {
                 JOptionPane.showMessageDialog(frame, "Employee deleted successfully.");
-                new StablesScrollGUI(userId, userType).createGUI();
+                new EmployeesScrollGUI(userId, userType).createGUI();
                 frame.setVisible(false);
             } else {
                 StringBuilder errorText = new StringBuilder();

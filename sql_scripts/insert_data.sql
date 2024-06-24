@@ -83,11 +83,11 @@ INSERT INTO Stables (name, address_id) VALUES
 
 -- Insert statements for the Positions table
 INSERT INTO Positions (name, salary_min, salary_max, licence_id, coaching_licence_id, speciality) VALUES
-('Trainer', 3000.00, 6000.00, 2, 7, 'Equestrianism'),
-('Senior Trainer', 4000.00, 7000.00, 3, 8, 'Equestrianism'),
-('Instructor', 5500.00, 9000.00, 4, 9, 'Equestrian Instructor'),
-('Senior Instructor', 7500.00, 10000.00, 5, 10, 'Equestrian Instructor'),
-('Director of Training', 9000.00, 12000.00, 6, 11, 'Equestrian Program Management'),
+('Trainer', 3000.00, 6000.00, 2, 8, 'Equestrianism'),
+('Senior Trainer', 4000.00, 7000.00, 3, 9, 'Equestrianism'),
+('Instructor', 5500.00, 9000.00, 4, 10, 'Equestrian Instructor'),
+('Senior Instructor', 7500.00, 10000.00, 5, 11, 'Equestrian Instructor'),
+('Director of Training', 9000.00, 12000.00, 6, 12, 'Equestrian Program Management'),
 ('Veterinarian', 4000.00, 8000.00, 1, 7, 'Animal Care'),
 ('Caretaker', 3000.00, 6000.00, 1, 7, 'Horse Care'),
 ('Administrator', 3500.00, 7000.00, 1, 7, 'Administration'),
@@ -162,10 +162,10 @@ INSERT INTO Classes (type, date, trainer_id, group_id, stable_id) VALUES
 ('Horse Exercises', '2025-06-09', 10, 2, 4),
 ('Training Clinic', '2025-06-10', 5, 3, 5);
 
--- Insert statements for the Tournaments table
+# Insert statements for the Tournaments table
 INSERT INTO Tournaments (name, date, address_id, judge_id) VALUES
-('Beginner Tournament', '2025-07-01', 1, 1),
-('Intermediate Tournament', '2025-07-15', 2, 1);
+('Beginner Tournament', '2025-07-01', 1, 10),
+('Intermediate Tournament', '2025-07-15', 2, 10);
 
 -- Insert statements for the Tournament_Participants table
 INSERT INTO Tournament_Participants (tournament_id, contestant_id, contestant_place) VALUES

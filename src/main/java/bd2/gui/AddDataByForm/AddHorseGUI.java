@@ -1,16 +1,39 @@
 package bd2.gui.AddDataByForm;
 
 import bd2.gui.SeeDataByScrolling.HorsesScrollGUI;
+import kotlin.Pair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class AddHorseGUI extends AddDataTemplate {
 
     public AddHorseGUI(int userId, String userType) {
         super(userId, userType, "Add Horse");
     }
+
+    public AddHorseGUI(int userId, String userType, int editedElementId) {
+        super(userId, userType, "Edit Horse");
+        this.editedElementId = editedElementId;
+        this.editMode = true;
+    }
+
+    @Override
+    protected void createCustomGUI() {
+        super.createCustomGUI();
+        if (this.editMode) {
+            populateFieldValues(getHorseDataFromDB(this.editedElementId));
+        }
+    }
+
+    // [MOCK]
+    HashMap<String, String> getHorseDataFromDB(int elementId) {
+        HashMap<String, String> myMap = new HashMap<String, String>() {{
+            put("Bread", "Appaloosa");
+            put("Age", "5");
+        }};
+        return myMap;
+    }
+
 
     @Override
     protected String[] getFieldLabels() {
@@ -43,21 +66,12 @@ public class AddHorseGUI extends AddDataTemplate {
     }
 
     @Override
-    protected List<Integer> validateInput(HashMap<String, String> textFieldsValues) {
-        /*List <Integer> errorCodes = new ClientValidator(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Name"), textFieldsValues.get("Surname"),
-                textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
-                textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), LocalDate.parse(textFieldsValues.get("Date of birth")),
-                textFieldsValues.get("Nationality"), textFieldsValues.get("Gender")).validateCredentials();*/
-        List <Integer> errorCodes = new ArrayList<>(); // [MOCK]
-        return errorCodes;
-    }
-
-    @Override
-    protected void addToDB(HashMap<String, String> textFieldsValues) {
+    protected Pair<Integer, String> addToDB(HashMap<String, String> textFieldsValues) {
         /*new AddNewUser(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Name"), textFieldsValues.get("Surname"),
                 textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
                 textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), LocalDate.parse(textFieldsValues.get("Date of birth")),
                 textFieldsValues.get("Nationality"), textFieldsValues.get("Gender"), true).insertIntoDatabase(); [MOCK]*/
+        return null;
     }
 
 

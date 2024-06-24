@@ -1,16 +1,43 @@
 package bd2.gui.AddDataByForm;
 
-import bd2.gui.SeeDataByScrolling.HorsesScrollGUI;
 import bd2.gui.SeeDataByScrolling.StablesScrollGUI;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import kotlin.Pair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
+
+import static bd2.DBRequests.base_url;
+import static bd2.DBRequests.postMethod;
 
 public class AddStableGUI extends AddDataTemplate {
 
     public AddStableGUI(int userId, String userType) {
         super(userId, userType, "Add Stable");
+    }
+
+    public AddStableGUI(int userId, String userType, int editedElementId) {
+        super(userId, userType, "Edit Stable");
+        this.editedElementId = editedElementId;
+        this.editMode = true;
+    }
+
+    @Override
+    protected void createCustomGUI() {
+        super.createCustomGUI();
+        if (this.editMode) {
+            populateFieldValues(getStableDataFromDB(this.editedElementId));
+        }
+    }
+
+    // [MOCK]
+    HashMap<String, String> getStableDataFromDB(int elementId) {
+        HashMap<String, String> myMap = new HashMap<String, String>() {{
+            put("Name", "Fajna Stajnia");
+            put("Street", "ul. Kolorowa");
+        }};
+        return myMap;
     }
 
     @Override
@@ -38,21 +65,41 @@ public class AddStableGUI extends AddDataTemplate {
     }
 
     @Override
-    protected List<Integer> validateInput(HashMap<String, String> textFieldsValues) {
-        /*List <Integer> errorCodes = new ClientValidator(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Name"), textFieldsValues.get("Surname"),
-                textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
-                textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), LocalDate.parse(textFieldsValues.get("Date of birth")),
-                textFieldsValues.get("Nationality"), textFieldsValues.get("Gender")).validateCredentials();*/
-        List <Integer> errorCodes = new ArrayList<>(); // [MOCK]
-        return errorCodes;
-    }
+    protected Pair<Integer, String> addToDB(HashMap<String, String> textFieldsValues) {
+        String url = base_url + "stables/add/";
 
-    @Override
-    protected void addToDB(HashMap<String, String> textFieldsValues) {
-        /*new AddNewUser(textFieldsValues.get("Username"), textFieldsValues.get("Password"), textFieldsValues.get("Name"), textFieldsValues.get("Surname"),
-                textFieldsValues.get("Email"), textFieldsValues.get("Phone number"), textFieldsValues.get("Country"), textFieldsValues.get("City"),
-                textFieldsValues.get("Street"), textFieldsValues.get("Postal Code"), textFieldsValues.get("Street number"), LocalDate.parse(textFieldsValues.get("Date of birth")),
-                textFieldsValues.get("Nationality"), textFieldsValues.get("Gender"), true).insertIntoDatabase(); [MOCK]*/
+        //[MOCK] dodac if (this.editMode) -> stables/update
+
+        JsonObject stable = new JsonObject();
+        stable.addProperty("name", textFieldsValues.get("Name"));
+        JsonObject address = new JsonObject();
+        address.addProperty("country", textFieldsValues.get("Country"));
+        address.addProperty("city", textFieldsValues.get("City"));
+        address.addProperty("street", textFieldsValues.get("Street"));
+        address.addProperty("street_no", textFieldsValues.get("Street number"));
+        address.addProperty("postal_code", textFieldsValues.get("Postal Code"));
+        stable.add("address", address);
+
+        JsonArray stablesArray = new JsonArray();
+        stablesArray.add(stable);
+
+        JsonObject data = new JsonObject();
+        data.add("stables", stablesArray);
+
+
+        Pair<Integer, JsonObject> response = postMethod(url, data);
+        if (response != null) {
+            if (response.getFirst() == 200 || response.getFirst() == 201) {
+                return new Pair<>(response.getFirst(), "");
+            }
+            else {
+                String errorMsg = response.getSecond().get("error").getAsString();
+                return new Pair<>(response.getFirst(), errorMsg);
+            }
+        }
+        else {
+            return new Pair<>(-1, "Unknown error");
+        }
     }
 
 

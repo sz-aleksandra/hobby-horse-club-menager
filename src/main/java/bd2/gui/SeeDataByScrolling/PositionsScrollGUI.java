@@ -18,7 +18,7 @@ public class PositionsScrollGUI extends DataScrollTemplate {
     // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> dataInfo = new HashMap<String, String>();
+        HashMap<String, String> dataInfo = new HashMap<>();
         dataInfo.put("name", "Trainer");
         dataInfo.put("salary_min", "2400");
         dataInfo.put("salary_max", "6000");
@@ -41,12 +41,13 @@ public class PositionsScrollGUI extends DataScrollTemplate {
     }
 
     @Override
-    protected void handleEditData() {
-
+    protected void handleEditData(int elementId) {
+        new AddPositionGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override
-    protected void handleRemoveData() {
+    protected void handleRemoveData(int elementId) {
 
     }
 

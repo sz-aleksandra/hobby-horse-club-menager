@@ -18,7 +18,7 @@ public class AccessoriesScrollGUI extends DataScrollTemplate {
     // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> dataInfo = new HashMap<String, String>();
+        HashMap<String, String> dataInfo = new HashMap<>();
         dataInfo.put("name", "Saddle");
         dataInfo.put("custom_info", "<html>Material: Leather, Size: Large, Durability: High, Fastenings: Stainless steel, Color: Dark brown, Brand: Prestige Saddles, Warranty: 5-year warranty</html>");
         return dataInfo;
@@ -38,12 +38,13 @@ public class AccessoriesScrollGUI extends DataScrollTemplate {
     }
 
     @Override
-    protected void handleEditData() {
-
+    protected void handleEditData(int elementId) {
+        new AddAccessoryGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override
-    protected void handleRemoveData() {
+    protected void handleRemoveData(int elementId) {
 
     }
 

@@ -1,6 +1,5 @@
 package bd2.gui.SeeDataByScrolling;
 
-import bd2.gui.AddDataByForm.AddEmployeeGUI;
 import bd2.gui.AddDataByForm.AddRiderGUI;
 
 import javax.swing.*;
@@ -19,7 +18,7 @@ public class RidersScrollGUI extends DataScrollTemplate {
     // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> dataInfo = new HashMap<String, String>();
+        HashMap<String, String> dataInfo = new HashMap<>();
         dataInfo.put("name", "Ola");
         dataInfo.put("surname", "Nowak");
         dataInfo.put("username", "kochamkonieOla123");
@@ -49,12 +48,12 @@ public class RidersScrollGUI extends DataScrollTemplate {
     }
 
     @Override
-    protected void handleEditData() {
+    protected void handleEditData(int elementId) {
 
     }
 
     @Override
-    protected void handleRemoveData() {
+    protected void handleRemoveData(int elementId) {
 
     }
 

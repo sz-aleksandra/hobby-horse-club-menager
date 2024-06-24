@@ -18,7 +18,7 @@ public class EmployeesScrollGUI extends DataScrollTemplate {
     // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> dataInfo = new HashMap<String, String>();
+        HashMap<String, String> dataInfo = new HashMap<>();
         dataInfo.put("name", "Adam");
         dataInfo.put("surname", "Kaczka");
         dataInfo.put("position", "Trainer");
@@ -49,12 +49,12 @@ public class EmployeesScrollGUI extends DataScrollTemplate {
     }
 
     @Override
-    protected void handleEditData() {
+    protected void handleEditData(int elementId) {
 
     }
 
     @Override
-    protected void handleRemoveData() {
+    protected void handleRemoveData(int elementId) {
 
     }
 

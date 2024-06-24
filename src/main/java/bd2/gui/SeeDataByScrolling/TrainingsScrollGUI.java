@@ -1,11 +1,12 @@
 package bd2.gui.SeeDataByScrolling;
 
+import bd2.gui.AddDataByForm.AddStableGUI;
+import bd2.gui.AddDataByForm.AddTournamentGUI;
 import bd2.gui.AddDataByForm.AddTrainingGUI;
 import bd2.gui.components.ScrollElementButton;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class TrainingsScrollGUI extends DataScrollTemplate {
@@ -23,7 +24,7 @@ public class TrainingsScrollGUI extends DataScrollTemplate {
     // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> dataInfo = new HashMap<String, String>();
+        HashMap<String, String> dataInfo = new HashMap<>();
         dataInfo.put("type", "Jumping");
         dataInfo.put("date", "Mondays, 3PM");
         dataInfo.put("trainer", "Adam Kaczka");
@@ -48,16 +49,12 @@ public class TrainingsScrollGUI extends DataScrollTemplate {
         // If user is Employee with write permissions, show edit and delete buttons
         if (userType.equals("Employee") && doesEmployeeHaveWritePermissions()) {
             ScrollElementButton editButton = new ScrollElementButton("Edit", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
-            editButton.addActionListener(actionEvent -> {
-                handleEditData();
-            });
+            editButton.addActionListener(actionEvent -> handleEditData(elementId));
             dataPanel.add(editButton);
             dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize, 0)));
 
             ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
-            removeButton.addActionListener(actionEvent -> {
-                handleRemoveData();
-            });
+            removeButton.addActionListener(actionEvent -> handleRemoveData(elementId));
             dataPanel.add(removeButton);
         }
     }
@@ -79,12 +76,13 @@ public class TrainingsScrollGUI extends DataScrollTemplate {
     }
 
     @Override
-    protected void handleEditData() {
-        // Handle edit data
+    protected void handleEditData(int elementId) {
+        new AddTrainingGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override
-    protected void handleRemoveData() {
+    protected void handleRemoveData(int elementId) {
         // Handle remove data
     }
 

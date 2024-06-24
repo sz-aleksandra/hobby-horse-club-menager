@@ -1,5 +1,6 @@
 package bd2.gui.SeeDataByScrolling;
 
+import bd2.gui.AddDataByForm.AddStableGUI;
 import bd2.gui.AddDataByForm.AddTournamentGUI;
 import bd2.gui.components.ScrollElementButton;
 import javax.swing.*;
@@ -22,7 +23,7 @@ public class TournamentsScrollGUI extends DataScrollTemplate {
     // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> dataInfo = new HashMap<String, String>();
+        HashMap<String, String> dataInfo = new HashMap<>();
         dataInfo.put("name", "XXIV Monthly Hobby Horsing Contest");
         dataInfo.put("date", "2024-06-12");
         dataInfo.put("address", "ul. Kolorowa 41, Warszawa");
@@ -67,16 +68,12 @@ public class TournamentsScrollGUI extends DataScrollTemplate {
             }
         } else if (userType.equals("Employee") && doesEmployeeHaveWritePermissions()){
             ScrollElementButton editButton = new ScrollElementButton("Edit", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
-            editButton.addActionListener(actionEvent -> {
-                handleEditData();
-            });
+            editButton.addActionListener(actionEvent -> handleEditData(elementId));
             dataPanel.add(editButton);
             dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
 
             ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
-            editButton.addActionListener(actionEvent -> {
-                handleEditData();
-            });
+            editButton.addActionListener(actionEvent -> handleEditData(elementId));
             dataPanel.add(removeButton);
         }
     }
@@ -97,12 +94,13 @@ public class TournamentsScrollGUI extends DataScrollTemplate {
     }
 
     @Override
-    protected void handleEditData() {
-
+    protected void handleEditData(int elementId) {
+        new AddTournamentGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override
-    protected void handleRemoveData() {
+    protected void handleRemoveData(int elementId) {
 
     }
 

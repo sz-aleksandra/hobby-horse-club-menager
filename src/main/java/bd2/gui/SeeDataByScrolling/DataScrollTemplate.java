@@ -17,8 +17,8 @@ public abstract class DataScrollTemplate extends ScrollGUITemplate {
     // Usage: couple addJLabel methods
     protected abstract void addInfoToDataInfoPanel(int elementId, JPanel dataInfoPanel);
     protected abstract void handleAddData();
-    protected abstract void handleEditData();
-    protected abstract void handleRemoveData();
+    protected abstract void handleEditData(int elementId);
+    protected abstract void handleRemoveData(int elementId);
     protected int buttonsGapSize;
 
     protected JPanel createScrollElement(int elementId) {
@@ -48,16 +48,12 @@ public abstract class DataScrollTemplate extends ScrollGUITemplate {
             dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
 
             ScrollElementButton editButton = new ScrollElementButton("Edit", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
-            editButton.addActionListener(actionEvent -> {
-                handleEditData();
-            });
+            editButton.addActionListener(actionEvent -> handleEditData(elementId));
             dataPanel.add(editButton);
             dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
 
             ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
-            editButton.addActionListener(actionEvent -> {
-                handleRemoveData();
-            });
+            removeButton.addActionListener(actionEvent -> handleRemoveData(elementId));
             dataPanel.add(removeButton);
         }
     }

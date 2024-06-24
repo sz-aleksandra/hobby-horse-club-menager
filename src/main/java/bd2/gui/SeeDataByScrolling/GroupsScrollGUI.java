@@ -18,7 +18,7 @@ public class GroupsScrollGUI extends DataScrollTemplate {
     // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> dataInfo = new HashMap<String, String>();
+        HashMap<String, String> dataInfo = new HashMap<>();
         dataInfo.put("id", "1");
         dataInfo.put("no_riders", "7");
         dataInfo.put("trainings_for_group", "Id1, Id4, Id7, Id8, Id9");
@@ -40,12 +40,13 @@ public class GroupsScrollGUI extends DataScrollTemplate {
     }
 
     @Override
-    protected void handleEditData() {
-
+    protected void handleEditData(int elementId) {
+        new AddGroupGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override
-    protected void handleRemoveData() {
+    protected void handleRemoveData(int elementId) {
 
     }
 

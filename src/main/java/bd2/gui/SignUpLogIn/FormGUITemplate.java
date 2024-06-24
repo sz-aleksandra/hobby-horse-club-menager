@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.HashMap;
 
@@ -27,6 +28,9 @@ public abstract class FormGUITemplate extends BaseGUI {
     protected JLabel statusLabel;
     protected String pageName = "";
     protected String finishFormButtonText = "";
+
+    protected boolean editMode = false;
+    protected int editedElementId;
 
     public FormGUITemplate(int userId, String userType) {
         super(userId, userType);
@@ -251,13 +255,13 @@ public abstract class FormGUITemplate extends BaseGUI {
         int nrOfComboBoxes = comboBoxes.size();
         int nrOfDateComboBoxes = dateComboBoxes.size();
         int nrOfCheckBoxes = checkBoxes.size();
-        HashMap<String, String> FieldValues = new HashMap<String, String>();
+        HashMap<String, String> fieldValues = new HashMap<String, String>();
 
         for (int i = 0; i < nrOfTextFields; i++){
-            FieldValues.put(textFieldLabels.get(i), textFields.get(i).getText());
+            fieldValues.put(textFieldLabels.get(i), textFields.get(i).getText());
         }
         for (int i = 0; i < nrOfComboBoxes; i++){
-            FieldValues.put(comboBoxesLabels.get(i), String.valueOf(comboBoxes.get(i).getSelectedItem()));
+            fieldValues.put(comboBoxesLabels.get(i), String.valueOf(comboBoxes.get(i).getSelectedItem()));
         }
         for (int i = 0; i < nrOfDateComboBoxes; i++){
 
@@ -270,7 +274,7 @@ public abstract class FormGUITemplate extends BaseGUI {
             year = (int) currDateField.get(2).getSelectedItem();
             String currDateData = LocalDate.of(year, month, day).toString();
 
-            FieldValues.put(dateComboBoxesLabels.get(i), currDateData);
+            fieldValues.put(dateComboBoxesLabels.get(i), currDateData);
         }
         for (int i = 0; i < nrOfCheckBoxes; i++){
 
@@ -283,10 +287,46 @@ public abstract class FormGUITemplate extends BaseGUI {
                 }
             }
 
-            FieldValues.put(checkBoxesLabels.get(i), selectedOptions);
+            fieldValues.put(checkBoxesLabels.get(i), selectedOptions);
         }
-
-        return FieldValues;
+        return fieldValues;
     }
 
+    protected void populateFieldValues(HashMap<String, String> fieldValues){
+        for (HashMap.Entry<String, String> entry : fieldValues.entrySet()) {
+            String fieldLabel = entry.getKey();
+            String fieldValue = entry.getValue();
+
+            if (textFieldLabels.contains(fieldLabel)) {
+                textFields.get(textFieldLabels.indexOf(fieldLabel)).setText(fieldValue);
+            }
+            else if (comboBoxesLabels.contains(fieldLabel)) {
+                comboBoxes.get(comboBoxesLabels.indexOf(fieldLabel)).setSelectedItem(fieldValue);
+            }
+            else if (dateComboBoxesLabels.contains(fieldLabel)) {
+                List<JComboBox> processedDateComboBoxes = dateComboBoxes.get(dateComboBoxesLabels.indexOf(fieldLabel));
+                LocalDate processedDate = LocalDate.parse(fieldValue);
+                processedDateComboBoxes.get(0).setSelectedItem(processedDate.getDayOfMonth());
+                processedDateComboBoxes.get(1).setSelectedItem(processedDate.getMonth());
+                processedDateComboBoxes.get(2).setSelectedItem(processedDate.getYear());
+            }
+            else if (checkBoxesLabels.contains(fieldLabel)) {
+                List<JCheckBox> processedCheckBoxes = checkBoxes.get(checkBoxesLabels.indexOf(fieldLabel));
+                List<Object> fieldParameters = Arrays.asList(getFieldParameters());
+                List<Object> fieldLabels = Arrays.asList(getFieldLabels());
+                String[] processedCheckBoxesContent = (String[]) fieldParameters.get(fieldLabels.indexOf(fieldLabel));
+                List<String> checkedOptions = List.of(fieldValue.split(","));
+
+                for (int i = 0; i < processedCheckBoxes.size(); i++){
+                    JCheckBox checkBox = processedCheckBoxes.get(i);
+                    String checkBoxContent = processedCheckBoxesContent[i];
+                    if (checkedOptions.contains(checkBoxContent)) {
+                        checkBox.setSelected(true);
+                    }
+                }
+            }
+        }
+//        mainPanel.revalidate();
+//        mainPanel.repaint();
+    }
 }

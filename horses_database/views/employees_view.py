@@ -543,6 +543,8 @@ class EmployeesView:
                     salary = employee_data.get('salary')
                     date_employed = employee_data.get('date_employed')
 
+                    password = member_data['password']
+
                     if not Licences.objects.filter(id=licence_id).exists():
                         return JsonResponse({'error': f'Licence with ID {licence_id} does not exist'}, status=400)
 
@@ -563,12 +565,14 @@ class EmployeesView:
                     Members.objects.filter(id=member_data.get('id')).update(
                         name=member_data['name'], surname=member_data['surname'],
                         username=member_data['username'],
-                        password=member_data['password'],
                         date_of_birth=member_data['date_of_birth'],
                         address_id=address_data.get('id'),
                         phone_number=member_data['phone_number'],
                         email=member_data['email'],
                         is_active=member_data['is_active'], licence_id=licence_id)
+
+                    if password is not None:
+                        Members.objects.filter(id=member_data.get('id')).update(password=password)
 
                     Employees.objects.filter(id=employee_data.get('id')).update(member_id=member_data.get('id'),
                                                                                 position_id=position_id,

@@ -123,4 +123,49 @@ BEGIN
     END IF;
 END//
 
+
+-- Trigger for INSERT operation on Employees table
+CREATE TRIGGER after_employee_insert
+AFTER INSERT ON Employees
+FOR EACH ROW
+BEGIN
+    INSERT INTO Positions_History (employee_id, position_id, date_start)
+    VALUES (NEW.id, NEW.position_id, NEW.date_employed);
+END//
+
+-- Trigger for UPDATE operation on Employees table
+CREATE TRIGGER after_employee_update
+AFTER UPDATE ON Employees
+FOR EACH ROW
+BEGIN
+    IF NEW.position_id != OLD.position_id THEN
+        -- Update the end date of the previous position history record
+        UPDATE Positions_History
+        SET date_end = NEW.date_employed
+        WHERE employee_id = OLD.id AND position_id = OLD.position_id AND date_end IS NULL;
+
+        -- Insert a new position history record for the new position
+        INSERT INTO Positions_History (employee_id, position_id, date_start)
+        VALUES (NEW.id, NEW.position_id, NEW.date_employed);
+    END IF;
+END//
+
+CREATE TRIGGER before_tournament_participant_insert
+BEFORE INSERT ON Tournament_Participants
+FOR EACH ROW
+BEGIN
+    DECLARE consent BOOLEAN;
+
+    -- Pobranie wartości parent_consent dla danego uczestnika
+    SELECT parent_consent INTO consent
+    FROM Riders
+    WHERE id = NEW.contestant_id;
+
+    -- Sprawdzenie, czy participant ma zgodę rodziców
+    IF consent = FALSE THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Participant does not have parent consent.', MYSQL_ERRNO = 2001;
+    END IF;
+END//
+
+
 DELIMITER ;

@@ -2,8 +2,18 @@ package bd2.gui;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.awt.*;
 import java.io.File;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +23,9 @@ import bd2.gui.SignUpLogIn.LogInGUI;
 import bd2.gui.components.LogOutButton;
 import bd2.gui.components.LogoPanel;
 import bd2.gui.components.TextIconButton;
+import bd2.logic.getMemberInfo;
 import bd2.logic.ErrorCodes;
+import bd2.logic.deactivateAccount;
 
 // TODO: pomysl - dodanie wszytskich modyfikacji danych to moze byc 1. stworzenie formularza 2. przejscie po wszystkich polach tak jak w getFieldsValues TYLKO nie getowanie a ustawinie. I moze to doslownie bedzie szybkie.
 // TODO: filtry?
@@ -49,26 +61,34 @@ public class HomePageGUI extends BaseGUI {
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.LINE_AXIS));
         infoPanel.setBackground(bgColor);
 
-        String name; String userImgPath = "";
+        String name = "Default"; String userImgPath = ""; String positionName = "Default";
         if (userType.equals("Rider")) {
-            //ClientDAO cd = new ClientDAO();
-            //name = cd.findById(userId).getName();
-            name = "Ola"; //[MOCK]
+			try {
+            	HttpResponse<String> response = getMemberInfo.getInfo(userId, true);
+				String memberName = JsonParser.parseString(response.body()).getAsJsonObject()
+						   .getAsJsonArray("riders").get(0).getAsJsonObject()
+						   .getAsJsonObject("member").get("name").getAsString();
+				name = memberName;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
             userImgPath = "/student.png";
         } else if (userType.equals("Employee")) {
-            //OwnerDAO od = new OwnerDAO();
-            //name = od.findById(userId).getCompanyName();
-            //[MOCK]
-            if (userId == 1) {
-                name = "Natalia (Owner)";
-            } else if (userId == 2) {
-                name = "Adam (Cleaner)";
-            } else {
-                name = "Bartek (Trainer)";
-            }
+            try {
+            	HttpResponse<String> response = getMemberInfo.getInfo(userId, false);
+				positionName = JsonParser.parseString(response.body()).getAsJsonObject()
+							.getAsJsonArray("employees").get(0).getAsJsonObject()
+							.getAsJsonObject("position").get("name").getAsString();
+				String memberName = JsonParser.parseString(response.body()).getAsJsonObject()
+						   .getAsJsonArray("employees").get(0).getAsJsonObject()
+						   .getAsJsonObject("member").get("name").getAsString();
+				name = memberName + "(" + positionName+ ")";
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
             userImgPath = "/business.png";
         } else {
-            name = "User";
+            name = "Member";
         }
         welcomeLabel = new JLabel("Hello " + name + "!", JLabel.CENTER);
         welcomeLabel.setFont(fontMiddle);
@@ -143,13 +163,13 @@ public class HomePageGUI extends BaseGUI {
             seeStablesButton = new MenuButton("Stables", "/icons/stable.png");
             seeStablesButton.addActionListener(e->seeStablesAction());
 
-            if (doesEmployeeHaveReadOrWritePermissions("Employees")){
+            if (doesEmployeeHaveReadOrWritePermissions("Employees", positionName)){
                 buttonsRow1.add(seeEmployeesButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
             }
-            if (doesEmployeeHaveReadOrWritePermissions("Positions")){
+            if (doesEmployeeHaveReadOrWritePermissions("Positions", positionName)){
                 buttonsRow1.add(seePositionsButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
             }
-            if (doesEmployeeHaveReadOrWritePermissions("Stables")){
+            if (doesEmployeeHaveReadOrWritePermissions("Stables", positionName)){
                 buttonsRow1.add(seeStablesButton); buttonsRow1.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
             }
             buttonsRow1.add(Box.createHorizontalGlue());
@@ -162,10 +182,10 @@ public class HomePageGUI extends BaseGUI {
             seeAccessoriesButton = new MenuButton("Accessories", "/icons/accessory.png");
             seeAccessoriesButton.addActionListener(e->seeAccessoriesAction());
 
-            if (doesEmployeeHaveReadOrWritePermissions("Horses")){
+            if (doesEmployeeHaveReadOrWritePermissions("Horses", positionName)){
                 buttonsRow2.add(seeHorsesButton); buttonsRow2.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
             }
-            if (doesEmployeeHaveReadOrWritePermissions("Accessories")){
+            if (doesEmployeeHaveReadOrWritePermissions("Accessories", positionName)){
                 buttonsRow2.add(seeAccessoriesButton); buttonsRow2.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
             }
             buttonsRow2.add(Box.createHorizontalGlue());
@@ -182,16 +202,16 @@ public class HomePageGUI extends BaseGUI {
             seeTournamentsButton = new MenuButton("Tournaments", "/icons/tournament.png");
             seeTournamentsButton.addActionListener(e->seeTournamentsAction());
 
-            if (doesEmployeeHaveReadOrWritePermissions("Riders")){
+            if (doesEmployeeHaveReadOrWritePermissions("Riders", positionName)){
                 buttonsRow3.add(seeRidersButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
             }
-            if (doesEmployeeHaveReadOrWritePermissions("Groups")){
+            if (doesEmployeeHaveReadOrWritePermissions("Groups", positionName)){
                 buttonsRow3.add(seeGroupsButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
             }
-            if (doesEmployeeHaveReadOrWritePermissions("Trainings")){
+            if (doesEmployeeHaveReadOrWritePermissions("Trainings", positionName)){
                 buttonsRow3.add(seeTrainingsButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
             }
-            if (doesEmployeeHaveReadOrWritePermissions("Tournaments")){
+            if (doesEmployeeHaveReadOrWritePermissions("Tournaments", positionName)){
                 buttonsRow3.add(seeTournamentsButton); buttonsRow3.add(Box.createRigidArea(new Dimension(menuButtonGap,0)));
             }
             buttonsRow3.add(Box.createHorizontalGlue());
@@ -264,9 +284,17 @@ public class HomePageGUI extends BaseGUI {
         if (pickedOption == 1) {
             List<Integer> errorCodes = new ArrayList<>();
             if (userType.equals("Rider")){
-            //    errorCodes = DeactivateAccount.deactivateClientAccount(userId); //[MOCK], zmienic na deaktywacje Ridera
+				try {
+					deactivateAccount.deactivate(userId, true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
             } else if (userType.equals("Employee")){
-            //    errorCodes = DeactivateAccount.deactivateOwnerAccount(userId); // [MOCK], zmienic na deaktywacje Employee
+				try {
+					deactivateAccount.deactivate(userId, true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
             } else {
                 errorCodes.add(-1);
             }
@@ -291,18 +319,8 @@ public class HomePageGUI extends BaseGUI {
         frame.setVisible(false);
     }
 
-    protected boolean doesEmployeeHaveReadOrWritePermissions(String pageName){
-        //[MOCK], pobrac z bazy danych informacje o nazwie pozycji
-        String employeePositionName;
-        if (userId == 1) {
-            employeePositionName = "Owner";
-        } else if (userId == 2) {
-            employeePositionName = "Cleaner";
-        } else {
-            employeePositionName = "Trainer";
-        }
-
-        String accessType = new TableAccessChecker().getAccessType(pageName, employeePositionName);
+    protected boolean doesEmployeeHaveReadOrWritePermissions(String pageName, String positionName){
+        String accessType = new TableAccessChecker().getAccessType(pageName, positionName);
         return accessType.equals("Read") || accessType.equals("Write");
     }
 

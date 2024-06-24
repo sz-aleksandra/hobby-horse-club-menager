@@ -7,6 +7,10 @@ import com.google.gson.JsonObject;
 
 import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +19,7 @@ import bd2.gui.HomePageGUI;
 import bd2.gui.components.LogoPanel;
 import bd2.gui.components.RoundedButtonDefault;
 import bd2.logic.ErrorCodes;
-
+import bd2.logic.LoginHandler;
 import okhttp3.*;
 
 public class LogInGUI extends BaseGUI {
@@ -147,8 +151,21 @@ public class LogInGUI extends BaseGUI {
         statusLabel.setForeground(statusNeutral);
         statusLabel.paintImmediately(statusLabel.getVisibleRect());
 
-		new HomePageGUI(1, "Rider").createGUI();
-        frame.setVisible(false);
+        try {
+            HttpResponse<String> response = LoginHandler.login(usernameText, passwordText, true);
+			if (response.statusCode() == 200){
+				Gson gson = new Gson();
+				JsonObject jsonObject = gson.fromJson(response.body(), JsonObject.class);
+				int id = jsonObject.get("id").getAsInt();
+				new HomePageGUI(id, "Rider").createGUI();
+				frame.setVisible(false);
+			} else {
+				statusLabelText = "Invalid username or password";
+        		statusLabel.setText(statusLabelText);
+			}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     void logInEmployeeClickedAction() {
@@ -160,31 +177,20 @@ public class LogInGUI extends BaseGUI {
         statusLabel.setForeground(statusNeutral);
         statusLabel.paintImmediately(statusLabel.getVisibleRect());
 
-        // [MOCK], logging in as default Rider
-        /*OwnerLogin ol = new OwnerLogin(usernameText, passwordText);
-        Owner owner = ol.getOwnerAccount();
-        List<Integer> errorCodesEmployee = ol.getErrorCodes();*/
-        List<Integer> errorCodesEmployee = new ArrayList<>();
-
-        if (errorCodesEmployee.isEmpty()) {
-            // new HomePageGUI(owner.getOwnerId(), "Employee").createGUI();
-            //[MOCK]
-            if (usernameText.equals("1")) {
-                new HomePageGUI(1, "Employee").createGUI();
-            } else if (usernameText.equals("2")) {
-                new HomePageGUI(2, "Employee").createGUI();
-            } else {
-                new HomePageGUI(3, "Employee").createGUI();
-            }
-
-            frame.setVisible(false);
-        } else {
-            statusLabelText = "<html>";
-            statusLabelText = statusLabelText + ErrorCodes.getErrorDescription(errorCodesEmployee.get(0));
-            statusLabelText = statusLabelText + "</html>";
-            statusLabel.setText(statusLabelText);
-            statusLabel.setForeground(statusWrong);
-            statusLabel.paintImmediately(statusLabel.getVisibleRect());
+		try {
+            HttpResponse<String> response = LoginHandler.login(usernameText, passwordText, false);
+			if (response.statusCode() == 200){
+				Gson gson = new Gson();
+				JsonObject jsonObject = gson.fromJson(response.body(), JsonObject.class);
+				int id = jsonObject.get("id").getAsInt();
+				new HomePageGUI(id, "Employee").createGUI();
+				frame.setVisible(false);
+			} else {
+				statusLabelText = "Invalid username or password";
+        		statusLabel.setText(statusLabelText);
+			}
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

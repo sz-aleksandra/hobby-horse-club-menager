@@ -362,8 +362,9 @@ class TournamentsView:
                     judge_id = tournament_data.get('judge', {}).get('id')
 
                     # Check if Licence ID exists
-                    if not Employees.objects.filter(id=judge_id).exists():
-                        return JsonResponse({'error': f'Employee with ID {judge_id} does not exist'}, status=400)
+                    if judge_id:
+                        if not Employees.objects.filter(id=judge_id).exists():
+                            return JsonResponse({'error': f'Employee with ID {judge_id} does not exist'}, status=400)
 
                     # Create Address object
                     if address_data:
@@ -428,7 +429,7 @@ class TournamentsView:
             with transaction.atomic():
                 for tournament_data in tournaments:
                     tournament_id = tournament_data.get('id')
-                    address_data = tournament_data.pop('address')
+                    address_data = tournament_data.get('address')
                     address_id = address_data.get('id')
                     judge_id = tournament_data.get('judge', {}).get('id')
 

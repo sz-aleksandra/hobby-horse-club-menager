@@ -1,29 +1,32 @@
 package bd2.logic;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class LoginHandler {
-    private static final HttpClient client = HttpClient.newHttpClient();
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+public class getMemberInfo {
+	private static final HttpClient client = HttpClient.newHttpClient();
     private static final Gson gson = new Gson();
 
-	public static HttpResponse<String> login(String usernameText, String passwordText, boolean isRider) throws Exception {
-		JsonObject data = new JsonObject();
-		data.addProperty("login", usernameText);
-		data.addProperty("password", passwordText);
+	public static HttpResponse<String> getInfo(int userId, boolean isRider) throws Exception {
+		JsonArray idsArray = new JsonArray();
+        idsArray.add(userId);
+
+    	JsonObject data = new JsonObject();
+        data.add("ids", idsArray);
 
 		String jsonData = gson.toJson(data);
 
 		String url;
 		if (isRider) {
-			url = "http://127.0.0.1:8000/riders/login_rider/";
+			url = "http://127.0.0.1:8000/riders/get_by_id/";
 		} else {
-			url = "http://127.0.0.1:8000/employees/login_employee/";
+			url = "http://127.0.0.1:8000/employees/get_by_id/";
 		}
 
 		HttpRequest request = HttpRequest.newBuilder()

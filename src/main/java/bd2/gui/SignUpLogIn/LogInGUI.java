@@ -178,7 +178,7 @@ public class LogInGUI extends BaseGUI {
         statusLabel.paintImmediately(statusLabel.getVisibleRect());
 
 		try {
-            HttpResponse<String> response = LoginHandler.login(usernameText, passwordText, true);
+            HttpResponse<String> response = LoginHandler.login(usernameText, passwordText, false);
 			if (response.statusCode() == 200){
 				Gson gson = new Gson();
 				JsonObject jsonObject = gson.fromJson(response.body(), JsonObject.class);

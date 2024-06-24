@@ -28,6 +28,7 @@ public abstract class FormGUITemplate extends BaseGUI {
     protected JLabel statusLabel;
     protected String pageName = "";
     protected String finishFormButtonText = "";
+    protected int largeNoFields = 12;
 
     protected boolean editMode = false;
     protected int editedElementId;
@@ -44,8 +45,19 @@ public abstract class FormGUITemplate extends BaseGUI {
     protected abstract void undoBtnClickedAction();
 
     protected void createCustomGUI() {
-        // Move this part to new main.java.bd2.gui.BaseGUI function/to createBaseGUI function
-        // podzielic te funkcje na czesci
+
+        int nrOfFields;
+        String[] fieldLabels = getFieldLabels();
+        String[] fieldTypes = getFieldTypes();
+        Object[] fieldParameters = getFieldParameters();
+
+        if ((fieldLabels.length == fieldTypes.length) && (fieldLabels.length == fieldParameters.length) && (fieldTypes.length == fieldParameters.length)) {
+            nrOfFields = fieldLabels.length;
+        } else {
+            nrOfFields = 0; // Throw exception?
+            JOptionPane.showMessageDialog(frame, "No of fields inconsistent", "Error!", JOptionPane.ERROR_MESSAGE);
+        }
+
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
         mainPanel.setBackground(bgColor);
@@ -53,9 +65,10 @@ public abstract class FormGUITemplate extends BaseGUI {
 
         LogoPanel logoPanel = new LogoPanel(logoColor, frameHeight, frameWidth, frameHeight/10);
         mainPanel.add(logoPanel);
-        mainPanel.add(Box.createRigidArea(new Dimension(0,frameHeight/20)));
+        int verticalGap = nrOfFields > largeNoFields ? (int) frameHeight/40 : (int) frameHeight/20;
+        mainPanel.add(Box.createRigidArea(new Dimension(0,verticalGap)));
 
-        int contentPanelSize = frameHeight - frameHeight/10 - frameHeight/20 - frameHeight/20;
+        int contentPanelSize = frameHeight - frameHeight/10 - verticalGap - verticalGap;
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.LINE_AXIS));
         contentPanel.setBackground(bgColor);
@@ -77,19 +90,7 @@ public abstract class FormGUITemplate extends BaseGUI {
         registerPanel.setMaximumSize(new Dimension(frameWidth/3, contentPanelSize));
         contentPanel.add(registerPanel);
 
-        int nrOfFields;
-        String[] fieldLabels = getFieldLabels();
-        String[] fieldTypes = getFieldTypes();
-        Object[] fieldParameters = getFieldParameters();
-
-        if ((fieldLabels.length == fieldTypes.length) && (fieldLabels.length == fieldParameters.length) && (fieldTypes.length == fieldParameters.length)) {
-            nrOfFields = fieldLabels.length;
-        } else {
-            nrOfFields = 0; // Throw exception?
-            JOptionPane.showMessageDialog(frame, "No of fields inconsistent", "Error!", JOptionPane.ERROR_MESSAGE);
-        }
-
-        int fieldHeight = frameHeight/22;
+        int fieldHeight = nrOfFields > largeNoFields ? frameHeight/25 : frameHeight/22;
         JLabel longestLabel = new JLabel("");
         longestLabel.setFont(fontBigger);
         int longestLabelWidth = 0;
@@ -114,9 +115,10 @@ public abstract class FormGUITemplate extends BaseGUI {
             fieldPanel.add(Box.createRigidArea(new Dimension(frameWidth/20,0)));
 
             JLabel fieldLabel = new JLabel(fieldLabels[i]);
-            fieldLabel.setFont(fontBigger);
+            Font labelFont = nrOfFields > largeNoFields ? fontSmaller : fontBigger;
+            fieldLabel.setFont(labelFont);
             fieldPanel.add(fieldLabel);
-            int labelWidth = fieldLabel.getFontMetrics(fontBigger).stringWidth(String.valueOf(fieldLabel.getText()));
+            int labelWidth = fieldLabel.getFontMetrics(labelFont).stringWidth(String.valueOf(fieldLabel.getText()));
             int labelInputGap = longestLabelWidth - labelWidth + minLabelInputGap;
             fieldPanel.add(Box.createRigidArea(new Dimension(labelInputGap,0)));
 
@@ -226,8 +228,9 @@ public abstract class FormGUITemplate extends BaseGUI {
                 }
                 fieldPanel.add(checkBoxesField);
             }
-
-            fieldsPanel.add(Box.createVerticalGlue());
+            if (i != nrOfFields-1) {
+                fieldsPanel.add(Box.createVerticalGlue());
+            }
         }
 
         registerPanel.add(Box.createVerticalGlue());
@@ -245,7 +248,8 @@ public abstract class FormGUITemplate extends BaseGUI {
         registerPanel.add(finishFormButton);
         registerPanel.add(Box.createRigidArea(new Dimension(0,frameHeight/20)));
 
-        UndoPanel undoPanel = new UndoPanel(frameWidth, frameHeight/20, bgColor, e->undoBtnClickedAction(), pageName, fontMiddle);
+        int undoPanelSize = nrOfFields > largeNoFields ? frameHeight/30 : frameHeight/20;
+        UndoPanel undoPanel = new UndoPanel(frameWidth, undoPanelSize, bgColor, e->undoBtnClickedAction(), pageName, fontMiddle);
         mainPanel.add(undoPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0,frameHeight/40)));
     }

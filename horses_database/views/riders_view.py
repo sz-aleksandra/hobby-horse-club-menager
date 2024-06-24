@@ -483,6 +483,14 @@ class RidersView:
                     horse_id = rider_data.get('horse', {}).get('id')
                     parent_consent = rider_data.get('parent_consent', False)
 
+                    if horse_id is not None:
+                        if not Horses.objects.filter(id=horse_id).exists():
+                            return JsonResponse({'error': f'Horse with ID {horse_id} does not exist'}, status=400)
+
+                    if group_id is not None:
+                        if not Groups.objects.filter(id=group_id).exists():
+                            return JsonResponse({'error': f'Group with ID {group_id} does not exist'}, status=400)
+
                     address_data = member_data.get('address', {})
                     address = Addresses.objects.create(**address_data)
 
@@ -608,19 +616,28 @@ class RidersView:
                     parent_consent = rider_data.get('parent_consent')
                     group_id = rider_data.get('group_id')
                     horse_id = rider_data.get('horse_id')
+                    password = member_data.get('password')
 
                     address_data = member_data.get('address')
                     licence_id = member_data.get('licence', {}).get('id')
 
-                    if not rider_id or not member_id or not group_id or not horse_id:
+                    if not rider_id or not member_id:
                         return JsonResponse(
-                            {'error': 'ID, member_id, group_id, horse_id are required fields'},
+                            {'error': 'ID, member_id are required fields'},
                             status=400
                         )
                     if not Members.objects.filter(id=member_id).exists():
                         return JsonResponse({'error': f'Member with ID {member_id} does not exist'}, status=400)
                     if not Licences.objects.filter(id=licence_id).exists():
                         return JsonResponse({'error': f'Licence with ID {licence_id} does not exist'}, status=400)
+
+                    if horse_id is not None:
+                        if not Horses.objects.filter(id=horse_id).exists():
+                            return JsonResponse({'error': f'Horse with ID {horse_id} does not exist'}, status=400)
+
+                    if group_id is not None:
+                        if not Groups.objects.filter(id=group_id).exists():
+                            return JsonResponse({'error': f'Group with ID {group_id} does not exist'}, status=400)
 
                     if address_data.get('id'):
                         Addresses.objects.filter(id=address_data.get('id')).update(
@@ -635,7 +652,6 @@ class RidersView:
                         name=member_data.get('name'),
                         surname=member_data.get('surname'),
                         username=member_data.get('username'),
-                        password=member_data.get('password'),
                         date_of_birth=member_data.get('date_of_birth'),
                         phone_number=member_data.get('phone_number'),
                         email=member_data.get('email'),
@@ -643,6 +659,9 @@ class RidersView:
                         licence_id=licence_id,
                         address_id=address_data.get('id')
                     )
+
+                    if password is not None:
+                        Members.objects.filter(id=member_id).update(password=password)
 
                     Riders.objects.filter(id=rider_id).update(
                         member_id=member_id,

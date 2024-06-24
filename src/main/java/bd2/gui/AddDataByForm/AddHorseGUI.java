@@ -1,10 +1,15 @@
 package bd2.gui.AddDataByForm;
 
 import bd2.gui.SeeDataByScrolling.HorsesScrollGUI;
+import bd2.logic.getInfoById;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import kotlin.Pair;
 
+import java.net.http.HttpResponse;
 import java.util.HashMap;
 
 import static bd2.DBRequests.base_url;
@@ -31,11 +36,34 @@ public class AddHorseGUI extends AddDataTemplate {
     }
 
     HashMap<String, String> getHorseDataFromDB(int elementId) {
-        HashMap<String, String> myMap = new HashMap<String, String>() {{
-            put("Bread", "Appaloosa");
-            put("Age", "5");
-        }};
-        return myMap;
+		HashMap<String, String> horseMap = new HashMap<>();
+
+        try {
+            HttpResponse<String> response = getInfoById.getInfo(elementId, "horses/get_by_id/");
+			
+            JsonObject jsonObject = JsonParser.parseString(response.body()).getAsJsonObject();
+
+            JsonArray jsonHorsesArray = jsonObject.getAsJsonArray("horses");
+			JsonObject horse = jsonHorsesArray.get(0).getAsJsonObject();
+            String breed = horse.get("breed").getAsString();
+            String origin = horse.get("origin").getAsString();
+            String height = horse.get("height").getAsString();
+            String age = horse.get("age").getAsString();
+            String color = horse.get("color").getAsString();
+            String eyeColor = horse.get("eye_color").getAsString();
+            String hairStyle = horse.get("hairstyle").getAsString();
+
+			horseMap.put("Bread", breed);
+			horseMap.put("Origin", origin);
+			horseMap.put("Height", height);
+			horseMap.put("Age", age);
+			horseMap.put("Color", color);
+			horseMap.put("Eye color", eyeColor);
+			horseMap.put("Hairstyle", hairStyle);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return horseMap;
     }
 
 

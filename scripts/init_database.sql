@@ -326,6 +326,15 @@ CREATE TRIGGER before_insert_members
     FOR EACH ROW
 BEGIN
     DECLARE username_count INT;
+    DECLARE normalized_phone VARCHAR(20);
+
+    IF NEW.phone_number IS NOT NULL THEN
+        SET normalized_phone = REPLACE(REPLACE(REPLACE(REPLACE(NEW.phone_number, ' ', ''), '-', ''), '(', ''), ')', '');
+        IF LEFT(normalized_phone, 3) = '+48' THEN
+            SET normalized_phone = RIGHT(normalized_phone, LENGTH(normalized_phone) - 3);
+END IF;
+SET NEW.phone_number = normalized_phone;
+END IF;
 
     SELECT COUNT(*)
     INTO username_count
@@ -336,14 +345,12 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Username must be unique', MYSQL_ERRNO = 1201;
 END IF;
 
-IF NEW.email IS NOT NULL AND INSTR(NEW.email, '@') = 0 THEN
+    IF NEW.email IS NOT NULL AND INSTR(NEW.email, '@') = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Email must contain "@" symbol', MYSQL_ERRNO = 1202;
 END IF;
-END //
 
-
-IF NEW.date_of_birth >= CURDATE() THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Date of birth must be in the past', MYSQL_ERRNO = 1202;
+    IF NEW.date_of_birth >= CURDATE() THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Date of birth must be in the past', MYSQL_ERRNO = 1203;
 END IF;
 END//
 
@@ -478,5 +485,15 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Judge must have a Coaching Licence Level of 4 or higher', MYSQL_ERRNO = 2001;
 END IF;
 END //
+
+
+CREATE TRIGGER before_insert_addresses
+    BEFORE INSERT ON Addresses
+    FOR EACH ROW
+BEGIN
+    IF NOT (NEW.postal_code REGEXP '^[0-9]{2}-[0-9]{3}$') THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Postal code must be in the format 00-000', MYSQL_ERRNO = 2101;
+END IF;
+END//
 
 DELIMITER ;

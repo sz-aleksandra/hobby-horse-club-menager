@@ -133,6 +133,130 @@ class EmployeesView:
 
     @staticmethod
     @csrf_exempt
+    def get_active_employees(request):
+        """
+        Example request JSON: N/A
+        Example response JSON:
+        {
+            "employees": [
+                {
+                    "id": 1,
+                    "member": {
+                        "id": 1,
+                        "name": "John",
+                        "surname": "Doe",
+                        "username": "johndoe",
+                        "date_of_birth": "1990-01-01",
+                        "address": {
+                            "id": 1,
+                            "country": "USA",
+                            "city": "New York",
+                            "street": "Broadway",
+                            "street_no": "123",
+                            "postal_code": "10001"
+                        },
+                        "phone_number": "+1234567890",
+                        "email": "john.doe@example.com",
+                        "is_active": true,
+                        "licence": {
+                            "id": 1,
+                            "licence_level": "A"
+                        }
+                    },
+                    "position": {
+                        "id": 1,
+                        "name": "Head Coach",
+                        "salary_min": "5000.00",
+                        "salary_max": "8000.00",
+                        "licence": {
+                           "id": 1,
+                            "licence_level": "Advanced"
+                        },
+                        "coaching_licence": {
+                            "id": 2,
+                            "licence_level": "Basic"
+                        },
+                        "speciality": "Jumping"
+                    },
+                    "salary": 1000,
+                    "date_employed": "1985-05-15"
+                }
+            ]
+        }
+        """
+        try:
+            employees = Employees.objects.filter(member__is_active=True).select_related(
+                'member__address', 'member__licence', 'position__licence', 'position__coaching_licence'
+            ).values(
+                'id',
+                'member_id', 'member__name', 'member__surname', 'member__username', 'member__date_of_birth',
+                'member__address_id', 'member__address__country', 'member__address__city', 'member__address__street',
+                'member__address__street_no', 'member__address__postal_code', 'member__phone_number', 'member__email',
+                'member__is_active', 'member__licence_id', 'member__licence__licence_level',
+                'position_id', 'position__name', 'position__salary_min', 'position__salary_max',
+                'position__licence_id', 'position__licence__licence_level',
+                'position__coaching_licence_id', 'position__coaching_licence__licence_level',
+                'salary', 'date_employed'
+            )
+
+            data = []
+            for employee in employees:
+                employee_data = {
+                    "id": employee['id'],
+                    "member": {
+                        "id": employee['member_id'],
+                        "name": employee['member__name'],
+                        "surname": employee['member__surname'],
+                        "username": employee['member__username'],
+                        "date_of_birth": employee['member__date_of_birth'],
+                        "address": {
+                            "id": employee['member__address_id'],
+                            "country": employee['member__address__country'],
+                            "city": employee['member__address__city'],
+                            "street": employee['member__address__street'],
+                            "street_no": employee['member__address__street_no'],
+                            "postal_code": employee['member__address__postal_code']
+                        },
+                        "phone_number": employee['member__phone_number'],
+                        "email": employee['member__email'],
+                        "is_active": employee['member__is_active'],
+                        "licence": {
+                            "id": employee['member__licence_id'],
+                            "licence_level": employee['member__licence__licence_level'],
+                        }
+                    },
+                    "position": {
+                        "id": employee['position_id'],
+                        "name": employee['position__name'],
+                        "salary_min": employee['position__salary_min'],
+                        "salary_max": employee['position__salary_max'],
+                        "licence": {
+                            "id": employee['position__licence_id'],
+                            "licence_level": employee['position__licence__licence_level']
+                        },
+                        "coaching_licence": {
+                            "id": employee['position__coaching_licence_id'],
+                            "licence_level": employee['position__coaching_licence__licence_level']
+                        }
+                    },
+                    "salary": employee['salary'],
+                    "date_employed": employee['date_employed']
+                }
+                data.append(employee_data)
+            return JsonResponse({'employees': data}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    @staticmethod
+    @csrf_exempt
     def get_employee_by_id(request):
         """
         Example request JSON:

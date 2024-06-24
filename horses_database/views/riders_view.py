@@ -131,6 +131,129 @@ class RidersView:
 
     @staticmethod
     @csrf_exempt
+    def get_active_riders(request):
+        """
+        Get all active riders
+        Example request JSON: N/A
+        Example response JSON:
+        {
+            "riders": [
+                {
+                    "id": 1,
+                    "member": {
+                        "id": 1,
+                        "name": "John",
+                        "surname": "Doe",
+                        "username": "johndoe",
+                        "date_of_birth": "1990-01-01",
+                        "address": {
+                            "id": 1,
+                            "country": "USA",
+                            "city": "New York",
+                            "street": "Broadway",
+                            "street_no": "123",
+                            "postal_code": "10001"
+                        },
+                        "phone_number": "+1234567890",
+                        "email": "john.doe@example.com",
+                        "is_active": true,
+                        "licence": {
+                            "id": 1,
+                            "licence_level": "A"
+                        }
+                    },
+                    "parent_consent": true,
+                    "group": {
+                        "id": 1,
+                        "name": "Jumpers",
+                        "max_group_members": 10
+                    },
+                    "horse": {
+                        "id": 1,
+                        "breed": "Thoroughbred",
+                        "height": "170 cm",
+                        "color": "Bay",
+                        "eye_color": "Brown",
+                        "age": 7,
+                        "origin": "USA",
+                        "hairstyle": "Short"
+                    }
+                }
+            ]
+        }
+        """
+        try:
+            riders = Riders.objects.filter(member__is_active=True).select_related('member', 'group', 'horse').values(
+                'id',
+                'member_id', 'member__name', 'member__surname', 'member__username', 'member__date_of_birth',
+                'member__address_id', 'member__address__country', 'member__address__city', 'member__address__street',
+                'member__address__street_no', 'member__address__postal_code', 'member__phone_number', 'member__email',
+                'member__is_active', 'member__licence_id', 'member__licence__licence_level',
+                'parent_consent',
+                'group_id', 'group__name', 'group__max_group_members',
+                'horse_id', 'horse__breed', 'horse__height', 'horse__color', 'horse__eye_color', 'horse__age',
+                'horse__origin', 'horse__hairstyle'
+            )
+
+            data = []
+            for rider in riders:
+                rider_data = {
+                    "id": rider['id'],
+                    "member": {
+                        "id": rider['member_id'],
+                        "name": rider['member__name'],
+                        "surname": rider['member__surname'],
+                        "username": rider['member__username'],
+                        "date_of_birth": rider['member__date_of_birth'],
+                        "address": {
+                            "id": rider['member__address_id'],
+                            "country": rider['member__address__country'],
+                            "city": rider['member__address__city'],
+                            "street": rider['member__address__street'],
+                            "street_no": rider['member__address__street_no'],
+                            "postal_code": rider['member__address__postal_code']
+                        },
+                        "phone_number": rider['member__phone_number'],
+                        "email": rider['member__email'],
+                        "is_active": rider['member__is_active'],
+                        "licence": {
+                            "id": rider['member__licence_id'],
+                            "licence_level": rider['member__licence__licence_level'],
+                        }
+                    },
+                    "parent_consent": rider['parent_consent'],  # Poprawiona nazwa pola
+                    "group": {
+                        "id": rider['group_id'],
+                        "name": rider['group__name'],
+                        "max_group_members": rider['group__max_group_members']
+                    },
+                    "horse": {
+                        "id": rider['horse_id'],
+                        "breed": rider['horse__breed'],
+                        "height": rider['horse__height'],
+                        "color": rider['horse__color'],
+                        "eye_color": rider['horse__eye_color'],
+                        "age": rider['horse__age'],
+                        "origin": rider['horse__origin'],
+                        "hairstyle": rider['horse__hairstyle']
+                    }
+                }
+                data.append(rider_data)
+
+            return JsonResponse({'riders': data}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing field in JSON: {str(e)}'}, status=400)
+        except IntegrityError as e:
+            return JsonResponse({'error': 'Integrity error: ' + str(e)}, status=400)
+        except DatabaseError as e:
+            return JsonResponse({'error': 'Database error: ' + str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    @staticmethod
+    @csrf_exempt
     def get_rider_by_id(request):
         """
         Get riders by IDs.

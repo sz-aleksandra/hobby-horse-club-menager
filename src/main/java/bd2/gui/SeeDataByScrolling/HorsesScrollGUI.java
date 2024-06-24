@@ -2,35 +2,64 @@ package bd2.gui.SeeDataByScrolling;
 
 import bd2.gui.AddDataByForm.AddHorseGUI;
 import bd2.gui.components.ScrollElementButton;
+import bd2.logic.ErrorCodes;
+import com.google.gson.JsonObject;
+import kotlin.Pair;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
+import java.util.List;
+
+import static bd2.DBRequests.base_url;
+import static bd2.DBRequests.postMethod;
 
 public class HorsesScrollGUI extends DataScrollTemplate {
 
 	boolean[] doesUserChooseThisHorse = {true, false, false, true, false, true, true};
 
-    //[MOCK]
     @Override
     protected void getElementsData() {
-        this.fittingElementsIds = new Integer[]{1,2,3,4,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25};
-        this.nrOfElements = fittingElementsIds.length;
+        String url = base_url + "horses/get_all/";
+
+        Pair<Integer, JsonObject> response = postMethod(url, new HashMap<>());
+        if (response != null) {
+            JsonObject responseData = response.getSecond();
+            this.nrOfElements = responseData.getAsJsonArray("horses").size();
+            this.fittingElementsIds = new Integer[this.nrOfElements];
+            for (int i = 0; i < responseData.getAsJsonArray("horses").size(); i++) {
+                this.fittingElementsIds[i] = responseData.getAsJsonArray("horses").get(i).getAsJsonObject().get("id").getAsInt();
+            }
+        }
+        else {
+            this.nrOfElements = 0;
+            this.fittingElementsIds = new Integer[]{};
+        }
     }
 
-    // [MOCK]
     @Override
     protected HashMap<String, String> getElementData(int elementId) {
-        HashMap<String, String> dataInfo = new HashMap<>();
-        dataInfo.put("bread", "Appaloosa");
-        dataInfo.put("height", "100");
-        dataInfo.put("color", "Chestnut");
-        dataInfo.put("eye_color", "Blue");
-        dataInfo.put("age", "4");
-        dataInfo.put("origin", "Peru");
-        dataInfo.put("hairstyle", "Braided");
-        return dataInfo;
+        String url = base_url + "horses/get_by_id/";
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("ids", List.of(elementId));
+
+        Pair<Integer, JsonObject> response = postMethod(url, data);
+        if (response != null) {
+            JsonObject responseData = response.getSecond().getAsJsonArray("horses").get(0).getAsJsonObject();
+            HashMap<String, String> dataInfo = new HashMap<>();
+            dataInfo.put("bread", responseData.get("breed").getAsString());
+            dataInfo.put("height", responseData.get("height").getAsString());
+            dataInfo.put("color", responseData.get("color").getAsString());
+            dataInfo.put("eye_color", responseData.getAsJsonObject().get("eye_color").getAsString());
+            dataInfo.put("age", responseData.getAsJsonObject().get("age").getAsString());
+            dataInfo.put("origin", responseData.getAsJsonObject().get("origin").getAsString());
+            dataInfo.put("hairstyle", responseData.getAsJsonObject().get("hairstyle").getAsString());
+            return dataInfo;
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
@@ -70,14 +99,14 @@ public class HorsesScrollGUI extends DataScrollTemplate {
                 });
                 dataPanel.add(registerButton);
             }
-        } else if (userType.equals("Employee") && doesEmployeeHaveWritePermissions()){
+        } else if (userType.equals("Employee") && doesEmployeeHaveWritePermissions()) {
             ScrollElementButton editButton = new ScrollElementButton("Edit", buttonSize, buttonSize, secondColor, secondColorDarker, fontButtons, true, elementId);
             editButton.addActionListener(actionEvent -> handleEditData(elementId));
             dataPanel.add(editButton);
             dataPanel.add(Box.createRigidArea(new Dimension(buttonsGapSize,0)));
 
             ScrollElementButton removeButton = new ScrollElementButton("Delete", buttonSize, buttonSize, statusWrongLighter, statusWrong, fontButtons, true, elementId);
-            editButton.addActionListener(actionEvent -> handleEditData(elementId));
+            removeButton.addActionListener(actionEvent -> handleRemoveData(elementId));
             dataPanel.add(removeButton);
         }
     }
@@ -105,7 +134,43 @@ public class HorsesScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleRemoveData(int elementId) {
+        String[] options = {"No", "Yes"};
+        int pickedOption = JOptionPane.showOptionDialog(null, "This action is irreversible. Are you sure you want to continue?",
+                "Confirm action", 0, 0, null, options, "No");
 
+        if (pickedOption == 1) {
+            List<Integer> errorCodes = new ArrayList<>();
+            String url = base_url + "horses/delete/";
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("ids", List.of(elementId));
+
+            Pair<Integer, JsonObject> response = postMethod(url, data);
+
+            if (response != null) {
+                JsonObject responseData = response.getSecond();
+                int response_code = response.getFirst();
+                if (response_code != 200) {
+                    errorCodes.add(response_code);
+                }
+            }
+            else {
+                errorCodes.add(-1);
+            }
+
+            if (errorCodes.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Horse deleted successfully.");
+                new HorsesScrollGUI(userId, userType).createGUI();
+                frame.setVisible(false);
+            } else {
+                StringBuilder errorText = new StringBuilder();
+                for (Integer errorCode : errorCodes) {
+                    errorText.append(ErrorCodes.getErrorDescription(errorCode)).append(" ");
+                }
+
+                JOptionPane.showMessageDialog(frame, errorText.toString());
+            }
+        }
     }
 
     public HorsesScrollGUI(int userId, String userType){

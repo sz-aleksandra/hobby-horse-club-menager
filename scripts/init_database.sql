@@ -31,7 +31,7 @@ CREATE TABLE Members (
                         phone_number VARCHAR(20),
                         email VARCHAR(255),
                         is_active BOOLEAN NOT NULL DEFAULT TRUE,
-                        licence_id INT,
+                        licence_id INT NOT NULL DEFAULT 1,
                         FOREIGN KEY (address_id) REFERENCES Addresses(id),
                         FOREIGN KEY (licence_id) REFERENCES Licences(id)
 );
@@ -62,8 +62,8 @@ CREATE TABLE Positions (
                             name VARCHAR(255) NOT NULL,
                             salary_min DECIMAL(10, 2) NOT NULL,
                             salary_max DECIMAL(10, 2) NOT NULL,
-                            licence_id INT,
-                            coaching_licence_id INT,
+                            licence_id INT NOT NULL DEFAULT 1,
+                            coaching_licence_id INT NOT NULL DEFAULT 7,
                             speciality VARCHAR(255),
                             FOREIGN KEY (licence_id) REFERENCES Licences(id),
                             FOREIGN KEY (coaching_licence_id) REFERENCES Licences(id)
@@ -363,7 +363,37 @@ BEGIN
     IF NEW.salary < min_salary OR NEW.salary > max_salary THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Salary must be within the defined range for the position', MYSQL_ERRNO = 1301;
 END IF;
+
+IF NEW.date_start > CURDATE() THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Start date must not be in the future', MYSQL_ERRNO = 1302;
+END IF;
 END//
+
+
+CREATE TRIGGER before_insert_or_update_employees
+    BEFORE INSERT ON Employees
+    FOR EACH ROW
+BEGIN
+    DECLARE required_licence_level INT;
+
+    SELECT licence_id
+    INTO required_licence_level
+    FROM Positions
+    WHERE id = NEW.position_id;
+
+    IF NEW.position_id IS NOT NULL AND NEW.member_id IS NOT NULL THEN
+        DECLARE employee_licence_level INT;
+
+    SELECT licence_id
+    INTO employee_licence_level
+    FROM Members
+    WHERE id = NEW.member_id;
+
+    IF employee_licence_level < required_licence_level THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Employee does not meet the required licence level for the position', MYSQL_ERRNO = 1303;
+END IF;
+END IF;
+END //
 
 
 CREATE TRIGGER before_insert_positions
@@ -433,32 +463,6 @@ END IF;
 END//
 
 
-CREATE TRIGGER before_insert_or_update_employees
-    BEFORE INSERT ON Employees
-    FOR EACH ROW
-BEGIN
-    DECLARE required_licence_level INT;
-
-    SELECT licence_id
-    INTO required_licence_level
-    FROM Positions
-    WHERE id = NEW.position_id;
-
-    IF NEW.position_id IS NOT NULL AND NEW.member_id IS NOT NULL THEN
-        DECLARE employee_licence_level INT;
-
-    SELECT licence_id
-    INTO employee_licence_level
-    FROM Members
-    WHERE id = NEW.member_id;
-
-    IF employee_licence_level < required_licence_level THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Employee does not meet the required licence level for the position', MYSQL_ERRNO = 1302;
-END IF;
-END IF;
-END //
-
-
 CREATE TRIGGER before_insert_tournaments
     BEFORE INSERT ON Tournaments
     FOR EACH ROW
@@ -474,7 +478,5 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Judge must have a Coaching Licence Level of 4 or higher', MYSQL_ERRNO = 2001;
 END IF;
 END //
-
-
 
 DELIMITER ;

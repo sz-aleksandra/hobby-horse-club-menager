@@ -439,7 +439,7 @@ CREATE TRIGGER before_insert_or_update_employees
 BEGIN
     DECLARE required_licence_level INT;
 
-    SELECT CAST(RIGHT(licence_id, 1) AS UNSIGNED)
+    SELECT licence_id
     INTO required_licence_level
     FROM Positions
     WHERE id = NEW.position_id;
@@ -447,7 +447,7 @@ BEGIN
     IF NEW.position_id IS NOT NULL AND NEW.member_id IS NOT NULL THEN
         DECLARE employee_licence_level INT;
 
-    SELECT CAST(RIGHT(licence_id, 1) AS UNSIGNED)
+    SELECT licence_id
     INTO employee_licence_level
     FROM Members
     WHERE id = NEW.member_id;
@@ -465,12 +465,12 @@ CREATE TRIGGER before_insert_tournaments
 BEGIN
     DECLARE judge_coaching_licence_level INT;
 
-    SELECT CAST(RIGHT(coaching_licence_id, 1) AS UNSIGNED)
+    SELECT coaching_licence_id
     INTO judge_coaching_licence_level
     FROM Employees
     WHERE id = NEW.judge_id;
 
-    IF judge_coaching_licence_level < 4 THEN
+    IF judge_coaching_licence_level < 11 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Judge must have a Coaching Licence Level of 4 or higher', MYSQL_ERRNO = 2001;
 END IF;
 END //

@@ -42,12 +42,10 @@ public class AddStableGUI extends AddDataTemplate {
         try {
             HttpResponse<String> response = getInfoById.getInfo(elementId, "stables/get_by_id/");
 
-			System.out.println(response.body());
-
             JsonObject jsonObject = JsonParser.parseString(response.body()).getAsJsonObject();
 
-            JsonArray jsonPositionsArray = jsonObject.getAsJsonArray("stables");
-			JsonObject stable = jsonPositionsArray.get(0).getAsJsonObject();
+            JsonArray jsonStablesArray = jsonObject.getAsJsonArray("stables");
+			JsonObject stable = jsonStablesArray.get(0).getAsJsonObject();
             String name = stable.get("name").getAsString();
             JsonObject address = stable.getAsJsonObject("address");
             int address_id = address.get("id").getAsInt();

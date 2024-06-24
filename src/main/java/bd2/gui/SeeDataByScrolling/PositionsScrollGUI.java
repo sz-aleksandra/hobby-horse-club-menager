@@ -42,7 +42,8 @@ public class PositionsScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleEditData(int elementId) {
-
+        new AddPositionGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

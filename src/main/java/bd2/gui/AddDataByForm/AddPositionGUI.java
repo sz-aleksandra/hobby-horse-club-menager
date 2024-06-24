@@ -11,6 +11,29 @@ public class AddPositionGUI extends AddDataTemplate {
         super(userId, userType, "Add Position");
     }
 
+    public AddPositionGUI(int userId, String userType, int editedElementId) {
+        super(userId, userType, "Edit Position");
+        this.editedElementId = editedElementId;
+        this.editMode = true;
+    }
+
+    @Override
+    protected void createCustomGUI() {
+        super.createCustomGUI();
+        if (this.editMode) {
+            populateFieldValues(getPositionDataFromDB(this.editedElementId));
+        }
+    }
+
+    // [MOCK]
+    HashMap<String, String> getPositionDataFromDB(int elementId) {
+        HashMap<String, String> myMap = new HashMap<String, String>() {{
+            put("Name", "Cleaner");
+            put("Minimal salary", "4200");
+        }};
+        return myMap;
+    }
+
     @Override
     protected String[] getFieldLabels() {
         String[] fieldLabels = {"Name", "Minimal salary", "Maximal salary", "Speciality"};

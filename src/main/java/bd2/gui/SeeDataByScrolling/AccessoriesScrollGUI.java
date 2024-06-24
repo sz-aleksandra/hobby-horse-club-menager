@@ -39,7 +39,8 @@ public class AccessoriesScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleEditData(int elementId) {
-
+        new AddAccessoryGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override

@@ -11,6 +11,30 @@ public class AddHorseGUI extends AddDataTemplate {
         super(userId, userType, "Add Horse");
     }
 
+    public AddHorseGUI(int userId, String userType, int editedElementId) {
+        super(userId, userType, "Edit Horse");
+        this.editedElementId = editedElementId;
+        this.editMode = true;
+    }
+
+    @Override
+    protected void createCustomGUI() {
+        super.createCustomGUI();
+        if (this.editMode) {
+            populateFieldValues(getHorseDataFromDB(this.editedElementId));
+        }
+    }
+
+    // [MOCK]
+    HashMap<String, String> getHorseDataFromDB(int elementId) {
+        HashMap<String, String> myMap = new HashMap<String, String>() {{
+            put("Bread", "Appaloosa");
+            put("Age", "5");
+        }};
+        return myMap;
+    }
+
+
     @Override
     protected String[] getFieldLabels() {
         String[] fieldLabels = {"Bread", "Origin", "Height", "Age", "Color", "Eye color", "Hairstyle"};

@@ -12,6 +12,30 @@ public class AddTournamentGUI extends AddDataTemplate {
         super(userId, userType, "Add Tournament");
     }
 
+    public AddTournamentGUI(int userId, String userType, int editedElementId) {
+        super(userId, userType, "Edit Tournament");
+        this.editedElementId = editedElementId;
+        this.editMode = true;
+    }
+
+    @Override
+    protected void createCustomGUI() {
+        super.createCustomGUI();
+        if (this.editMode) {
+            populateFieldValues(getTournamentDataFromDB(this.editedElementId));
+        }
+    }
+
+    // [MOCK]
+    HashMap<String, String> getTournamentDataFromDB(int elementId) {
+        HashMap<String, String> myMap = new HashMap<String, String>() {{
+            put("Name", "Turniej 1");
+            put("Country", "Poland");
+        }};
+        return myMap;
+    }
+
+
     @Override
     protected String[] getFieldLabels() {
         String[] fieldLabels = {"Name", "Date", "Country", "City", "Street", "Street number", "Postal Code"};

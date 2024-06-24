@@ -1,5 +1,6 @@
 package bd2.gui.SeeDataByScrolling;
 
+import bd2.gui.AddDataByForm.AddStableGUI;
 import bd2.gui.AddDataByForm.AddTournamentGUI;
 import bd2.gui.components.ScrollElementButton;
 import javax.swing.*;
@@ -94,7 +95,8 @@ public class TournamentsScrollGUI extends DataScrollTemplate {
 
     @Override
     protected void handleEditData(int elementId) {
-
+        new AddTournamentGUI(userId, userType, elementId).createGUI();
+        frame.setVisible(false);
     }
 
     @Override
